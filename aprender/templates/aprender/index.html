@@ -92,10 +92,47 @@
                         <img src="{% static 'icons/user.png' %}" alt="profile pic">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg-end">
-                        <li><hr class="dropdown-divider"></li>
-                        <li><button class="dropdown-item" type="button">Action</button></li>
+                        <li>
+                            <style>
+                                #container {
+                                    display: flex;
+                                    flex-flow: row nowrap;
+                                    margin: 5px;
+                                }
+
+                                #profilePic {
+                                    height: 32px;
+                                    width: 32px;
+                                    border-radius: 15px;
+                                }
+
+                                #username, #email {
+                                    font-size: .7em;
+                                    margin: 0 1px;
+                                }
+
+                                #body {
+                                    margin: 0 5px;
+                                }
+                            </style>
+                            <div id='container'>
+                                {% comment %} TODO USERS PIC {% endcomment %}
+                                <img id='profilePic' src="{% static 'icons/image.jpeg' %}" alt="profile pic">
+                                <div id='body'>
+                                    {% comment %} TODO USERS INFO {% endcomment %}
+                                    <p id='username'> <strong>Medreres</strong></p>
+                                    <p id='email'>mrtraitor252325@gmail.com</p>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><button class="dropdown-item" type="button">Profile</button></li>
                         <li><button class="dropdown-item" type="button">Another action</button></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
                     </ul>
                 </div>

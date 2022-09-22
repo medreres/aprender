@@ -82,7 +82,8 @@ def register(request):
 
     else:
         return render(request, 'aprender/register.html', {
-            'RegisterForm': RegisterForm()
+            'RegisterForm': RegisterForm(),
+            'LoginForm': LoginForm()
         })
 
 
