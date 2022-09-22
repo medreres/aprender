@@ -1,0 +1,17 @@
+{% extends 'aprender/index.html' %}
+{% block body %}
+<style>
+    form {
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+    }
+    form > * {
+        margin: 10px;
+    }
+</style>
+<form action="">
+    {{RegisterForm}}
+    <input type="submit" value='Register'>
+</form>
+{% endblock body %}
