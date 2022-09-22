@@ -10,8 +10,9 @@
         margin: 10px;
     }
 </style>
-<form action="">
+<form action="{% url 'register' %}" method='post'>
     {{RegisterForm}}
+    {% csrf_token %}
     <input type="submit" value='Register'>
 </form>
 {% endblock body %}
