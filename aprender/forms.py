@@ -4,7 +4,7 @@ from django.forms import TextInput, EmailInput, PasswordInput
 class LoginForm(forms.Form):
    # username = forms.CharField(label='Username', max_length=100)
    username = forms.CharField(widget=forms.TextInput(attrs={
-      'placeholder': 'email@example.com',
+      'placeholder': 'Username',
       'type': 'text',
       'class': 'form-control',
       'id': 'DropdownFormEmail1',

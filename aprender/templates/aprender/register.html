@@ -1,16 +1,9 @@
 {% extends 'aprender/index.html' %}
 {% block body %}
 <style>
-    form {
-        display: flex;
-        flex-flow: column nowrap;
-        align-items: center;
-    }
-    form > * {
-        margin: 10px;
-    }
+
 </style>
-<form action="{% url 'register' %}" method='post'>
+<form id='registerForm' action="{% url 'register' %}" method='post'>
     {{RegisterForm}}
     {% csrf_token %}
     <input type="submit" value='Register'>
