@@ -31,6 +31,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
                     </li>
+                    {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a id="libraryBtn" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -65,7 +66,7 @@
                                 function loadSets(event) {
                                     fetch("{% url 'fetchsets' request.user%}")
                                         .then(response => response.json())
-                                        .then(result => result.forEach(card => addCard(card)) )
+                                        .then(result => result.forEach(card => addCard(card)))
                                 }
 
                                 function addCard(card) {
@@ -83,10 +84,10 @@
                                     </div>
                                     `;
 
-                                    document.querySelector('#containerAjax').innerHTML += tmp;
+                                        document.querySelector('#containerAjax').innerHTML += tmp;
                                     }, 1)
 
-                                    
+
                                 }
 
                                 function loadFolders(event) {
@@ -150,6 +151,7 @@
                             <a href="#" id="foldersLink" class="hidden">View all folders</a>
                         </ul>
                     </li>
+                    
                     <li class="nav-item dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
@@ -157,23 +159,57 @@
                         </button>
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'createset' %}" r class="dropdown-item" type="button">Study Set</a></li>
-                            <li><button class="dropdown-item" type="button">Folder</button></li>
+                            <li>
+                                <!-- <a href="{% url 'createfolder' %}" class="dropdown-item" type="button">Folder</a> -->
+
+
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    Launch demo modal
+                                </button>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="exampleModal" tabindex="-1"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ...
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="button" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </li>
                         </ul>
 
                     </li>
+                    {% endif %}
                 </ul>
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 </form>
                 <!-- Default dropstart button -->
-                {% if not user.is_authenticated%}
+                {% if not user.is_authenticated %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         Sign In
                     </button>
                     <div class="dropdown-menu dropdown-menu-lg-end">
-                        <form class="px-4 py-3" method='post' action="{% url ' login' %}">
+                        <form class="px-4 py-3" method='post' action="{% url 'login' %}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="DropdownFormEmail1" class="form-label">Email address</label>

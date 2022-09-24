@@ -137,3 +137,6 @@ def createset(request):
 
 def sets(request, user):
     return render(request, 'aprender/sets.html')
+
+def createfolder(request):
+    return render(request, 'aprender/createfolder.html')
