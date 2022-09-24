@@ -1,24 +1,54 @@
 from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
+from .models import Set
+
 
 class LoginForm(forms.Form):
-   # username = forms.CharField(label='Username', max_length=100)
-   username = forms.CharField(widget=forms.TextInput(attrs={
-      'placeholder': 'Username',
-      'type': 'text',
-      'class': 'form-control',
-      'id': 'DropdownFormEmail1',
-   }))
-   # password = forms.CharField(label='Password',  max_length=100)
-   password = forms.CharField(widget=forms.PasswordInput(attrs={
-      'type': 'password',
-      'class': 'form-control',
-      'id': 'DropdownFormPassword1',
-      'placeholder': 'Password',
-   }))
+    # username = forms.CharField(label='Username', max_length=100)
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Username',
+        'type': 'text',
+        'class': 'form-control',
+        'id': 'DropdownFormEmail1',
+    }))
+    # password = forms.CharField(label='Password',  max_length=100)
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'type': 'password',
+        'class': 'form-control',
+        'id': 'DropdownFormPassword1',
+        'placeholder': 'Password',
+    }))
+
 
 class RegisterForm(forms.Form):
-   username = forms.CharField(label='Username', max_length=100)
-   password = forms.CharField(label='Password',  max_length=100)
-   password2 = forms.CharField(label='Password',  max_length=100)
-   email = forms.CharField(label='Email',  max_length=100)
+    username = forms.CharField(label='Username', max_length=100)
+    password = forms.CharField(label='Password',  max_length=100)
+    password2 = forms.CharField(label='Password',  max_length=100)
+    email = forms.CharField(label='Email',  max_length=100)
+
+
+class CreateSet(forms.ModelForm):
+   #  label = forms.CharField(label='Study Set Label', max_length=100)
+    # ? Could be done better?
+   #  term = forms.CharField(widget=forms.TextInput(attrs={
+   #      'id': f"term_0",
+   #  }))
+   #  definition = forms.CharField(widget=forms.TextInput(attrs={
+   #      'id': f"definition_0",
+   #  }))
+
+    class Meta:
+        model = Set
+        fields = ('label', 'words')
+
+    words = forms.CharField(widget=forms.TextInput(attrs={
+        'id': 'term_0',
+    }))
+    definitions = forms.CharField(widget=forms.TextInput(attrs={
+        'id': 'definition_0',
+    }))
+
+    wordsList = []
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

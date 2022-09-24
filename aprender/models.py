@@ -17,13 +17,14 @@ class Word(models.Model):
     definition = models.CharField(max_length=500)
 
     def __str__(self):
-        return f"{self.term} "
+        return f"{self.term} - {self.definition} "
 
 
 class Set(models.Model):
     words = models.ManyToManyField(Word, related_name="words")
     label = models.CharField(max_length=255)
     date = models.DateTimeField()
+    # if author is null, then author was deleted, but set was saved
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # words that user like to learn more than the others
     chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True)

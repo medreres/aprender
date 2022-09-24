@@ -1,12 +1,14 @@
+from datetime import datetime
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import LoginForm, RegisterForm
-from .models import User
+from .forms import LoginForm, RegisterForm, CreateSet
+from .models import User, Word, Set
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
-from django.contrib import messages #import messages
+from django.contrib import messages  # import messages
+import itertools
 
 # Create your views here.
 
@@ -22,17 +24,18 @@ def loginUser(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         # check form for validity, else show error
-        # TODO make alert if not valid
         if not form.is_valid():
-            pass
+            messages.error(request, "Error. Invalid form")
 
         user = authenticate(
             request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
         if user is not None:
             logUser(request, user)
+        else:
+            messages.warning(
+                request, "User with such password/username doesnt exist")
         return HttpResponseRedirect(reverse('index'))
 
-    # TODO process get request
     return render(request, 'aprender/login.html', {
         'LoginForm': LoginForm()
     })
@@ -45,14 +48,17 @@ def logoutUser(request):
 
 
 def register(request):
+    if request.user:
+        messages.warning(request, 'You are already logged!')
+        return HttpResponseRedirect(reverse('index'))
+
     if request.method == 'POST':
         # TODO throw warning
         pass
 
         form = RegisterForm(request.POST)
         if not form.is_valid():
-            # TODO throw an error
-            pass
+            messages.error(request, "Error. Invalid form")
 
         password = form.cleaned_data['password']
         password2 = form.cleaned_data['password2']
@@ -72,8 +78,9 @@ def register(request):
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
-            # TODO handle error if user already exists
-            pass
+            messages.warning(
+                request, "User with such username already exists!")
+            return HttpResponseRedirect(reverse('register'))
 
         logUser(request, user)
         # print(user)
@@ -87,6 +94,41 @@ def register(request):
         })
 
 
-def logUser(request,user):
+def logUser(request, user):
     login(request, user)
     messages.success(request, f'You are now logged in as {user.username}')
+
+
+def createset(request):
+    if request.method == 'POST':
+        form = CreateSet(request.POST)
+
+        if not form.is_valid():
+            messages.error(request, 'Form is not valid')
+            return HttpResponseRedirect(reverse('createset'))
+
+        # ! CRUTCHES
+        formFields = request.POST
+        # didn't manage to implement correctly, so all terms and their definitions
+        # will be fetched via request.POST than it would be better to do via django form
+
+        # iterate through all terms and create corresponding object Word
+        wordsObjectList = []
+        for (word, definition) in zip(formFields.getlist('words'), formFields.getlist('definitions')):
+            # create Word model for every word-definition
+            wordModel = Word.objects.create(term=word, definition=definition)
+            wordsObjectList.append(wordModel)
+        
+        studySet = Set.objects.create(
+            label=form.cleaned_data['label'],
+            date=datetime.now(),
+            author=request.user
+        )
+        studySet.words.add(*[w.id for w in wordsObjectList])
+        
+        
+        return HttpResponseRedirect(reverse('createset'))
+
+    return render(request, 'aprender/createset.html', {
+        'CreateSet': CreateSet(),
+    })
