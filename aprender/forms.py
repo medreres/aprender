@@ -39,7 +39,7 @@ class CreateSet(forms.ModelForm):
 
     class Meta:
         model = Set
-        fields = ('label', 'words')
+        fields = ('label', 'words', 'description')
 
     words = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'term_0',

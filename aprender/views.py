@@ -122,7 +122,8 @@ def createset(request):
         studySet = Set.objects.create(
             label=form.cleaned_data['label'],
             date=datetime.now(),
-            author=request.user
+            author=request.user,
+            description = form.cleaned_data['description']
         )
         studySet.words.add(*[w.id for w in wordsObjectList])
         
@@ -132,3 +133,7 @@ def createset(request):
     return render(request, 'aprender/createset.html', {
         'CreateSet': CreateSet(),
     })
+
+
+def sets(request, user):
+    return render(request, 'aprender/sets.html')

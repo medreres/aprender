@@ -23,6 +23,7 @@ class Word(models.Model):
 class Set(models.Model):
     words = models.ManyToManyField(Word, related_name="words")
     label = models.CharField(max_length=255)
+    description = models.CharField(max_length=512)
     date = models.DateTimeField()
     # if author is null, then author was deleted, but set was saved
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
