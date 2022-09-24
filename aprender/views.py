@@ -8,7 +8,7 @@ from .models import User, Word, Set
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
-import itertools
+from .helper import fetchSets, fetchFolders
 
 # Create your views here.
 

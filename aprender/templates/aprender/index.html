@@ -32,26 +32,122 @@
                         <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                        <a id="libraryBtn" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Your Library
                         </a>
-                        <ul class="dropdown-menu">
-                            {% comment %} <li><a class="dropdown-item" href="{% url 'sets' request.user %}" >Study Sets</a></li>
+                        <ul class="dropdown-menu p-2">
+                            {% comment %} <li><a class="dropdown-item" href="{% url 'sets' request.user %}">Study
+                                    Sets</a></li>
                             <li><a class="dropdown-item" href="#">Folders</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item" href="#">See all sets</a></li> {% endcomment %}
+                            <script>
+                                document.addEventListener("DOMContentLoaded", () => {
+                                    let setsButton = document.querySelector("#setsButton");
+
+                                    setsButton.addEventListener('click', (evt) => {
+                                        evt.stopPropagation();
+                                        loadSets(evt);
+                                        hideLink();
+                                    });
+
+                                    let foldersButton = document.querySelector("#foldersButton");
+                                    foldersButton.addEventListener('click', (evt) => {
+                                        evt.stopPropagation();
+                                        loadSets(evt);
+                                        hideLink();
+                                    });
+                                    document.querySelector('#libraryBtn').addEventListener('click', loadSets);
+                                })
+                                function loadSets(event) {
+                                    fetch("{% url 'fetchsets' request.user%}")
+                                        .then(response => response.json())
+                                        .then(result => result.forEach(card => addCard(card)) )
+                                }
+
+                                function addCard(card) {
+                                    document.querySelector('#containerAjax').innerHTML = "";
+
+                                    setTimeout(() => {
+                                        let tmp = `
+                                    <div class="card">
+                                    <div class="card-header">
+                                        ${card['label']}
+                                    </div>
+                                    <div class="card-body">
+                                        ${card['wordsNumber']} words
+                                    </div>
+                                    </div>
+                                    `;
+
+                                    document.querySelector('#containerAjax').innerHTML += tmp;
+                                    }, 1)
+
+                                    
+                                }
+
+                                function loadFolders(event) {
+                                    // event.stopPropagation();
+
+
+                                    // document.querySelector('#setsButton').classList.toggle('active');
+                                    // event.target.classList.toggle('active');
+                                    // hideLink();
+                                }
+
+                                function hideLink() {
+                                    // toggle classes for css
+                                    document.querySelector('#foldersLink').classList.toggle('hidden');
+                                    document.querySelector('#setsLink').classList.toggle('hidden');
+
+                                    // toggle visibilyty for a links
+                                    document.querySelector('#foldersButton').classList.toggle('active');
+                                    document.querySelector('#setsButton').classList.toggle('active');
+                                }
+                            </script>
+                            <style>
+                                #setsButton:hover,
+                                #foldersButton:hover {
+                                    cursor: pointer;
+                                }
+
+                                .hidden {
+                                    display: none;
+                                }
+
+                                .dropdown-menu {
+                                    min-width: 300px;
+                                }
+
+                                #containerAjax {
+                                    padding: 5px 0;
+                                }
+                            </style>
 
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                  <a class="nav-link active text-dark" aria-current="page" href="#">Active</a>
+                                    <a id='setsButton' class="nav-link active text-dark" aria-current="page">Sets</a>
                                 </li>
                                 <li class="nav-item">
-                                  <a class="nav-link text-dark" href="#">Link</a>
+                                    <a id='foldersButton' class="nav-link text-dark" aria-current="page">Folders</a>
                                 </li>
-                              </ul>
+                            </ul>
+                            <!-- TODO -->
+                            <div id="containerAjax">
+                                <!-- Here goes folders and sets -->
+
+
+
+
+                            </div>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <a href="{% url 'sets' request.user %}" id="setsLink">View all sets</a>
+                            <a href="#" id="foldersLink" class="hidden">View all folders</a>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -77,7 +173,7 @@
                         Sign In
                     </button>
                     <div class="dropdown-menu dropdown-menu-lg-end">
-                        <form class="px-4 py-3" method='post' action='{% url 'login' %}'>
+                        <form class="px-4 py-3" method='post' action="{% url ' login' %}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="DropdownFormEmail1" class="form-label">Email address</label>
@@ -115,7 +211,8 @@
                                     border-radius: 15px;
                                 }
 
-                                #username, #email {
+                                #username,
+                                #email {
                                     font-size: .7em;
                                     margin: 0 1px;
                                 }

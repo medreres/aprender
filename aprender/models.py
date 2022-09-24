@@ -23,12 +23,19 @@ class Word(models.Model):
 class Set(models.Model):
     words = models.ManyToManyField(Word, related_name="words")
     label = models.CharField(max_length=255)
-    description = models.CharField(max_length=512)
+    description = models.CharField(max_length=512, null=True)
     date = models.DateTimeField()
     # if author is null, then author was deleted, but set was saved
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # words that user like to learn more than the others
     chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'label': self.label,
+            'wordsNumber': self.words.count()
+        }
 
 
 class Folder(models.Model):

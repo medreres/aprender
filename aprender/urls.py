@@ -8,4 +8,6 @@ urlpatterns = [
     path('logout', views.logoutUser, name='logout'),
     path('createset', views.createset, name='createset'),
     path('<str:user>/sets', views.sets, name='sets'),
+    path('<str:user>/fetchSetsAjax', views.fetchSets, name='fetchsets'),
+    path('<str:user>/fetchFoldersAjax', views.fetchFolders, name='fetchfolders'),
 ]
