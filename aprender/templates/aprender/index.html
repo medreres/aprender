@@ -64,12 +64,27 @@
                                     document.querySelector('#libraryBtn').addEventListener('click', loadSets);
                                 })
                                 function loadSets(event) {
-                                    fetch("{% url 'fetchsets' request.user%}")
+                                    fetch("{% url 'fetchsets' request.user %}")
                                         .then(response => response.json())
-                                        .then(result => result.forEach(card => addCard(card)))
+                                        .then(result => {
+                                            if (result.length === 0)
+                                            {
+                                                addCard(undefined);
+                                            }
+                                            else
+                                            {
+                                                result.forEach(card => addCard(card));
+                                            }
+                                        })
                                 }
 
                                 function addCard(card) {
+
+                                    if (card === undefined)
+                                    {
+                                        document.querySelector('#containerAjax').innerHTML = "It's seem that there is nothing to show!";
+                                        return;
+                                    }
                                     document.querySelector('#containerAjax').innerHTML = "";
 
                                     setTimeout(() => {
@@ -151,49 +166,54 @@
                             <a href="#" id="foldersLink" class="hidden">View all folders</a>
                         </ul>
                     </li>
-                    
+
                     <li class="nav-item dropdown">
                         <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             Create
                         </button>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'createset' %}" r class="dropdown-item" type="button">Study Set</a></li>
+                            <li><a href="{% url 'createset' %}" class="dropdown-item" type="button">Study Set</a></li>
                             <li>
                                 <!-- <a href="{% url 'createfolder' %}" class="dropdown-item" type="button">Folder</a> -->
-
-
-                                <!-- Button trigger modal -->
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleModal">
-                                    Launch demo modal
+                                <button type="button" class="dropdown-item" data-bs-toggle="modal"
+                                    data-bs-target="#folderModal">
+                                    Folder
                                 </button>
 
-                                <!-- Modal -->
-                                <div class="modal fade" id="exampleModal" tabindex="-1"
-                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                    aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                ...
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Close</button>
-                                                <button type="button" class="btn btn-primary">Save changes</button>
-                                            </div>
+                            </li>
+
+
+                        </ul>
+
+                        <!-- Button trigger modal -->
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel"
+                            aria-hidden="true">
+                            <div class="modal-dialog">
+                                <form action="{% url 'createfolder' %}" method="post">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="folderModalLabel">Create a new folder</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input class="form-control mb-2" type="text" placeholder="Enter a title"
+                                                aria-label="default input example">
+                                            <input class="form-control form-control-lg" type="text"
+                                                placeholder="Enter a description (optional)"
+                                                aria-label="Enter a description (optional)">
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary">Create folder</button>
                                         </div>
                                     </div>
-                                </div>
-
-
-                            </li>
-                        </ul>
+                                </form>
+                            </div>
+                        </div>
 
                     </li>
                     {% endif %}

@@ -18,6 +18,6 @@ from django.urls import path
 from django.urls import include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('adminPanel', admin.site.urls),
     path('', include('aprender.urls'))
 ]

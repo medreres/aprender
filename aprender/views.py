@@ -118,16 +118,15 @@ def createset(request):
             # create Word model for every word-definition
             wordModel = Word.objects.create(term=word, definition=definition)
             wordsObjectList.append(wordModel)
-        
+
         studySet = Set.objects.create(
             label=form.cleaned_data['label'],
             date=datetime.now(),
             author=request.user,
-            description = form.cleaned_data['description']
+            description=form.cleaned_data['description']
         )
         studySet.words.add(*[w.id for w in wordsObjectList])
-        
-        
+
         return HttpResponseRedirect(reverse('createset'))
 
     return render(request, 'aprender/createset.html', {
@@ -138,5 +137,11 @@ def createset(request):
 def sets(request, user):
     return render(request, 'aprender/sets.html')
 
+
 def createfolder(request):
+    if request.method != "POST":
+        messages.error(request, 'Error. Wrong request method')
+        return HttpResponseRedirect(reverse('index'))
+
+        
     return render(request, 'aprender/createfolder.html')
