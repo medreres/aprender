@@ -26,38 +26,42 @@
             setsButton.addEventListener('click', (evt) => {
                 evt.stopPropagation();
                 loadSets(evt);
-                hideLink();
+
+                toggleActive('setsButton', 'foldersButton');
+                toggleHidden('foldersLink', 'setsLink');
             });
 
             let foldersButton = document.querySelector("#foldersButton");
             foldersButton.addEventListener('click', (evt) => {
                 evt.stopPropagation();
                 loadFolders(evt);
-                hideLink();
+
+                toggleActive('setsButton', 'foldersButton');
+                toggleHidden('foldersLink', 'setsLink');
             });
             // document.querySelector('#libraryBtn').addEventListener('click', loadSets);
         })
 
-        function loadSets(event, username) {
-            fetch("{% url 'fetchsets' request.user %}")
+        function loadSets(event, username = '{{request.user}}', id = 'containerAjax') {
+            fetch(`${username}/fetchSetsAjax`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
-                        addCard(undefined);
+                        addCard(undefined, id);
                     } else {
-                        result.forEach(card => addCard(card));
+                        result.forEach(card => addCard(card, id));
                     }
                 })
         }
 
-        function addCard(card) {
+        function addCard(card, id = 'containerAjax') {
 
             if (card === undefined) {
-                document.querySelector('#containerAjax').innerHTML =
+                document.querySelector(`#${id}`).innerHTML =
                     "It's seem that there is nothing to show!";
                 return;
             }
-            document.querySelector('#containerAjax').innerHTML = "";
+            document.querySelector(`#${id}`).innerHTML = "";
             const numberOfEntities = ('wordsNumber' in card) ? `${card['wordsNumber']} words` :
                 `${card['setsNumber']} sets`
             const template = `
@@ -72,33 +76,34 @@
             `;
 
             setTimeout(() => {
-                document.querySelector('#containerAjax').innerHTML += template;
+                document.querySelector(`#${id}`).innerHTML += template;
             }, 1)
         }
 
-        function loadFolders(event, username) {
-            fetch(`{% url 'fetchfolders' request.user %}`)
+        function loadFolders(event, username = '{{request.user}}', id = 'containerAjax') {
+            fetch(`${username}/fetchFoldersAjax`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
                         addCard(undefined);
                         return;
                     } else {
-                        result.forEach(card => addCard(card))
+                        result.forEach(card => addCard(card, id))
                     }
                 })
         }
 
 
-        function hideLink() {
+        function toggleActive(...ids) {
+            // console.log(a1,a2);
             // toggle classes for css
-            document.querySelector('#foldersLink').classList.toggle('hidden');
-            document.querySelector('#setsLink').classList.toggle('hidden');
-
-            // toggle visibilyty for a links
-            document.querySelector('#foldersButton').classList.toggle('active');
-            document.querySelector('#setsButton').classList.toggle('active');
+            ids.forEach(id => { document.querySelector(`#${id}`).classList.toggle('active'); })
         }
+
+        function toggleHidden(...ids) {
+            ids.forEach(id => { document.querySelector(`#${id}`).classList.toggle('hidden'); })
+        }
+
     </script>
     {% block scripts %}{% endblock scripts %}
 
@@ -225,7 +230,7 @@
                         <li>
                             <div id='container'>
                                 {% comment %} TODO USERS PIC {% endcomment %}
-                                <img id='profilePic' src="{% static 'icons/image.jpeg' %}" alt="profile pic">
+                                <img class="profilePicSm" src="{% static 'icons/image.jpeg' %}" alt="profile pic">
                                 <div id='body'>
                                     <p id='username'> <strong>{{request.user}}</strong></p>
                                     <p id='email'>{{request.user.email}}</p>
@@ -235,7 +240,8 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="{% url 'profile' request.user %}" type="button">Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' request.user %}" type="button">Profile</a>
+                        </li>
                         <li><button class="dropdown-item" type="button">Another action</button></li>
                         <li>
                             <hr class="dropdown-divider">

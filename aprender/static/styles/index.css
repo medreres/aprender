@@ -22,10 +22,20 @@
     margin: 5px;
 }
 
-#profilePic {
+.hover:hover {
+    cursor: pointer;
+}
+
+.profilePicSm {
     height: 32px;
     width: 32px;
     border-radius: 15px;
+}
+
+.profilePicBg {
+    height: 64px;
+    width: 64px;
+    border-radius: 32px;
 }
 
 #username,

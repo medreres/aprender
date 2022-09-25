@@ -1,4 +1,67 @@
 {% extends 'aprender/index.html' %}
+{% load static %}
 {% block body %}
-it's profile page of {{user}}
+
+<style>
+    .containerCol {
+        display: flex;
+        flex-flow: column nowrap;
+    }
+
+    .containerRow {
+        display: flex;
+        flex-flow: row nowrap;
+    }
+</style>
+<script>
+    const url = new URL(window.location.href);
+    const username = (url.pathname.replace('/', ''));
+
+    // by default load user sets
+    loadSets(undefined, username, 'contentContainer');
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('#setsBtn').addEventListener('click', loadUserSets);
+        document.querySelector('#foldersBtn').addEventListener('click', loadUserFolders);
+    })
+
+    function loadUserSets(evt) {
+        // load posts via ajax
+        if (!evt.target.classList.contains('active')) {
+            loadSets(undefined, username, 'contentContainer');
+            toggleActive('userFoldersLink', 'userSetsLink');
+        }
+    }
+
+    function loadUserFolders(evt) {
+        if (!evt.target.classList.contains('active')) {
+            loadFolders(undefined, username, 'contentContainer');
+            toggleActive('userFoldersLink', 'userSetsLink');
+        }
+    }
+
+</script>
+<div class='containerCol' style='margin: 5vh 10vw;'>
+    <div class='containerRow' style='margin-bottom: 2vh;'>
+        <img class='profilePicBg' src="{% static 'icons/image.jpeg' %}">
+        <div class='containerCol' style='margin-left: 10px;'>
+            <h3>{{request.user}}</h3>
+            <p>{{request.user.first_name}} {{request.user.last_name}}</p>
+        </div>
+    </div>
+    <ul class="nav nav-tabs">
+        <li class="nav-item hover" id='setsBtn'>
+            <a id='userSetsLink' class="nav-link active" aria-current="page">Study Sets</a>
+        </li>
+        <li class="nav-item hover" id='foldersBtn'>
+            <a id='userFoldersLink' class="nav-link">Folders</a>
+        </li>
+        </li>
+    </ul>
+
+    <div id='contentContainer'>
+        lol
+    </div>
+</div>
 {% endblock body %}

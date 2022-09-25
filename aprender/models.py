@@ -6,8 +6,9 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    favoriteSets = models.ManyToManyField('Set')
-    favoriteFolders = models.ManyToManyField('Folder')
+    favoriteSets = models.ManyToManyField('Set', blank=True)
+    favoriteFolders = models.ManyToManyField('Folder', blank=True)
+
 
 # model for words
 
