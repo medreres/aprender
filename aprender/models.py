@@ -1,4 +1,5 @@
 from multiprocessing import AuthenticationError
+from re import T
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -8,21 +9,23 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     favoriteSets = models.ManyToManyField('Set', blank=True)
     favoriteFolders = models.ManyToManyField('Folder', blank=True)
-
     # ? could be better?
     # implement back end algorithm for learning words via card
     # the main goal is to separe words into 3 categories: well-known, intermediate and poor-known
     # if user gives the right answer for the same words 2 times in a row, the word acquires a higher state
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
-
-class LearnWords(models.Model):
+class LearnWay(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    set = models.ForeignKey('Set', on_delete=models.Case, null=True)
     # TODO implement case of deleting last word examined
-    lastWord = models.ForeignKey('Word', null=True, on_delete=models.SET_NULL, related_name='lastKnown')
-    poorKnown = models.ManyToManyField('Word', null=True, related_name='poorKnown')
-    intermediateKnown = models.ManyToManyField('Word', null=True, related_name='intermediateKnown')
-    wellKnown = models.ManyToManyField('Word', null=True, related_name='wellKnown')
+    lastWord = models.ForeignKey('Word', null=True,blank=True, on_delete=models.SET_NULL, related_name='lastKnown')
+    poorKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='poorKnown')
+    intermediateKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='intermediateKnown')
+    wellKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='wellKnown')
+
+    def __str__(self) -> str:
+        return f"{self.author.username} learns {self.set.label}"
 
 
 class Word(models.Model):
@@ -42,6 +45,9 @@ class Set(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # words that user like to learn more than the others
     chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True)
+
+    def __str__(self) -> str:
+        return f"{self.label} {self.id}"
 
     def serialize(self):
         return {

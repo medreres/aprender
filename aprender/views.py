@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder
-from .models import Folder, User, Word, Set
+from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
@@ -145,9 +145,11 @@ def sets(request, user):
                   })
 
 def set(request, user, id):
-
+    # find out if user has already started learning way
+    print(LearnWay.objects.filter(author=request.user).filter(set__pk=id).count())
     return render(request, 'aprender/set.html', {
-        'set': Set.objects.get(pk=id)
+        'set': Set.objects.get(pk=id).serialize(),
+        'learnStarted': LearnWay.objects.filter(author=request.user).filter(set__pk=id).count() > 0,
     })
 
 def createfolder(request):
