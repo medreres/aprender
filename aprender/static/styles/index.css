@@ -1,0 +1,39 @@
+#setsButton:hover,
+#foldersButton:hover {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.dropdown-menu {
+    min-width: 300px;
+}
+
+#containerAjax {
+    padding: 5px 0;
+}
+
+
+#container {
+    display: flex;
+    flex-flow: row nowrap;
+    margin: 5px;
+}
+
+#profilePic {
+    height: 32px;
+    width: 32px;
+    border-radius: 15px;
+}
+
+#username,
+#email {
+    font-size: .7em;
+    margin: 0 1px;
+}
+
+#body {
+    margin: 0 5px;
+}

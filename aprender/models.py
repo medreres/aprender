@@ -41,5 +41,6 @@ class Set(models.Model):
 class Folder(models.Model):
     sets = models.ManyToManyField(Set)
     label = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, null=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     date = models.DateTimeField()

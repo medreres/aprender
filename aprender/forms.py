@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
-from .models import Set
+from .models import Set, Folder
 
 
 class LoginForm(forms.Form):
@@ -54,4 +54,20 @@ class CreateSet(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
 class CreateFolder(forms.ModelForm):
-    pass
+    class Meta:
+        model = Folder
+        fields = ('label', 'description')
+    
+    label = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control mb-2',
+        'type': 'text',
+        'placeholder': 'Enter a title',
+        'aria-label': 'Enter a title'
+    }))
+
+    description = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control form-control-lg',
+        'type': 'text',
+        'placeholder': 'Enter a description (optional)',
+        'aria-label': 'Enter a description (optional)'
+    }), required=False)

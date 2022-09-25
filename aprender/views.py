@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import LoginForm, RegisterForm, CreateSet
+from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder
 from .models import User, Word, Set
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
@@ -16,7 +16,8 @@ from .helper import fetchSets, fetchFolders
 def index(request):
     # messages.success(request, "Success message")
     return render(request, 'aprender/index.html', {
-        'LoginForm': LoginForm
+        'LoginForm': LoginForm,
+        'CreateFolder': CreateFolder()
     })
 
 
@@ -135,7 +136,10 @@ def createset(request):
 
 
 def sets(request, user):
-    return render(request, 'aprender/sets.html')
+    return render(request, 'aprender/sets.html',
+    {
+        'CreateFolder': CreateFolder()
+    })
 
 
 def createfolder(request):
@@ -143,5 +147,5 @@ def createfolder(request):
         messages.error(request, 'Error. Wrong request method')
         return HttpResponseRedirect(reverse('index'))
 
-        
+
     return render(request, 'aprender/createfolder.html')

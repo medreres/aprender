@@ -14,7 +14,7 @@
 
     {% bootstrap_javascript %}
 
-
+    <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     <title>live</title>
 </head>
 
@@ -46,6 +46,7 @@
                             </li>
                             <li><a class="dropdown-item" href="#">See all sets</a></li> {% endcomment %}
                             <script>
+
                                 document.addEventListener("DOMContentLoaded", () => {
                                     let setsButton = document.querySelector("#setsButton");
 
@@ -63,16 +64,14 @@
                                     });
                                     document.querySelector('#libraryBtn').addEventListener('click', loadSets);
                                 })
+
                                 function loadSets(event) {
                                     fetch("{% url 'fetchsets' request.user %}")
                                         .then(response => response.json())
                                         .then(result => {
-                                            if (result.length === 0)
-                                            {
+                                            if (result.length === 0) {
                                                 addCard(undefined);
-                                            }
-                                            else
-                                            {
+                                            } else {
                                                 result.forEach(card => addCard(card));
                                             }
                                         })
@@ -80,9 +79,9 @@
 
                                 function addCard(card) {
 
-                                    if (card === undefined)
-                                    {
-                                        document.querySelector('#containerAjax').innerHTML = "It's seem that there is nothing to show!";
+                                    if (card === undefined) {
+                                        document.querySelector('#containerAjax').innerHTML =
+                                            "It's seem that there is nothing to show!";
                                         return;
                                     }
                                     document.querySelector('#containerAjax').innerHTML = "";
@@ -123,25 +122,9 @@
                                     document.querySelector('#foldersButton').classList.toggle('active');
                                     document.querySelector('#setsButton').classList.toggle('active');
                                 }
+                            
                             </script>
-                            <style>
-                                #setsButton:hover,
-                                #foldersButton:hover {
-                                    cursor: pointer;
-                                }
-
-                                .hidden {
-                                    display: none;
-                                }
-
-                                .dropdown-menu {
-                                    min-width: 300px;
-                                }
-
-                                #containerAjax {
-                                    padding: 5px 0;
-                                }
-                            </style>
+                            <style></style>
 
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
@@ -180,20 +163,15 @@
                                     data-bs-target="#folderModal">
                                     Folder
                                 </button>
-
                             </li>
-
-
                         </ul>
 
-                        <!-- Button trigger modal -->
-
-
-                        <!-- Modal -->
+                        {% comment %} Form for creating folder {% endcomment %}
                         <div class="modal fade" id="folderModal" tabindex="-1" aria-labelledby="folderModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <form action="{% url 'createfolder' %}" method="post">
+                                    {% csrf_token %}
                                     <div class="modal-content">
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="folderModalLabel">Create a new folder</h5>
@@ -201,14 +179,11 @@
                                                 aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <input class="form-control mb-2" type="text" placeholder="Enter a title"
-                                                aria-label="default input example">
-                                            <input class="form-control form-control-lg" type="text"
-                                                placeholder="Enter a description (optional)"
-                                                aria-label="Enter a description (optional)">
+                                            {{CreateFolder.label}}
+                                            {{CreateFolder.description}}
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-primary">Create folder</button>
+                                            <input type="submit" class="btn btn-primary" value='Create a folder' />
                                         </div>
                                     </div>
                                 </form>
@@ -221,7 +196,6 @@
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 </form>
-                <!-- Default dropstart button -->
                 {% if not user.is_authenticated %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
@@ -254,36 +228,14 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg-end">
                         <li>
-                            <style>
-                                #container {
-                                    display: flex;
-                                    flex-flow: row nowrap;
-                                    margin: 5px;
-                                }
-
-                                #profilePic {
-                                    height: 32px;
-                                    width: 32px;
-                                    border-radius: 15px;
-                                }
-
-                                #username,
-                                #email {
-                                    font-size: .7em;
-                                    margin: 0 1px;
-                                }
-
-                                #body {
-                                    margin: 0 5px;
-                                }
-                            </style>
+                            {% comment %} <style></style> {% endcomment %}
                             <div id='container'>
                                 {% comment %} TODO USERS PIC {% endcomment %}
                                 <img id='profilePic' src="{% static 'icons/image.jpeg' %}" alt="profile pic">
                                 <div id='body'>
                                     {% comment %} TODO USERS INFO {% endcomment %}
-                                    <p id='username'> <strong>Medreres</strong></p>
-                                    <p id='email'>mrtraitor252325@gmail.com</p>
+                                    <p id='username'> <strong>{{request.user}}</strong></p>
+                                    <p id='email'>{{request.user.email}}</p>
                                 </div>
                             </div>
                         </li>
