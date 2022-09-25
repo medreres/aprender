@@ -15,6 +15,93 @@
     {% bootstrap_javascript %}
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            // initially load colelction of sets
+            loadSets(undefined);
+
+            // on click for eact tab load content correspondingly (sets/folders)
+            let setsButton = document.querySelector("#setsButton");
+            setsButton.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                loadSets(evt);
+                hideLink();
+            });
+
+            let foldersButton = document.querySelector("#foldersButton");
+            foldersButton.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                loadFolders(evt);
+                hideLink();
+            });
+            // document.querySelector('#libraryBtn').addEventListener('click', loadSets);
+        })
+
+        function loadSets(event, username) {
+            fetch("{% url 'fetchsets' request.user %}")
+                .then(response => response.json())
+                .then(result => {
+                    if (result.length === 0) {
+                        addCard(undefined);
+                    } else {
+                        result.forEach(card => addCard(card));
+                    }
+                })
+        }
+
+        function addCard(card) {
+
+            if (card === undefined) {
+                document.querySelector('#containerAjax').innerHTML =
+                    "It's seem that there is nothing to show!";
+                return;
+            }
+            document.querySelector('#containerAjax').innerHTML = "";
+            const numberOfEntities = ('wordsNumber' in card) ? `${card['wordsNumber']} words` :
+                `${card['setsNumber']} sets`
+            const template = `
+            <div class="card">
+            <div class="card-header">
+                ${card['label']}
+            </div>
+            <div class="card-body">
+                ${numberOfEntities}
+            </div>
+            </div>
+            `;
+
+            setTimeout(() => {
+                document.querySelector('#containerAjax').innerHTML += template;
+            }, 1)
+        }
+
+        function loadFolders(event, username) {
+            fetch(`{% url 'fetchfolders' request.user %}`)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.length === 0) {
+                        addCard(undefined);
+                        return;
+                    } else {
+                        result.forEach(card => addCard(card))
+                    }
+                })
+        }
+
+
+        function hideLink() {
+            // toggle classes for css
+            document.querySelector('#foldersLink').classList.toggle('hidden');
+            document.querySelector('#setsLink').classList.toggle('hidden');
+
+            // toggle visibilyty for a links
+            document.querySelector('#foldersButton').classList.toggle('active');
+            document.querySelector('#setsButton').classList.toggle('active');
+        }
+    </script>
+    {% block scripts %}{% endblock scripts %}
+
     <title>live</title>
 </head>
 
@@ -38,94 +125,6 @@
                             Your Library
                         </a>
                         <ul class="dropdown-menu p-2">
-                            {% comment %} <li><a class="dropdown-item" href="{% url 'sets' request.user %}">Study
-                                    Sets</a></li>
-                            <li><a class="dropdown-item" href="#">Folders</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">See all sets</a></li> {% endcomment %}
-                            <script>
-
-                                document.addEventListener("DOMContentLoaded", () => {
-                                    let setsButton = document.querySelector("#setsButton");
-
-                                    setsButton.addEventListener('click', (evt) => {
-                                        evt.stopPropagation();
-                                        loadSets(evt);
-                                        hideLink();
-                                    });
-
-                                    let foldersButton = document.querySelector("#foldersButton");
-                                    foldersButton.addEventListener('click', (evt) => {
-                                        evt.stopPropagation();
-                                        loadSets(evt);
-                                        hideLink();
-                                    });
-                                    document.querySelector('#libraryBtn').addEventListener('click', loadSets);
-                                })
-
-                                function loadSets(event) {
-                                    fetch("{% url 'fetchsets' request.user %}")
-                                        .then(response => response.json())
-                                        .then(result => {
-                                            if (result.length === 0) {
-                                                addCard(undefined);
-                                            } else {
-                                                result.forEach(card => addCard(card));
-                                            }
-                                        })
-                                }
-
-                                function addCard(card) {
-
-                                    if (card === undefined) {
-                                        document.querySelector('#containerAjax').innerHTML =
-                                            "It's seem that there is nothing to show!";
-                                        return;
-                                    }
-                                    document.querySelector('#containerAjax').innerHTML = "";
-
-                                    setTimeout(() => {
-                                        let tmp = `
-                                    <div class="card">
-                                    <div class="card-header">
-                                        ${card['label']}
-                                    </div>
-                                    <div class="card-body">
-                                        ${card['wordsNumber']} words
-                                    </div>
-                                    </div>
-                                    `;
-
-                                        document.querySelector('#containerAjax').innerHTML += tmp;
-                                    }, 1)
-
-
-                                }
-
-                                function loadFolders(event) {
-                                    // event.stopPropagation();
-
-
-                                    // document.querySelector('#setsButton').classList.toggle('active');
-                                    // event.target.classList.toggle('active');
-                                    // hideLink();
-                                }
-
-                                function hideLink() {
-                                    // toggle classes for css
-                                    document.querySelector('#foldersLink').classList.toggle('hidden');
-                                    document.querySelector('#setsLink').classList.toggle('hidden');
-
-                                    // toggle visibilyty for a links
-                                    document.querySelector('#foldersButton').classList.toggle('active');
-                                    document.querySelector('#setsButton').classList.toggle('active');
-                                }
-                            
-                            </script>
-                            <style></style>
-
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
                                     <a id='setsButton' class="nav-link active text-dark" aria-current="page">Sets</a>
@@ -134,19 +133,16 @@
                                     <a id='foldersButton' class="nav-link text-dark" aria-current="page">Folders</a>
                                 </li>
                             </ul>
-                            <!-- TODO -->
                             <div id="containerAjax">
                                 <!-- Here goes folders and sets -->
-
-
-
 
                             </div>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <a href="{% url 'sets' request.user %}" id="setsLink">View all sets</a>
-                            <a href="#" id="foldersLink" class="hidden">View all folders</a>
+                            <a href="{% url 'folders' request.user %}" id="foldersLink" class="hidden">View all
+                                folders</a>
                         </ul>
                     </li>
 
@@ -158,7 +154,6 @@
                         <ul class="dropdown-menu">
                             <li><a href="{% url 'createset' %}" class="dropdown-item" type="button">Study Set</a></li>
                             <li>
-                                <!-- <a href="{% url 'createfolder' %}" class="dropdown-item" type="button">Folder</a> -->
                                 <button type="button" class="dropdown-item" data-bs-toggle="modal"
                                     data-bs-target="#folderModal">
                                     Folder
@@ -196,7 +191,7 @@
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 </form>
-                {% if not user.is_authenticated %}
+                {% if not request.user.is_authenticated %}
                 <div class="btn-group">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown"
                         aria-expanded="false">
@@ -228,12 +223,10 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-lg-end">
                         <li>
-                            {% comment %} <style></style> {% endcomment %}
                             <div id='container'>
                                 {% comment %} TODO USERS PIC {% endcomment %}
                                 <img id='profilePic' src="{% static 'icons/image.jpeg' %}" alt="profile pic">
                                 <div id='body'>
-                                    {% comment %} TODO USERS INFO {% endcomment %}
                                     <p id='username'> <strong>{{request.user}}</strong></p>
                                     <p id='email'>{{request.user.email}}</p>
                                 </div>
@@ -242,7 +235,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><button class="dropdown-item" type="button">Profile</button></li>
+                        <li><a class="dropdown-item" href="{% url 'profile' request.user %}" type="button">Profile</a></li>
                         <li><button class="dropdown-item" type="button">Another action</button></li>
                         <li>
                             <hr class="dropdown-divider">

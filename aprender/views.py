@@ -1,10 +1,13 @@
+from ast import arg
 from datetime import datetime
+from doctest import debug_script
+from operator import is_
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse
 from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder
-from .models import User, Word, Set
+from .models import Folder, User, Word, Set
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
@@ -137,9 +140,9 @@ def createset(request):
 
 def sets(request, user):
     return render(request, 'aprender/sets.html',
-    {
-        'CreateFolder': CreateFolder()
-    })
+                  {
+                      'CreateFolder': CreateFolder()
+                  })
 
 
 def createfolder(request):
@@ -147,5 +150,30 @@ def createfolder(request):
         messages.error(request, 'Error. Wrong request method')
         return HttpResponseRedirect(reverse('index'))
 
+    form = CreateFolder(request.POST)
+    if not form.is_valid():
+        messages.error(request, 'Error. Form is not valid')
 
-    return render(request, 'aprender/createfolder.html')
+    folder = Folder.objects.create(
+        label=form.cleaned_data['label'],
+        description=form.cleaned_data['description'],
+        author=request.user,
+        date=datetime.now()
+    )
+
+    print(folder)
+
+    return HttpResponseRedirect(reverse('folders', args=(request.user,)))
+
+
+def folders(request, user):
+    return render(request, 'aprender/folders.html', {
+        'username': user,
+    })
+
+
+def folder(request, user, id):
+    pass
+
+def profile(request,user):
+    return render(request, 'aprender/profile.html')

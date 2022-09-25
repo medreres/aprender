@@ -44,3 +44,10 @@ class Folder(models.Model):
     description = models.CharField(max_length=255, null=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     date = models.DateTimeField()
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'label': self.label,
+            'setsNumber': self.sets.count()
+        }
