@@ -1,0 +1,69 @@
+{% extends 'aprender/index.html' %}
+{% block body %}
+<style>
+	.set {
+		margin-left: 10vw;
+		background-color: grey;
+		border: 1px solid red;
+	}
+	.blur {
+		position: absolute;
+		border: 1px solid black;
+		background-color: yellow;
+	}
+</style>
+<script>
+
+</script>
+<section class='set'>
+	<h1>{{set.label}}</h1>
+	<div>
+		<button type="button" class="btn btn-primary">Flashcards</button>
+		<button type="button" class="btn btn-primary">Learn</button>
+		<button type="button" class="btn btn-primary">Test</button>
+		<button type="button" class="btn btn-primary">Match</button>
+		<hr class="dropdown-divider">
+		<!-- carousel for taking look at cards with words -->
+		<!------------------------->
+		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-inner">
+				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;'>
+					<p>some text here</p>
+					at the top should be counter for showing which word now is shown
+					should be term , icon to edit and add to favorite
+					on click the card should flip and show the definition
+					when showing next term, preload the next after the one shown
+				</div>
+				<div class="carousel-item" data-bs-interval="2000" style='height: 400px;'>
+					<p>some text here again</p>
+				</div>
+			</div>
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
+				data-bs-slide="prev">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Previous</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
+				data-bs-slide="next">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Next</span>
+			</button>
+			<!-- blurring div in case learn program hasn't been created yet  -->
+			<!-- ------------------------------------ -->
+			<div class='blur'>
+
+			</div>
+			<!-- ------------------------------------ -->
+		</div>
+		<!---------------------------->
+		<hr class="dropdown-divider">
+		<div>
+			Created by user, his photo, at the reight icons for adding this set fo a folder, editing the set or sharing
+		</div>
+		<div>
+			here start sections with cards , words on them, pagintaion for 10-15 carcs per page, search bar
+			Each card must have word, definitoin, button to add to favorites, edit btn, photo (optional)
+		</div>
+	</div>
+</section>
+{% endblock body %}

@@ -26,6 +26,9 @@
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     <script>
+        // to make absolute url instead of relative
+        let url = new URL(location.href);
+        let path = url.origin;
         document.addEventListener("DOMContentLoaded", () => {
 
             // initially load colelction of sets
@@ -53,7 +56,8 @@
         })
 
         function loadSets(event, username = '{{request.user}}', id = 'containerAjax') {
-            fetch(`${username}/fetchSetsAjax`)
+
+            fetch(`${path}/${username}/fetchSetsAjax`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
@@ -85,13 +89,11 @@
             template.onclick = () => {
                 // provide location of the set/folder to reroute on click
                 // define if it's a set or a folder
-                if ('setsNumber' in card)
-                {
-                    location.href = `${card['author']}/folders/${card['id']}`;
+                if ('setsNumber' in card) {
+                    location.href = `${path}/${card['author']}/folders/${card['id']}`;
                 }
-                else
-                {
-                    location.href = `${card['author']}/sets/${card['id']}`;
+                else {
+                    location.href = `${path}/${card['author']}/sets/${card['id']}`;
                 }
             }
 
@@ -101,7 +103,10 @@
         }
 
         function loadFolders(event, username = '{{request.user}}', id = 'containerAjax') {
-            fetch(`${username}/fetchFoldersAjax`)
+
+            let url = new URL(location.href);
+            let path = url.origin;
+            fetch(`${path}/${username}/fetchFoldersAjax`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
@@ -131,9 +136,11 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'index' %}">Navbar</a>
+            <a class="navbar-brand" href="{% url 'index' %}">
+                <img src="{% static 'icons/logo.png' %}" alt="">
+                aprender</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
                 aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

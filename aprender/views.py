@@ -144,6 +144,11 @@ def sets(request, user):
                       'CreateFolder': CreateFolder()
                   })
 
+def set(request, user, id):
+
+    return render(request, 'aprender/set.html', {
+        'set': Set.objects.get(pk=id)
+    })
 
 def createfolder(request):
     if request.method != "POST":
@@ -173,7 +178,7 @@ def folders(request, user):
 
 
 def folder(request, user, id):
-    pass
+    return HttpResponse("TODO")
 
 def profile(request,user):
     return render(request, 'aprender/profile.html')
