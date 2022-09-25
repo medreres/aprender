@@ -35,7 +35,8 @@ class Set(models.Model):
         return {
             'id': self.id,
             'label': self.label,
-            'wordsNumber': self.words.count()
+            'wordsNumber': self.words.count(),
+            'author': self.author.username
         }
 
 
@@ -50,5 +51,6 @@ class Folder(models.Model):
         return {
             'id': self.id,
             'label': self.label,
-            'setsNumber': self.sets.count()
+            'setsNumber': self.sets.count(),
+            'author': self.author.username
         }

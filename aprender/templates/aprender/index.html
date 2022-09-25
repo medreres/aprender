@@ -13,6 +13,16 @@
     {% bootstrap_css %}
 
     {% bootstrap_javascript %}
+    <style>
+        .card {
+            margin: 5px 0;
+        }
+
+        .card:hover {
+            cursor: pointer;
+            box-shadow: 0 0 5px #fd7e14;
+        }
+    </style>
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     <script>
@@ -64,19 +74,29 @@
             document.querySelector(`#${id}`).innerHTML = "";
             const numberOfEntities = ('wordsNumber' in card) ? `${card['wordsNumber']} words` :
                 `${card['setsNumber']} sets`
-            const template = `
-            <div class="card">
-            <div class="card-header">
+            let template = document.createElement('div');
+            template.classList.add('card');
+            template.innerHTML = `<div class="card-header">
                 ${card['label']}
             </div>
             <div class="card-body">
                 ${numberOfEntities}
-            </div>
-            </div>
-            `;
+            </div>`;
+            template.onclick = () => {
+                // provide location of the set/folder to reroute on click
+                // define if it's a set or a folder
+                if ('setsNumber' in card)
+                {
+                    location.href = `${card['author']}/folders/${card['id']}`;
+                }
+                else
+                {
+                    location.href = `${card['author']}/sets/${card['id']}`;
+                }
+            }
 
             setTimeout(() => {
-                document.querySelector(`#${id}`).innerHTML += template;
+                document.querySelector(`#${id}`).append(template);
             }, 1)
         }
 
