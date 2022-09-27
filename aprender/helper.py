@@ -38,7 +38,7 @@ def createLearnPath(request, id):
     return JsonResponse({'success': "Learn Path successfully created!"})
 
 
-def fetchNextWord(request, id):
+def nextWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
@@ -57,3 +57,12 @@ def fetchNextWord(request, id):
     learnPath.save()
     
     return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord}, status=200)
+
+def currentWord(request,id):
+    learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
+    # if set doesn't exist but somehow learnway is still available
+    if len(learnPath) == 0:
+        messages.error(request, 'Internal error. Set is not found')
+        return JsonResponse({'error': "Set is not founded"})
+    learnPath = learnPath[0]
+    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition}, status=200)

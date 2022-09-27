@@ -1,45 +1,7 @@
 {% extends 'aprender/index.html' %}
 {% load static %}
 {% block head %}
-<style>
-	.set {
-		display: block;
-		margin-left: 10vw;
-	}
-
-	.blur {
-		position: absolute;
-		border: 1px solid black;
-		backdrop-filter: blur(5px);
-		z-index: 1;
-
-		left: 0;
-		top: 0;
-		height: 100%;
-		width: 100%;
-		display: flex;
-		flex-flow: column;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.menuContainer {
-		background-color: grey;
-		border: 1px solid red;
-		position: relative;
-
-	}
-
-	.flip-card-front,
-	.flip-card-back {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		-webkit-backface-visibility: hidden;
-		/* Safari */
-		backface-visibility: hidden;
-	}
-</style>
+<link rel="stylesheet" href="{% static 'styles/set.css' %}">
 {% if not learnStarted %}
 <script>
 	function createLearnPath() {
@@ -53,82 +15,66 @@
 </script>
 {%endif %}
 <script>
-	function flip(evt) {
-		document.querySelector('.flip-card').classList.toggle('flipped');
+	document.addEventListener('DOMContentLoaded', () => {
+		currentWord();
+	})
+
+	const idOfSet = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
+
+	function flip(flipCard) {
+		flipCard.classList.toggle('flipped');
 	}
 
-	function loadNextWord() {
-		const idOfSet = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
-		fetch(`${path}/sets/${idOfSet}/fetchWord`)
-		.then(response => response.json())
-		.then(result => {
-			console.log(result);
-		})
+
+
+	function currentWord() {
+		fetch(`${path}/sets/${idOfSet}/currentWord`)
+			.then(response => response.json())
+			.then(result => {
+				console.log(result);
+				// go to the next flipcard and change it contexr
+				let frontSide = document.querySelector('#carouselItemOneFront');
+				frontSide.innerHTML = result['word'];
+
+				let flipSide = document.querySelector('#carouselItemOneBack');
+				flipSide.innerHTML = result['definition'];
+
+			})
+	}
+
+	function nextWord() {
+
+		fetch(`${path}/sets/${idOfSet}/nextWord`)
+			.then(response => response.json())
+			.then(result => {
+				console.log(result);
+				let nextSlide = document.querySelector('.carousel-item:not(.active)');
+				let front = nextSlide.querySelector('.flip-card-front');
+				let back = nextSlide.querySelector('.flip-card-back');
+				front.innerHTML = result['word'];
+				back.innerHTML = result['definition'];
+				slideNext();
+			})
 	}
 
 	function loadPrevWord() {
 
 	}
+
+	function slideNext() {
+		const myCarouselEl = document.querySelector('#carouselExampleInterval')
+		const carousel = bootstrap.Carousel.getInstance(myCarouselEl) // Retrieve a Carousel instance
+		carousel.next();
+	}
+	function slidePrev() {
+		const myCarouselEl = document.querySelector('#carouselExampleInterval')
+		const carousel = bootstrap.Carousel.getInstance(myCarouselEl) // Retrieve a Carousel instance
+		carousel.prev();
+	}
 </script>
+
 {% endblock head %}
 {% block body %}
-<style>
-	.flip-card {
-		background-color: transparent;
-		width: 100%;
-		height: 100%;
-		border: 1px solid #f1f1f1;
-		perspective: 1000px;
-		/* Remove this if you don't want the 3D effect */
-	}
-
-	.flip-card:hover {
-		cursor: pointer;
-	}
-
-	/* This container is needed to position the front and back side */
-	.flip-card-inner {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		text-align: center;
-		transition: transform 0.8s;
-		transform-style: preserve-3d;
-	}
-
-	/* Do an horizontal flip when you move the mouse over the flip box container */
-	.flip-card.flipped .flip-card-inner {
-		transform: rotateY(180deg);
-	}
-
-	/* Position the front and back side */
-	.flip-card-front,
-	.flip-card-back {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		-webkit-backface-visibility: hidden;
-		/* Safari */
-		backface-visibility: hidden;
-
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	/* Style the front side (fallback if image is missing) */
-	.flip-card-front {
-		background-color: #bbb;
-		color: black;
-	}
-
-	/* Style the back side */
-	.flip-card-back {
-		background-color: dodgerblue;
-		color: white;
-		transform: rotateY(180deg);
-	}
-</style>
 <section class='set'>
 	<h1>{{set.label}}</h1>
 	<div class="menuContainer">
@@ -138,31 +84,34 @@
 		<button type="button" class="btn btn-primary">Match</button>
 		<hr class="dropdown-divider">
 		<!-- carousel for taking look at cards with words -->
-		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
 			<div class="carousel-inner">
-				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;' id='carouselItemOne'>
-					<div class="flip-card" onclick='flip(event);'>
+				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;'>
+					<div class="flip-card" onclick='flip(this);' id="flipCardOne">
 						<div class="flip-card-inner">
-							<div class="flip-card-front">
-								<h3>Some word</h3>
+							<div class="flip-card-front" id='carouselItemOneFront'>
 							</div>
-							<div class="flip-card-back">
-								its definition
+							<div class="flip-card-back" id='carouselItemOneBack'>
 							</div>
 						</div>
 					</div>
 				</div>
-				<div class="carousel-item" data-bs-interval="2000" style='height: 400px;' id='carouselItemTwo'>
-					<p>some text here again</p>
+				<div class="carousel-item" data-bs-interval="2000" style='height: 400px;' >
+					<div class="flip-card" onclick='flip(this)' id="flipCardTwo">
+						<div class="flip-card-inner">
+							<div class="flip-card-front" id='carouselItemTwoFront'>
+							</div>
+							<div class="flip-card-back" id='carouselItemTwoBack'>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
-			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
-				data-bs-slide="prev" onclick='loadPrevWord();'>
+			<button class="carousel-control-prev" type="button" onclick='slidePrev();'>
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Previous</span>
 			</button>
-			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
-				data-bs-slide="next" onclick='loadNextWord();'>
+			<button class="carousel-control-next" type="button"  onclick='nextWord();'>
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Next</span>
 			</button>
