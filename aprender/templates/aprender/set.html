@@ -1,5 +1,5 @@
 {% extends 'aprender/index.html' %}
-{% block body %}
+{% block head %}
 <style>
 	.set {
 		display: block;
@@ -9,7 +9,7 @@
 	.blur {
 		position: absolute;
 		border: 1px solid black;
-		backdrop-filter: blur(5px);    
+		backdrop-filter: blur(5px);
 		z-index: 1;
 
 		left: 0;
@@ -29,8 +29,20 @@
 
 	}
 </style>
+{% endblock head %}
+{% block body %}
 <script>
+	{% if not learnStarted %}
 
+	function createLearnPath() {
+		const idOfSet = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
+		// create set and reload page
+		fetch(`${url.origin}/${idOfSet}/createLearnPath`)
+			.then(response => {
+				location.reload();
+			})
+	} 
+	{% endif %}
 </script>
 <section class='set'>
 	<h1>{{set.label}}</h1>
@@ -41,7 +53,6 @@
 		<button type="button" class="btn btn-primary">Match</button>
 		<hr class="dropdown-divider">
 		<!-- carousel for taking look at cards with words -->
-		<!------------------------->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
 			<div class="carousel-inner">
 				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;'>
@@ -66,17 +77,15 @@
 				<span class="visually-hidden">Next</span>
 			</button>
 		</div>
-		<!-- blurring div in case learn program hasn't been created yet  -->
-		<!-- ------------------------------------ -->
 		{% if not learnStarted %}
+		<!-- blurring div in case learn program hasn't been created yet  -->
 		<div class='blur'>
 			<p> Opps! It's seems that you haven't create your learning way yet!</p>
-			<p>Click Create to start studying term right off the bat!</p>
+			<p>Click <button onclick="createLearnPath();" class="btn bg-primary">Create</button> to start studying term
+				right off the bat!</p>
 		</div>
 		{% endif %}
-		<!-- ------------------------------------ -->
 	</div>
-	<!---------------------------->
 	<hr class="dropdown-divider">
 	<div>
 		Created by user, his photo, at the reight icons for adding this set fo a folder, editing the set or sharing

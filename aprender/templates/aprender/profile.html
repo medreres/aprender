@@ -14,7 +14,7 @@
     }
 </style>
 <script>
-    const url = new URL(window.location.href);
+    {% comment %} const url = new URL(window.location.href); {% endcomment %}
     const username = (url.pathname.replace('/', ''));
 
     // by default load user sets

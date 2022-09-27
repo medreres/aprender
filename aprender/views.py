@@ -11,7 +11,7 @@ from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
-from .helper import fetchSets, fetchFolders
+from .helper import fetchSets, fetchFolders, createLearnPath
 
 # Create your views here.
 
@@ -144,13 +144,14 @@ def sets(request, user):
                       'CreateFolder': CreateFolder()
                   })
 
-def set(request, user, id):
+
+def set(request, id):
     # find out if user has already started learning way
-    print(LearnWay.objects.filter(author=request.user).filter(set__pk=id).count())
     return render(request, 'aprender/set.html', {
         'set': Set.objects.get(pk=id).serialize(),
         'learnStarted': LearnWay.objects.filter(author=request.user).filter(set__pk=id).count() > 0,
     })
+
 
 def createfolder(request):
     if request.method != "POST":
@@ -168,8 +169,6 @@ def createfolder(request):
         date=datetime.now()
     )
 
-    print(folder)
-
     return HttpResponseRedirect(reverse('folders', args=(request.user,)))
 
 
@@ -179,8 +178,9 @@ def folders(request, user):
     })
 
 
-def folder(request, user, id):
+def folder(request, id):
     return HttpResponse("TODO")
 
-def profile(request,user):
+
+def profile(request, user):
     return render(request, 'aprender/profile.html')

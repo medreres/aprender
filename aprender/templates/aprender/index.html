@@ -90,10 +90,10 @@
                 // provide location of the set/folder to reroute on click
                 // define if it's a set or a folder
                 if ('setsNumber' in card) {
-                    location.href = `${path}/${card['author']}/folders/${card['id']}`;
+                    location.href = `${path}/folders/${card['id']}`;
                 }
                 else {
-                    location.href = `${path}/${card['author']}/sets/${card['id']}`;
+                    location.href = `${path}/sets/${card['id']}`;
                 }
             }
 
@@ -130,8 +130,7 @@
         }
 
     </script>
-    {% block scripts %}{% endblock scripts %}
-
+    {% block head %}{% endblock head %}
     <title>live</title>
 </head>
 
