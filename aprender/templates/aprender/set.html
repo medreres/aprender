@@ -1,4 +1,5 @@
 {% extends 'aprender/index.html' %}
+{% load static %}
 {% block head %}
 <style>
 	.set {
@@ -28,12 +29,19 @@
 		position: relative;
 
 	}
-</style>
-{% endblock head %}
-{% block body %}
-<script>
-	{% if not learnStarted %}
 
+	.flip-card-front,
+	.flip-card-back {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		-webkit-backface-visibility: hidden;
+		/* Safari */
+		backface-visibility: hidden;
+	}
+</style>
+{% if not learnStarted %}
+<script>
 	function createLearnPath() {
 		const idOfSet = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
 		// create set and reload page
@@ -41,9 +49,86 @@
 			.then(response => {
 				location.reload();
 			})
-	} 
-	{% endif %}
+	}
 </script>
+{%endif %}
+<script>
+	function flip(evt) {
+		document.querySelector('.flip-card').classList.toggle('flipped');
+	}
+
+	function loadNextWord() {
+		const idOfSet = url.pathname.substring(url.pathname.lastIndexOf('/') + 1);
+		fetch(`${path}/sets/${idOfSet}/fetchWord`)
+		.then(response => response.json())
+		.then(result => {
+			console.log(result);
+		})
+	}
+
+	function loadPrevWord() {
+
+	}
+</script>
+{% endblock head %}
+{% block body %}
+<style>
+	.flip-card {
+		background-color: transparent;
+		width: 100%;
+		height: 100%;
+		border: 1px solid #f1f1f1;
+		perspective: 1000px;
+		/* Remove this if you don't want the 3D effect */
+	}
+
+	.flip-card:hover {
+		cursor: pointer;
+	}
+
+	/* This container is needed to position the front and back side */
+	.flip-card-inner {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		transition: transform 0.8s;
+		transform-style: preserve-3d;
+	}
+
+	/* Do an horizontal flip when you move the mouse over the flip box container */
+	.flip-card.flipped .flip-card-inner {
+		transform: rotateY(180deg);
+	}
+
+	/* Position the front and back side */
+	.flip-card-front,
+	.flip-card-back {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		-webkit-backface-visibility: hidden;
+		/* Safari */
+		backface-visibility: hidden;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	/* Style the front side (fallback if image is missing) */
+	.flip-card-front {
+		background-color: #bbb;
+		color: black;
+	}
+
+	/* Style the back side */
+	.flip-card-back {
+		background-color: dodgerblue;
+		color: white;
+		transform: rotateY(180deg);
+	}
+</style>
 <section class='set'>
 	<h1>{{set.label}}</h1>
 	<div class="menuContainer">
@@ -55,24 +140,29 @@
 		<!-- carousel for taking look at cards with words -->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
 			<div class="carousel-inner">
-				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;'>
-					<p>some text here</p>
-					at the top should be counter for showing which word now is shown
-					should be term , icon to edit and add to favorite
-					on click the card should flip and show the definition
-					when showing next term, preload the next after the one shown
+				<div class="carousel-item active" data-bs-interval="10000" style='height: 400px;' id='carouselItemOne'>
+					<div class="flip-card" onclick='flip(event);'>
+						<div class="flip-card-inner">
+							<div class="flip-card-front">
+								<h3>Some word</h3>
+							</div>
+							<div class="flip-card-back">
+								its definition
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="carousel-item" data-bs-interval="2000" style='height: 400px;'>
+				<div class="carousel-item" data-bs-interval="2000" style='height: 400px;' id='carouselItemTwo'>
 					<p>some text here again</p>
 				</div>
 			</div>
 			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
-				data-bs-slide="prev">
+				data-bs-slide="prev" onclick='loadPrevWord();'>
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Previous</span>
 			</button>
 			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
-				data-bs-slide="next">
+				data-bs-slide="next" onclick='loadNextWord();'>
 				<span class="carousel-control-next-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Next</span>
 			</button>

@@ -12,6 +12,7 @@ urlpatterns = [
     path('folders/<int:id>', views.folder, name='folder'),
     path('<str:user>/sets', views.sets, name='sets'),
     path('sets/<int:id>', views.set, name='set'),
+    path('sets/<int:id>/fetchWord', views.fetchNextWord, name='fetchWord'),
     path('<str:user>/fetchFoldersAjax', views.fetchFolders, name='fetchfolders'),
     path('<str:user>/fetchSetsAjax', views.fetchSets, name='fetchsets'),
     path('<str:user>', views.profile, name='profile'),

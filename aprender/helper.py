@@ -1,5 +1,7 @@
+from email import message
 from django.http import JsonResponse
 from .models import LearnWay, Set, User, Folder
+from django.contrib import messages
 
 
 # fetch sets via ajax
@@ -34,3 +36,24 @@ def createLearnPath(request, id):
     newPath.poorKnown.add(*setToLearn[0].words.all())
 
     return JsonResponse({'success': "Learn Path successfully created!"})
+
+
+def fetchNextWord(request, id):
+    learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
+    # if set doesn't exist but somehow learnway is still available
+    if len(learnPath) == 0:
+        messages.error(request, 'Internal error. Set is not found')
+        return JsonResponse({'error': "Set is not founded"})
+    learnPath = learnPath[0]
+
+    # !CRUTCHES
+    # ?django manytomany rel doesnt support numeration of elemnt in manytomany,
+    # so i created list of all words in many tomany, get index of last word 
+    # and fetch word with index greater by 1
+    allWords = [*Set.objects.filter(pk=id)[0].words.all()]
+    print(allWords)
+    indexOfWord = (allWords.index(learnPath.lastWord)+1) % len(allWords)
+    learnPath.lastWord = allWords[indexOfWord]
+    learnPath.save()
+    
+    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord}, status=200)

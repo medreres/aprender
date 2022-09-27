@@ -11,7 +11,7 @@ from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
-from .helper import fetchSets, fetchFolders, createLearnPath
+from .helper import fetchSets, fetchFolders, createLearnPath, fetchNextWord
 
 # Create your views here.
 
@@ -106,6 +106,7 @@ def logUser(request, user):
 def createset(request):
     if request.method == 'POST':
         form = CreateSet(request.POST)
+        
 
         if not form.is_valid():
             messages.error(request, 'Form is not valid')
