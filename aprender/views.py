@@ -151,6 +151,7 @@ def set(request, id):
     return render(request, 'aprender/set.html', {
         'set': Set.objects.get(pk=id).serialize(),
         'learnStarted': LearnWay.objects.filter(author=request.user).filter(set__pk=id).count() > 0,
+        'id': id
     })
 
 
@@ -185,3 +186,7 @@ def folder(request, id):
 
 def profile(request, user):
     return render(request, 'aprender/profile.html')
+
+
+def flashcards(request,id):
+    return render(request, 'aprender/flashcards.html')

@@ -12,6 +12,7 @@ urlpatterns = [
     path('folders/<int:id>', views.folder, name='folder'),
     path('<str:user>/sets', views.sets, name='sets'),
     path('sets/<int:id>', views.set, name='set'),
+    path('sets/<int:id>/flashcards', views.flashcards, name='flashcards'),
     path('sets/<int:id>/nextWord', views.nextWord, name='nextWord'),
     path('sets/<int:id>/prevWord', views.prevWord, name='prevWord'),
     path('sets/<int:id>/currentWord', views.currentWord, name='currentWord'),

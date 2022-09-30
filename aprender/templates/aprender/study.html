@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title%}
+        studying
+        {% endblock title %}</title>
+
+    {% load bootstrap5 %}
+
+    {% bootstrap_css %}
+
+    {% bootstrap_javascript %}
+    <script>
+        let url = new URL(location.href);
+        let path = url.origin;
+        const idOfSet = window.location.href.split('/')[4];
+    </script>
+    {% block head %}
+    {% endblock head %}
+</head>
+
+<body>
+    <nav class="navbar bg-primary">
+        <div class="container-fluid">
+            <div class="dropdown">
+                <a class="btn btn-light dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    FlashCards
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Learn</a></li>
+                    <li><a class="dropdown-item" href="#">Test</a></li>
+                    <li><a class="dropdown-item" href="#">Match</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Home</a></li>
+                </ul>
+            </div>
+            <div id='progressFlashCards'></div>
+            <button type="button" class="btn btn-light" onclick="history.back()">Close</button>
+        </div>
+    </nav>
+   
+
+    {% block body %}
+    {% endblock body %}
+</body>
+
+</html>

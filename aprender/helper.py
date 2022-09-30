@@ -56,7 +56,7 @@ def nextWord(request, id):
     learnPath.lastWord = allWords[indexOfWord]
     learnPath.save()
     
-    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord}, status=200)
+    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
 
 def currentWord(request,id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
@@ -65,7 +65,9 @@ def currentWord(request,id):
         messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
-    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition}, status=200)
+    allWords = [*Set.objects.filter(pk=id)[0].words.all()]
+    indexOfWord = (allWords.index(learnPath.lastWord))
+    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
 
 def prevWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
@@ -84,4 +86,4 @@ def prevWord(request, id):
     learnPath.lastWord = allWords[indexOfWord]
     learnPath.save()
     
-    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord}, status=200)
+    return JsonResponse({'word': learnPath.lastWord.term, 'definition':learnPath.lastWord.definition , 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
