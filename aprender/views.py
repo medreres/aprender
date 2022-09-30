@@ -11,7 +11,7 @@ from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, resetLearnWay
 
 # Create your views here.
 
@@ -190,3 +190,6 @@ def profile(request, user):
 
 def flashcards(request,id):
     return render(request, 'aprender/flashcards.html')
+
+def learn(request,id):
+    return render(request, 'aprender/learn.html')

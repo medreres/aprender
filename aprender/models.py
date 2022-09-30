@@ -19,6 +19,9 @@ class LearnWay(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     set = models.ForeignKey('Set', on_delete=models.Case, null=True)
     # TODO implement case of deleting last word examined
+    
+    
+    # rank of knowing words
     lastWord = models.ForeignKey('Word', null=True,blank=True, on_delete=models.SET_NULL, related_name='lastKnown')
     poorKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='poorKnown')
     intermediateKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='intermediateKnown')
@@ -33,7 +36,14 @@ class Word(models.Model):
     definition = models.CharField(max_length=500)
 
     def __str__(self):
-        return f"{self.term} - {self.definition} "
+        return f"({self.id}) {self.term} - {self.definition} "
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'term': self.term,
+            'definition': self.definition
+        }
 
 
 class Set(models.Model):
