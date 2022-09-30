@@ -31,7 +31,6 @@
 		fetch(`${path}/sets/${idOfSet}/currentWord`)
 			.then(response => response.json())
 			.then(result => {
-				console.log(result);
 				// go to the next flipcard and change it contexr
 				let frontSide = document.querySelector('#carouselItemOneFront');
 				frontSide.innerHTML = result['word'];
@@ -47,7 +46,6 @@
 		fetch(`${path}/sets/${idOfSet}/nextWord`)
 			.then(response => response.json())
 			.then(result => {
-				console.log(result);
 				let nextSlide = document.querySelector('.carousel-item:not(.active)');
 				let front = nextSlide.querySelector('.flip-card-front');
 				let back = nextSlide.querySelector('.flip-card-back');
@@ -57,8 +55,17 @@
 			})
 	}
 
-	function loadPrevWord() {
-
+	function prevWord() {
+		fetch(`${path}/sets/${idOfSet}/prevWord`)
+			.then(response => response.json())
+			.then(result => {
+				let nextSlide = document.querySelector('.carousel-item:not(.active)');
+				let front = nextSlide.querySelector('.flip-card-front');
+				let back = nextSlide.querySelector('.flip-card-back');
+				front.innerHTML = result['word'];
+				back.innerHTML = result['definition'];
+				slidePrev();
+			})
 	}
 
 	function slideNext() {
@@ -107,7 +114,7 @@
 					</div>
 				</div>
 			</div>
-			<button class="carousel-control-prev" type="button" onclick='slidePrev();'>
+			<button class="carousel-control-prev" type="button" onclick='prevWord();'>
 				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
 				<span class="visually-hidden">Previous</span>
 			</button>
@@ -134,4 +141,4 @@
 		Each card must have word, definitoin, button to add to favorites, edit btn, photo (optional)
 	</div>
 </section>
-{% endblock body %}
+{% endblock body %} 

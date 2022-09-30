@@ -11,7 +11,7 @@ from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord
 
 # Create your views here.
 

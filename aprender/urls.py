@@ -13,6 +13,7 @@ urlpatterns = [
     path('<str:user>/sets', views.sets, name='sets'),
     path('sets/<int:id>', views.set, name='set'),
     path('sets/<int:id>/nextWord', views.nextWord, name='nextWord'),
+    path('sets/<int:id>/prevWord', views.prevWord, name='prevWord'),
     path('sets/<int:id>/currentWord', views.currentWord, name='currentWord'),
     path('<str:user>/fetchFoldersAjax', views.fetchFolders, name='fetchfolders'),
     path('<str:user>/fetchSetsAjax', views.fetchSets, name='fetchsets'),
