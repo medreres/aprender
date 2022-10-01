@@ -107,7 +107,9 @@
 
 			} */
 
-
+			.form-check {
+				padding-left: 0;
+			}
 
 			#starredTerms {
 				min-width: 70%;
@@ -133,64 +135,77 @@
 									document.addEventListener('DOMContentLoaded', () => {
 
 
-										let questionTypes = document.querySelectorAll('input[name=question]');
+										let questionTypes = document.querySelectorAll('input[name=questionTypes]');
 										console.log(questionTypes)
 										questionTypes.forEach(checkbox => {
 											checkbox.addEventListener('change', (evt) => {
 												let target = evt.target;
 												if (target.checked) {
 													questionTypes.forEach(input => input.required = false);
-												}
-												else {
+												} else {
 													questionTypes.forEach(input => input.required = true);
 												}
 											})
 										})
 									})
 								</script>
+
 								<div class="form-check" id='questionTypes'>
-									<label class="form-check-label" for="written">
+									{{TestForm.questionTypes}}
+
+									<!-- <label class="form-check-label" for="written">
 										Written <input class="form-check-input" name="question" type="checkbox"
 											value="written" id="written" required>
 									</label>
-
 									<label class="form-check-label" for="Matching">
 										Matching <input class="form-check-input" name="question" type="checkbox"
 											value="matching" id="Matching" required>
 									</label>
-
 									<label class="form-check-label" for="multipleChoices">
 										Multiple Choices <input class="form-check-input" name="question" type="checkbox"
 											value="multiple" id="multipleChoices" required>
 									</label>
-
 									<label class="form-check-label" for="trueFalse">
 										True/False <input class="form-check-input" name="question" type="checkbox"
 											value="trueFalse" id="trueFalse" required>
-									</label>
+									</label> -->
 								</div>
 								<div id="limitAndImages">
 									<div id="questionLimit">
-										<label for="">
-											Question Limit <input type="number" step="5" min="10" max="50" value="10">
-										</label>
+										Question Limit {{TestForm.questionLimit}}
 									</div>
 									<div id="showImages">
-										<label for="">Images <input type="checkbox"> </label>
+										<label for="">Images {{TestForm.showImages}} </label>
 									</div>
+
 								</div>
 							</div>
 							<div id="starredTerms">
 								<label for="">Study Starred Terms
-									<div class="btn-group" role="group">
-										<input type="radio" name="radio-Btn-Group" class="btn-check" id="radioBtn1">
-										<label class="btn btn-outline-warning" for="radioBtn1">All</label>
 
-										<input type="radio" name="radio-Btn-Group" class="btn-check" id="radioBtn2"
-											checked>
-										<label class="btn btn-outline-success" for="radioBtn2">Starred</label>
-
+									<div class='btn-group'>
+										{% for field in TestForm.starredTerms %}
+										<input type="radio" name="radio-Btn-Group" class="btn-check"
+											id="{{ field.id_for_label }}" name="{{ field.html_name }}"
+											{% if field.choice_label == 'Starred'%}checked{%endif%}>
+										<label
+											class="btn btn-outline-{% if field.choice_label == 'All'%}warning{% else %}success{%endif%}"
+											for="{{ field.id_for_label }}">{{field.choice_label}}</label>
+										{% endfor %}
 									</div>
+
+									<!-- <div class="btn-group" role="group">
+										<div>
+											<input type="radio" name="radio-Btn-Group" class="btn-check" id="radioBtn1">
+											<label class="btn btn-outline-warning" for="radioBtn1">All</label>
+										</div>
+										<div>
+											<input type="radio" name="radio-Btn-Group" class="btn-check" id="radioBtn2"
+												checked>
+											<label class="btn btn-outline-success" for="radioBtn2">Starred</label>
+										</div>
+
+									</div> -->
 								</label>
 							</div>
 						</div>

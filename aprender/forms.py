@@ -19,6 +19,43 @@ class LoginForm(forms.Form):
         'placeholder': 'Password',
     }))
 
+# form for creating test
+
+
+class TestForm(forms.Form):
+    QUESTION_TYPES = (
+        ("written", "Written"),
+        ("matching", "Matching"),
+        ("multiple", "Multiple Choices"),
+        ("true", "True/False"),
+    )
+    STARRED_TERMS = (
+        ('1', "All"),
+        ('2', 'Starred')
+    )
+    
+    questionTypes = forms.MultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'name':"question",
+            'type':"checkbox",
+            'value':"written",
+            'id':"written",
+            'required': 'required'
+        }),choices=QUESTION_TYPES )
+    questionLimit = forms.IntegerField(widget=forms.NumberInput(attrs={
+        'min': 10,
+        'max': 15,
+        'step': 5,
+        'value': 10
+    }))
+    starredTerms = forms.ChoiceField(
+        choices=STARRED_TERMS, widget=forms.RadioSelect(attrs={
+            'class':"btn-check",
+            'class':"btn-group",
+            'role':"group",
+        }))
+    showImages = forms.BooleanField(label='Show Images',required=False)
+
 
 class RegisterForm(forms.Form):
     username = forms.CharField(label='Username', max_length=100)
@@ -53,11 +90,12 @@ class CreateSet(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+
 class CreateFolder(forms.ModelForm):
     class Meta:
         model = Folder
         fields = ('label', 'description')
-    
+
     label = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control mb-2',
         'type': 'text',

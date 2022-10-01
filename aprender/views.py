@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder
+from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder, TestForm
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
@@ -165,11 +165,13 @@ def set(request, id):
     print('SET')
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
+
     return render(request, 'aprender/set.html', {
         'set': Set.objects.get(pk=id).serialize(),
         'learnStarted': learnStarted,
         'id': id,
         'LoginForm': LoginForm(),
+        'TestForm': TestForm(),
     })
 
 
@@ -216,9 +218,10 @@ def flashcards(request, id):
 
 
 def learn(request, id):
-    return render(request, 'aprender/learn.html',{
+    return render(request, 'aprender/learn.html', {
         'id': id
     })
 
-def test(request,id):
+
+def test(request, id):
     return render(request, 'aprender/test.html')
