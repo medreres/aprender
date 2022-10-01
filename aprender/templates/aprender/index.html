@@ -6,8 +6,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
     {% load bootstrap5 %}
 
     {% bootstrap_css %}
@@ -25,6 +23,7 @@
     </style>
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
+    {%if user.is_authenticated%}
     <script>
         // to make absolute url instead of relative
         let url = new URL(location.href);
@@ -91,8 +90,7 @@
                 // define if it's a set or a folder
                 if ('setsNumber' in card) {
                     location.href = `${path}/folders/${card['id']}`;
-                }
-                else {
+                } else {
                     location.href = `${path}/sets/${card['id']}`;
                 }
             }
@@ -122,14 +120,18 @@
         function toggleActive(...ids) {
             // console.log(a1,a2);
             // toggle classes for css
-            ids.forEach(id => { document.querySelector(`#${id}`).classList.toggle('active'); })
+            ids.forEach(id => {
+                document.querySelector(`#${id}`).classList.toggle('active');
+            })
         }
 
         function toggleHidden(...ids) {
-            ids.forEach(id => { document.querySelector(`#${id}`).classList.toggle('hidden'); })
+            ids.forEach(id => {
+                document.querySelector(`#${id}`).classList.toggle('hidden');
+            })
         }
-
     </script>
+    {%endif%}
     {% block head %}
     {% endblock head %}
     <title>live</title>
@@ -230,7 +232,7 @@
                         Sign In
                     </button>
                     <div class="dropdown-menu dropdown-menu-lg-end">
-                        <form class="px-4 py-3" method='post' action="{% url 'login' %}">
+                        <form class="px-4 py-3" method='post' action="{% url 'login' %}?next={{request.path}}">
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="DropdownFormEmail1" class="form-label">Email address</label>
@@ -240,6 +242,9 @@
                                 <label for="DropdownFormPassword1" class="form-label">Password</label>
                                 {{LoginForm.password}}
                             </div>
+                            {% comment %} <a class="btn btn-primary" href="{% url 'login' %}?next={{request.path}}">Sign In</a>
+                             {% endcomment %}
+                             <input type="hidden" value='{{request.path}}'>
                             <button type="submit" class="btn btn-primary">Sign in</button>
                         </form>
                         <div class="dropdown-divider"></div>
@@ -273,7 +278,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Log Out</a></li>
+                        <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}} ">Log Out</a></li>
                     </ul>
                 </div>
                 {% endif %}

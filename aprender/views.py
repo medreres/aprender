@@ -3,14 +3,17 @@ from datetime import datetime
 from doctest import debug_script
 from operator import is_
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.shortcuts import render, redirect
 from django.urls import reverse
 from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
 from django.contrib import messages  # import messages
+from django.contrib.auth.decorators import login_required
+# from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, resetLearnWay
 
 # Create your views here.
@@ -25,29 +28,39 @@ def index(request):
 
 
 def loginUser(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        # check form for validity, else show error
-        if not form.is_valid():
-            messages.error(request, "Error. Invalid form")
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method!'})
+    form = LoginForm(request.POST)
 
-        user = authenticate(
-            request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
-        if user is not None:
-            logUser(request, user)
-        else:
-            messages.warning(
-                request, "User with such password/username doesnt exist")
-        return HttpResponseRedirect(reverse('index'))
+    # check form for validity, else show error
+    if not form.is_valid():
+        messages.error(request, "Error. Invalid form")
+        return JsonResponse({'error': 'Invalid form!'})
 
-    return render(request, 'aprender/login.html', {
-        'LoginForm': LoginForm()
-    })
+    user = authenticate(
+        request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
+    if user is not None:
+        logUser(request, user)
+    else:
+        messages.warning(
+            request, "User with such password/username doesnt exist")
+        return JsonResponse({'error': 'User doesnt exist!'})
+
+    # get page from which user logged
+    next_url = request.GET.get('next', None)
+    if next_url is not None:
+        return redirect(next_url)
+
+    return HttpResponseRedirect(reverse('index'))
 
 
 def logoutUser(request):
     # log out and reverse back to main page
     logout(request)
+    next_url = request.GET.get('next', None)
+    if next_url is not None:
+        return redirect(next_url)
+
     return HttpResponseRedirect(reverse('index'))
 
 
@@ -103,10 +116,10 @@ def logUser(request, user):
     messages.success(request, f'You are now logged in as {user.username}')
 
 
+@login_required
 def createset(request):
     if request.method == 'POST':
         form = CreateSet(request.POST)
-        
 
         if not form.is_valid():
             messages.error(request, 'Form is not valid')
@@ -139,22 +152,28 @@ def createset(request):
     })
 
 
+@login_required
 def sets(request, user):
     return render(request, 'aprender/sets.html',
                   {
-                      'CreateFolder': CreateFolder()
+                      'CreateFolder': CreateFolder(),
+                      'LoginForm': LoginForm(),
                   })
 
 
 def set(request, id):
     # find out if user has already started learning way
+    learnStarted = LearnWay.objects.filter(author=request.user).filter(
+        set__pk=id).count() > 0 if request.user.is_authenticated else False
     return render(request, 'aprender/set.html', {
         'set': Set.objects.get(pk=id).serialize(),
-        'learnStarted': LearnWay.objects.filter(author=request.user).filter(set__pk=id).count() > 0,
-        'id': id
+        'learnStarted': learnStarted,
+        'id': id,
+        'LoginForm': LoginForm(),
     })
 
 
+@login_required
 def createfolder(request):
     if request.method != "POST":
         messages.error(request, 'Error. Wrong request method')
@@ -174,22 +193,27 @@ def createfolder(request):
     return HttpResponseRedirect(reverse('folders', args=(request.user,)))
 
 
+@login_required
 def folders(request, user):
     return render(request, 'aprender/folders.html', {
         'username': user,
     })
 
 
+@login_required
 def folder(request, id):
     return HttpResponse("TODO")
 
 
+@login_required
 def profile(request, user):
     return render(request, 'aprender/profile.html')
 
 
-def flashcards(request,id):
+@login_required
+def flashcards(request, id):
     return render(request, 'aprender/flashcards.html')
 
-def learn(request,id):
+
+def learn(request, id):
     return render(request, 'aprender/learn.html')

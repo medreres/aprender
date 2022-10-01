@@ -123,12 +123,17 @@
 				<span class="visually-hidden">Next</span>
 			</button>
 		</div>
-		{% if not learnStarted %}
+		{% if user.is_authenticated and not learnStarted %}
 		<!-- blurring div in case learn program hasn't been created yet  -->
 		<div class='blur'>
 			<p> Opps! It's seems that you haven't create your learning way yet!</p>
 			<p>Click <button onclick="createLearnPath();" class="btn bg-primary">Create</button> to start studying term
 				right off the bat!</p>
+		</div>
+		{% elif not user.is_authenticated %}
+		<div class='blur'>
+			<p> Opps! It's seems that you haven't signed in yet!</p>
+			<p>Sign in to start learning words right now!</p>
 		</div>
 		{% endif %}
 	</div>

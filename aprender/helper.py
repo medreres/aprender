@@ -7,24 +7,26 @@ from .models import LearnWay, Set, User, Folder, Word
 from django.contrib import messages
 from random import randint, sample, shuffle
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 WORDSPERSET = 10
 
 
 # fetch sets via ajax
+@login_required
 def fetchSets(request, user):
     sets = Set.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
 # fetch folde via ajax
 
-
+@login_required
 def fetchFolders(request, user):
     folders = Folder.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([folder.serialize() for folder in folders], safe=False)
 
 # create learn path for user
 
-
+@login_required
 def createLearnPath(request, id):
     # handle wrong id of set to learn
     setToLearn = Set.objects.filter(pk=id)
@@ -43,12 +45,12 @@ def createLearnPath(request, id):
 
     return JsonResponse({'success': "Learn Path successfully created!"})
 
-
+@login_required
 def nextWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
-        messages.error(request, 'Internal error. Set is not found')
+        # messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
 
@@ -69,7 +71,7 @@ def currentWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
-        messages.error(request, 'Internal error. Set is not found')
+        # messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
     allWords = [*Set.objects.filter(pk=id)[0].words.all()]
@@ -81,7 +83,7 @@ def prevWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
-        messages.error(request, 'Internal error. Set is not found')
+        # messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
 
@@ -96,7 +98,7 @@ def prevWord(request, id):
 
     return JsonResponse({'word': learnPath.lastWord.term, 'definition': learnPath.lastWord.definition, 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
 
-
+@login_required
 def getWords(request, id):
     """getWord() sends a list of 10 words, if availble, or all the words left in one of the sets(poorKnown or intermediateKnown)"""
 
@@ -152,14 +154,16 @@ def getWords(request, id):
 
 
 # list to remember all words learned to show them at the end of the round
+# @login_required
 @csrf_exempt
 def check(request, id):
     # compare two words, if their definitions are equal , then answer is right
     givenWord = json.loads(request.body)
     actualWord = Word.objects.get(pk=givenWord['id'])
 
-    learnPath = LearnWay.objects.filter(
-        author=request.user).filter(set__pk=id)[0]
+    # learnPath = LearnWay.objects.filter(
+    #     author=request.user).get(set__pk=id)
+    learnPath = LearnWay.objects.filter(author=request.user).get(pk=id)
     # if answer is right remove this word from poor known and add to intermediate known
 
     if actualWord.definition == givenWord['definition']:
@@ -191,7 +195,7 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
         learnPath.intermediateKnown.remove(word)
         learnPath.poorKnown.add(word)
 
-
+@login_required
 # if learning is finihsed, propose restart learning
 def resetLearnWay(learnPath: LearnWay):
     learnPath.intermediateKnown.remove(learnPath.intermediateKnown.all())
