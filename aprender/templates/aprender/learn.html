@@ -56,7 +56,6 @@
     }
 </style>
 <script>
-
     document.addEventListener('DOMContentLoaded', () => {
         // load words on start
         getWords();
@@ -74,16 +73,18 @@
     }
 
     function toggleRestartMenu() {
-        
+
     }
 
     function restartLearnWay() {
-        let path = location.href + '/resetLearnWay';
+        // path = 
+        let path = "{% url 'restartLearnWay' id %}";
         fetch(path)
-        .then(response => response.json())
-        .then(result => {
-            console.log(result)
-        })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                location.reload();
+            })
     }
 
     function toggleRoundMenu() {
@@ -103,26 +104,24 @@
     function checkAnswer(element) {
         let path = location.href + '/check';
         fetch(path, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': element.dataset.id,
-                'definition': element.dataset.definition
+                method: 'POST',
+                body: JSON.stringify({
+                    'id': element.dataset.id,
+                    'definition': element.dataset.definition
+                })
             })
-        })
             .then(response => response.json())
             .then(result => {
                 if (result['answer']) {
                     element.classList.toggle('bg-success');
-                }
-                else {
+                } else {
                     element.classList.toggle('bg-danger');
                 }
                 element.addEventListener('transitionend', () => {
                     setTimeout(() => {
                         if (idOfWord >= wordsNumber - 1) {
                             toggleRoundMenu();
-                        }
-                        else
+                        } else
                             toggleNextQuestion(idOfWord++);
                     }, 1000);
                 });
@@ -139,8 +138,8 @@
             .then(response => {
 
                 // if learn way is finished, there is 'finish' key in dictionary
-                if ('finish' in response)
-                {
+                if ('finish' in response) {
+                    document.querySelector('#restartMenu').classList.toggle('hidden');
                     return;
                 }
 
@@ -204,7 +203,7 @@
     </div>
     <button onclick="startNewRound();">Start a New Round</button>
 </div>
-<div id="restartMenu" class="restartMenu">
+<div id="restartMenu" class="restartMenu hidden">
     <button onclick="restartLearnWay();">Restart</button>
 </div>
 {% endblock body %}

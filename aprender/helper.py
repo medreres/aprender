@@ -3,6 +3,7 @@ import json
 from multiprocessing.dummy import active_children
 from random import random
 from django.http import JsonResponse
+
 from .models import LearnWay, Set, User, Folder, Word
 from django.contrib import messages
 from random import randint, sample, shuffle
@@ -163,7 +164,7 @@ def check(request, id):
 
     # learnPath = LearnWay.objects.filter(
     #     author=request.user).get(set__pk=id)
-    learnPath = LearnWay.objects.filter(author=request.user).get(pk=id)
+    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     # if answer is right remove this word from poor known and add to intermediate known
 
     if actualWord.definition == givenWord['definition']:
@@ -197,8 +198,13 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
 
 @login_required
 # if learning is finihsed, propose restart learning
-def resetLearnWay(learnPath: LearnWay):
-    learnPath.intermediateKnown.remove(learnPath.intermediateKnown.all())
-    learnPath.wellKnown.remove(learnPath.wellKnown.all())
+def restartLearnWay(request, id):
+    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
+
+    # remove all words from wellknown set
+    for word in learnPath.wellKnown.all():
+        learnPath.wellKnown.remove(word)
+        
+    # add those words to poorknown
     learnPath.poorKnown.add(*learnPath.set.words.all())
     return JsonResponse({'success': 'Learn Way successfully restarted!'})

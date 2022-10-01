@@ -14,7 +14,7 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, resetLearnWay
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay
 
 # Create your views here.
 
@@ -163,6 +163,7 @@ def sets(request, user):
 
 def set(request, id):
     # find out if user has already started learning way
+    print('SET')
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
     return render(request, 'aprender/set.html', {
@@ -216,4 +217,6 @@ def flashcards(request, id):
 
 
 def learn(request, id):
-    return render(request, 'aprender/learn.html')
+    return render(request, 'aprender/learn.html',{
+        'id': id
+    })
