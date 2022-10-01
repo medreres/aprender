@@ -1,4 +1,3 @@
-from ast import arg
 from datetime import datetime
 from doctest import debug_script
 from operator import is_
@@ -220,3 +219,6 @@ def learn(request, id):
     return render(request, 'aprender/learn.html',{
         'id': id
     })
+
+def test(request,id):
+    return render(request, 'aprender/test.html')
