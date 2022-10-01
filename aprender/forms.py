@@ -30,8 +30,8 @@ class TestForm(forms.Form):
         ("true", "True/False"),
     )
     STARRED_TERMS = (
-        ('1', "All"),
-        ('2', 'Starred')
+        ('all', "All"),
+        ('starred', 'Starred')
     )
     
     questionTypes = forms.MultipleChoiceField(
@@ -53,7 +53,7 @@ class TestForm(forms.Form):
             'class':"btn-check",
             'class':"btn-group",
             'role':"group",
-        }))
+        }), required=True)
     showImages = forms.BooleanField(label='Show Images',required=False)
 
 

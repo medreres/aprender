@@ -224,4 +224,9 @@ def learn(request, id):
 
 
 def test(request, id):
+    form = TestForm(request.GET)
+    if form.is_valid():
+        messages.warning(request, 'Form is not valid')
+    
+    print(form.cleaned_data)
     return render(request, 'aprender/test.html')

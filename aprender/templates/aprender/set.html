@@ -183,14 +183,20 @@
 							<div id="starredTerms">
 								<label for="">Study Starred Terms
 
-									<div class='btn-group'>
+									{% comment %} {{TestForm.starredTerms}} {% endcomment %}
+
+
+									<div id='id_starredTerms' class='btn-group'>
 										{% for field in TestForm.starredTerms %}
-										<input type="radio" name="radio-Btn-Group" class="btn-check"
-											id="{{ field.id_for_label }}" name="{{ field.html_name }}"
-											{% if field.choice_label == 'Starred'%}checked{%endif%}>
-										<label
-											class="btn btn-outline-{% if field.choice_label == 'All'%}warning{% else %}success{%endif%}"
-											for="{{ field.id_for_label }}">{{field.choice_label}}</label>
+										<div>
+											<input type="radio" name="starredTerms" class="btn-check"
+												id="{{ field.id_for_label }}" name="{{ field.html_name }}"
+												{% if field.choice_label == 'Starred'%}checked{%endif%}
+												value='{{field.choice_label|lower}}' role='group'>
+											<label
+												class="btn btn-outline-{% if field.choice_label == 'All'%}warning{% else %}success{%endif%}"
+												for="{{ field.id_for_label }}">{{field.choice_label}}</label>
+										</div>
 										{% endfor %}
 									</div>
 
