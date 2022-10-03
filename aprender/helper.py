@@ -100,8 +100,8 @@ def prevWord(request, id):
     return JsonResponse({'word': learnPath.lastWord.term, 'definition': learnPath.lastWord.definition, 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
 
 @login_required
-def getWords(request, id):
-    """getWord() sends a list of 10 words, if availble, or all the words left in one of the sets(poorKnown or intermediateKnown)"""
+def getWords(request, id,numberOfWords=10):
+    """getWord() sends a list of n(numberOfwords) words, if availble, or all the words left in one of the sets(poorKnown or intermediateKnown)"""
 
     # find the learnpath in database
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
@@ -118,7 +118,7 @@ def getWords(request, id):
         studySet = learnPath.intermediateKnown
 
     # get a list of words from the set available
-    numberOfWordsToStudy = 10 if studySet.count() > 10 else studySet.count()
+    numberOfWordsToStudy = numberOfWords if studySet.count() > numberOfWords else studySet.count()
 
     # list of words to be studied
     wordsToStudy = []
@@ -160,6 +160,7 @@ def getWords(request, id):
 def check(request, id):
     # compare two words, if their definitions are equal , then answer is right
     givenWord = json.loads(request.body)
+    print(givenWord)
     actualWord = Word.objects.get(pk=givenWord['id'])
 
     # learnPath = LearnWay.objects.filter(
@@ -168,10 +169,10 @@ def check(request, id):
     # if answer is right remove this word from poor known and add to intermediate known
 
     if actualWord.definition == givenWord['definition']:
-        moveToUpperRank(learnPath, actualWord)
+        # moveToUpperRank(learnPath, actualWord)
         answer = True
     else:
-        moveToLowerRank(learnPath, actualWord)
+        # moveToLowerRank(learnPath, actualWord)
         answer = False
 
     return JsonResponse({'answer': answer}, status=200)

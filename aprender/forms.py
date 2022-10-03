@@ -25,7 +25,7 @@ class LoginForm(forms.Form):
 class TestForm(forms.Form):
     QUESTION_TYPES = (
         ("written", "Written"),
-        ("matching", "Matching"),
+        # ("matching", "Matching"),
         ("multiple", "Multiple Choices"),
         ("true", "True/False"),
     )
@@ -33,28 +33,29 @@ class TestForm(forms.Form):
         ('all', "All"),
         ('starred', 'Starred')
     )
-    
+
     questionTypes = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(attrs={
-            'name':"question",
-            'type':"checkbox",
-            'value':"written",
-            'id':"written",
+            'name': "question",
+            'type': "checkbox",
+            'value': "written",
+            'id': "written",
             'required': 'required'
-        }),choices=QUESTION_TYPES )
+        }), choices=QUESTION_TYPES)
     questionLimit = forms.IntegerField(widget=forms.NumberInput(attrs={
-        'min': 10,
-        'max': 15,
-        'step': 5,
-        'value': 10
+        # TODO
+        # 'min': 10,
+        # 'max': 15,
+        # 'step': 5,
+        'value': 5
     }))
     starredTerms = forms.ChoiceField(
         choices=STARRED_TERMS, widget=forms.RadioSelect(attrs={
-            'class':"btn-check",
-            'class':"btn-group",
-            'role':"group",
+            'class': "btn-check",
+            'class': "btn-group",
+            'role': "group",
         }), required=True)
-    showImages = forms.BooleanField(label='Show Images',required=False)
+    showImages = forms.BooleanField(label='Show Images', required=False)
 
 
 class RegisterForm(forms.Form):
