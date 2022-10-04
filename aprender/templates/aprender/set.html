@@ -80,7 +80,7 @@
 		carousel.prev();
 	}
 </script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js" />
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 {% endblock head %}
 {% block body %}
 <article class='set'>
@@ -329,26 +329,60 @@
 		</span>
 	</section>
 	{% comment %} here start all the terms with their definition with ability to edit them via ajax {% endcomment %}
+
+	<script src="{% static 'plugins/twbs-pagination/jquery.twbsPagination.js' %}">
+		// script for rght pagination
+	</script>
 	<script>
+		{% comment %} var page = 1; {% endcomment %}
+		var numberOfPages;
+		
 
 		document.addEventListener('DOMContentLoaded', () => {
+			// get general number of pages
+			// set pagination
+			getNumberOfPages();
 			// load first page of words initially
-			getWords();
+			//getWords();
 		})
-		var page = 1;
+
+
+		function getNumberOfPages() {
+			const url = location.href + '/getNumberOfPages';
+			fetch(url)
+				.then(response => response.json())
+				.then(result => {
+					numberOfPages = result['numberOfPages'];
+
+					// intialize pagination nav
+					// upper
+					$('#paginationUpper').twbsPagination({
+						totalPages: numberOfPages,
+						visiblePages: 3,
+						onPageClick: function (evt, page) {
+							//console.log(page);
+							//$('#content').text('Page ' + page);
+							loadPage(page);
+						}
+					});
+					// and lower
+				})
+		}
+
 		//  scripts for loading words 
-		function getWords() {
+		function loadPage(i) {
+			//console.log('loading function loadPage;')
+			//console.log('Page number ' + i);
 			const url = location.href + '/getWordsToEdit';
 			fetch(url, {
 					method: 'POST',
 					body: JSON.stringify({
-						page: page
+						page: i
 					})
 				})
 				.then(response => response.json())
 				.then(result => {
 					// process all words and add them to the page
-
 					/* 
 					<div class='word'>
 						<span class='term'>Table</span>
@@ -361,6 +395,7 @@
 					</div>
 					*/
 					let container = document.querySelector('#wordsContainer');
+					container.innerHTML = '';
 					result['words'].forEach(word => {
 						let div = document.createElement('div');
 						// assign class word
@@ -384,9 +419,10 @@
 	</script>
 	<article id='words'>
 		<h2>Terms in this set</h2>
-		{% comment %} TODO query django paginator to find out how many pages set contains, create appropriate nubmer of pages {% endcomment %}
+		{% comment %} TODO query django paginator to find out how many pages set contains, create appropriate nubmer of
+		pages {% endcomment %}
 		<nav>
-			<ul class="pagination">
+			<ul class="pagination" id='paginationUpper'>
 				<li class="page-item disabled">
 					<a class="page-link" href="#" tabindex="-1">Previous</a>
 				</li>
@@ -404,21 +440,6 @@
 		</nav>
 		<section id='wordsContainer'>
 		</section>
-		<nav aria-label="...">
-			<ul class="pagination">
-				<li class="page-item disabled">
-					<a class="page-link" href="#" tabindex="-1">Previous</a>
-				</li>
-				<li class="page-item active"><a class="page-link" href="#">1</a></li>
-				<li class="page-item ">
-					<a class="page-link" href="#">2</a>
-				</li>
-				<li class="page-item"><a class="page-link" href="#">3</a></li>
-				<li class="page-item">
-					<a class="page-link" href="#">Next</a>
-				</li>
-			</ul>
-		</nav>
 	</article>
 </article>
 {% endblock body %}

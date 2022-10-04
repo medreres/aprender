@@ -15,7 +15,7 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages
 
 # Create your views here.
 

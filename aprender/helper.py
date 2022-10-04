@@ -215,11 +215,21 @@ def getWordsToEdit(request, id):
     pageNumber = body['page']
 
     # create instance of paginaotr
-    #? could be saved in cache
+    # ? could be saved in cache
     wordsPages = Paginator(allWords, WORDSPERPAGE)
     page = wordsPages.page(pageNumber).object_list
     # print(wordsPages.page(2).object_list)
     return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
+
+
+def getNumberOfPages(request, id):
+    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
+    allWords = [*learnPath.set.words.all()]
+
+    # create instance of paginaotr
+    # ? could be saved in cache
+    wordsPages = Paginator(allWords, WORDSPERPAGE)
+    return JsonResponse({'numberOfPages': wordsPages.num_pages}, status=200)
 
 
 @login_required
