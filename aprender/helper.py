@@ -169,6 +169,7 @@ def check(request, id):
     # if answer is right remove this word from poor known and add to intermediate known
 
     if actualWord.definition == givenWord['definition']:
+        # TODO remove comments from moving up/down in rank
         # moveToUpperRank(learnPath, actualWord)
         answer = True
     else:

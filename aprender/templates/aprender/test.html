@@ -37,6 +37,9 @@
         transition-duration: 1s;
         transition-property: background-color;
     }
+    .answer:focus {
+        content: none;
+    }
 
     .hidden {
         display: none;
@@ -56,14 +59,17 @@
     }
 
     .correct {
-        background-color: green;
+        background-color: green !important;
+        opacity: 1 !important;
     }
 
     .incorrect {
-        background-color: red;
+        background-color: red !important;
+        opacity: 1 !important;
     }
 
-    .definitions>* {
+    input[name="written"],
+    input[name="multiple"] {
         transition: background-color 1s;
     }
 </style>
@@ -94,7 +100,7 @@
         const url = new URL(location.href);
         let path = url.origin + '/sets/{{id}}/learn/check';
         // console.log(element.value)
-        console.log(path);
+        // console.log(path);
         fetch(path, {
             method: 'POST',
             body: JSON.stringify({
@@ -106,9 +112,11 @@
             .then(result => {
                 if (result['answer'] === true) {
                     element.classList.toggle('correct');
-                    // numberOfWordsCorrect++;
+                    // console.log('correct');
+                    numberOfWordsCorrect++;
                 }
                 else {
+                    // console.log('incorrect');
                     element.classList.toggle('incorrect');
                 }
 
@@ -138,12 +146,21 @@
 
     function checkWord(evt) {
         if (evt.name === 'written') {
-            evt.disabled = true;
+            disable(evt);
             // console.log(`input[name="written"] [data-id="${evt.dataset.id}"]`)
             let definition = document.querySelector(`input[name="written"][data-id="${evt.dataset.id}"]`);
-            console.log(definition);
+            // console.log(definition);
             checkAnswer(definition);
         }
+        else if (evt.name === 'multiple') {
+            document.querySelectorAll(`input[name="multiple"][data-id="${evt.dataset.id}"]`).forEach(element =>  element.classList.toggle('disabled'))
+            checkAnswer(evt);
+
+        }
+    }
+
+    function disable(element) {
+        element.disabled = true;
     }
 </script>
 
@@ -169,17 +186,20 @@ score{% endcomment %}
 
 
         <div class='definitions'>
+            <!-- for each type of question different method is used -->
             {% if key == 'multiple' %}
+            <!-- TODO implelent mechanism for checking spelling with multiple questions -->
             {% for definition in word.definition %}
-            <input type="button" class="btn btn-primary answer" data-id='{{word.id}}' data-definition="{{definition}}"
-                value='{{definition}}' name="definition" autocomplete="off" />
-
+            <input type="button" class="btn btn-primary answer" data-id='{{word.id}}' value='{{definition}}'
+                name="multiple" onclick="checkWord(this);" />
             {% endfor %}
             {% elif key == 'written' %}
+            <!-- just check spelling via checkWord() function -->
             <input type="text" data-id='{{word.id}}' name='written' autocomplete="off">
-            <button onclick="checkWord(this);" data-id="{{word.id}}" name="written" class="btn btn-primary">Check</button>
+            <button onclick="checkWord(this);" data-id="{{word.id}}" name="written"
+                class="btn btn-primary">Check</button>
             {% else %}
-
+            <!-- TODO implement mechanism for checking via true/false -->
             <button type="button" class="btn btn-primary answer" data-id='{{word.id}}'
                 data-definition="{{word.definition}}">True</button>
             <button type="button" class="btn btn-primary answer" data-id='{{word.id}}'
@@ -192,7 +212,7 @@ score{% endcomment %}
     <button type="submit" class='btn btn-primary hidden'>Submit</button>
 </section>
 
-<section id='result'>
+<section id='result' class="hidden">
 
     <h2>Result</h2>
 

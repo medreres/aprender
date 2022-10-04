@@ -238,7 +238,8 @@ def test(request, id):
         'id': id,
     })
 
-def testCheck(request,id):
+
+def testCheck(request, id):
     written = request.POST.getlist('written')
     return HttpResponseRedirect(reverse('index'))
 
