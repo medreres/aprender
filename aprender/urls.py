@@ -14,6 +14,7 @@ urlpatterns = [
     path('sets/<int:id>', views.set, name='set'),
     path('sets/<int:id>/getWordsToEdit', views.getWordsToEdit, name='getWordsToEdit'),
     path('sets/<int:id>/getNumberOfPages', views.getNumberOfPages, name='getNumberOfPages'),
+    path('sets/<int:id>/changeWord', views.changeWord, name='changeWord'),
     path('sets/<int:id>/flashcards', views.flashcards, name='flashcards'),
     path('sets/<int:id>/learn', views.learn, name='learn'),
     path('sets/<int:id>/learn/restartLearnWay', views.restartLearnWay, name='restartLearnWay'),

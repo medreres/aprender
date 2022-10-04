@@ -334,9 +334,8 @@
 		// script for rght pagination
 	</script>
 	<script>
-		{% comment %} var page = 1; {% endcomment %}
 		var numberOfPages;
-		
+
 
 		document.addEventListener('DOMContentLoaded', () => {
 			// get general number of pages
@@ -367,6 +366,55 @@
 					});
 					// and lower
 				})
+		}
+
+		function changeWord(element) {
+			//console.log(element)
+			// hide label and show input or vice versa
+			toggleInput(element.dataset.id);
+			if (element.dataset['changemode'] == 'false') {
+				element.dataset['changemode'] = 'true';
+			}
+			else{
+				element.dataset['changemode'] = 'false';
+				saveWord(element.dataset.id);
+			}
+		}
+
+		function saveWord(id) {
+			let term = document.querySelector(`#term_input_${id}`).value;
+			let definition = document.querySelector(`#definition_input_${id}`).value;
+
+			console.log(term,definition);
+
+			document.querySelector(`#term_label_${id}`).innerHTML = term;
+			document.querySelector(`#definition_label_${id}`).innerHTML = definition;
+
+			//make post query to change the word in database
+			const url = location.href + '/changeWord';
+			fetch(url, {
+				method: 'POST',
+				body: JSON.stringify({
+					id: id,
+					term: term,
+					definition: definition
+				})
+			})
+			.then(response => response.json())
+			.then(result => {
+				console.log(result);
+			})
+		}
+
+		function toggleInput(id) {
+			//console.log(`term_label_${id}`);
+			// for term
+			document.querySelector(`#term_input_${id}`).classList.toggle('hidden');
+			document.querySelector(`#term_label_${id}`).classList.toggle('hidden');
+
+			// for definition
+			document.querySelector(`#definition_label_${id}`).classList.toggle('hidden');
+			document.querySelector(`#definition_input_${id}`).classList.toggle('hidden');
 		}
 
 		//  scripts for loading words 
@@ -401,12 +449,16 @@
 						// assign class word
 						div.classList.add('word');
 						div.innerHTML = `
-						<span class='term'>${word['term']}</span>
-						<span class='definition'>${word['definition']}</span>
+						<span class='term'>
+							<span id='term_label_${word['id']}'>${word['term']}</span>
+							<input id='term_input_${word['id']}' type='text' class='hidden' value=${word['term']} />
+						</span>
+						<span class='definition'>
+							<span id='definition_label_${word['id']}'>${word['definition']}</span>
+							<input id='definition_input_${word['id']}' type='text' class='hidden' value=${word['definition']} />
+						</span>
 						<span class='icons'>
-							<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
-							<img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
-							<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
+							<button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit word"></button>
 						</span>
 						`;
 

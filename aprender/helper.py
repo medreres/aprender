@@ -231,6 +231,24 @@ def getNumberOfPages(request, id):
     wordsPages = Paginator(allWords, WORDSPERPAGE)
     return JsonResponse({'numberOfPages': wordsPages.num_pages}, status=200)
 
+@csrf_exempt
+def changeWord(request,id):
+    body = json.loads(request.body)
+
+    # {'id': '53', 'term': 'coffe', 'definition': 'кава'}
+    try:
+        wordToChange = Word.objects.get(pk=body['id'])
+        
+        if (wordToChange.term == body['term'] and wordToChange.definition == body['definition']):
+            return JsonResponse({'success': 'word hasnt been changed'}, status=200)
+
+        wordToChange.term = body['term']
+        wordToChange.definition = body['definition']
+        wordToChange.save()
+    except:
+        return JsonResponse({'error': 'word couldnt be found'}, status=200)
+    return JsonResponse({'success': 'word changed successfully!'}, status=200)
+
 
 @login_required
 # if learning is finihsed, propose restart learning
