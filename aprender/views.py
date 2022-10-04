@@ -322,8 +322,5 @@ def getMultipleWord(words: list):
 def getTrueWord(words: list):
     randWord = getRandWord(words)
     # chose definition for true/false statemnt on random
-    if randint(0, 1) == 1:
-        wordDef = sample(words, 1)[0].definition
-    else:
-        wordDef = randWord.definition
-    return {'word': randWord.term, 'definition': wordDef, 'id': randWord.id}
+    faultyDef = sample([*words, randWord], 1)[0].definition
+    return {'word': randWord.term, 'definitionRandom': faultyDef, 'definitionTrue': randWord.definition, 'id': randWord.id}

@@ -37,6 +37,7 @@
         transition-duration: 1s;
         transition-property: background-color;
     }
+
     .answer:focus {
         content: none;
     }
@@ -79,7 +80,7 @@
         console.log(data.getAll('np'))
         return false;
     }
-    var numberOfWordsGeneral = '{{numberOfWordsGeneral}}';
+    var numberOfWordsGeneral = {{numberOfWordsGeneral}};
     var numberOfWordsCorrect = 0;
     var currentWord = 0;
 
@@ -114,8 +115,7 @@
                     element.classList.toggle('correct');
                     // console.log('correct');
                     numberOfWordsCorrect++;
-                }
-                else {
+                } else {
                     // console.log('incorrect');
                     element.classList.toggle('incorrect');
                 }
@@ -126,16 +126,6 @@
                     toggleNextDiv(currentWord + 1);
                     currentWord++;
                 }, 2000)
-
-                // element.addEventListener('transitionend', () => {
-                //     setTimeout(() => {
-
-
-
-
-                //     })
-                // }, 2000);
-
             })
     }
 
@@ -151,11 +141,15 @@
             let definition = document.querySelector(`input[name="written"][data-id="${evt.dataset.id}"]`);
             // console.log(definition);
             checkAnswer(definition);
-        }
-        else if (evt.name === 'multiple') {
-            document.querySelectorAll(`input[name="multiple"][data-id="${evt.dataset.id}"]`).forEach(element =>  element.classList.toggle('disabled'))
+        } else if (evt.name === 'multiple') {
+            document.querySelectorAll(`input[name="multiple"][data-id="${evt.dataset.id}"]`).forEach(element => element
+                .classList.toggle('disabled'))
             checkAnswer(evt);
-
+        } else if (evt.name === 'true') {
+            // console.log(evt.value);
+            document.querySelectorAll(`button[name="true"][data-id="${evt.dataset.id}"]`).forEach(element => element
+                .classList.toggle('disabled'))
+            checkAnswer(evt);
         }
     }
 
@@ -179,7 +173,7 @@ score{% endcomment %}
         <div class='word-container'>
             <span class='word'>{{word.word}}</span>
             {% if key == 'true' %}
-            means {{word.definition}}
+            means {{word.definitionRandom}}
             {% endif %}
             <div class='picture'></div>
         </div>
@@ -188,7 +182,6 @@ score{% endcomment %}
         <div class='definitions'>
             <!-- for each type of question different method is used -->
             {% if key == 'multiple' %}
-            <!-- TODO implelent mechanism for checking spelling with multiple questions -->
             {% for definition in word.definition %}
             <input type="button" class="btn btn-primary answer" data-id='{{word.id}}' value='{{definition}}'
                 name="multiple" onclick="checkWord(this);" />
@@ -198,12 +191,20 @@ score{% endcomment %}
             <input type="text" data-id='{{word.id}}' name='written' autocomplete="off">
             <button onclick="checkWord(this);" data-id="{{word.id}}" name="written"
                 class="btn btn-primary">Check</button>
-            {% else %}
+            {% elif key == 'true' %}
             <!-- TODO implement mechanism for checking via true/false -->
-            <button type="button" class="btn btn-primary answer" data-id='{{word.id}}'
-                data-definition="{{word.definition}}">True</button>
-            <button type="button" class="btn btn-primary answer" data-id='{{word.id}}'
-                data-definition="{{word.definition}}">False</button>
+            {% comment %} {{word.definition}} {% endcomment %}
+            {% if word.definitionRandom == word.definitionTrue %}
+            <button type="button" name="true" class="btn btn-primary answer" data-id='{{word.id}}'
+                value="{{word.definitionTrue}}" onclick="checkWord(this);">True</button>
+            <button type="button" name="true" class="btn btn-primary answer" data-id='{{word.id}}' value=""
+                onclick="checkWord(this);">False</button>
+            {% else %}
+            <button type="button" name="true" class="btn btn-primary answer" data-id='{{word.id}}'
+                value="{{word.definitionRandom}}" onclick="checkWord(this);">True</button>
+            <button type="button" name="true" class="btn btn-primary answer" data-id='{{word.id}}'
+                value="{{word.definitionTrue}}" onclick="checkWord(this);">False</button>
+            {% endif %}
             {% endif %}
         </div>
     </div>
