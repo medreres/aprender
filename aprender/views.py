@@ -227,8 +227,10 @@ def learn(request, id):
 
 def test(request, id):
     form = TestForm(request.GET)
+    # TODO
     if form.is_valid():
-        messages.warning(request, 'Form is not valid')
+        pass
+        # messages.warning(request, 'Form is not valid')
 
     # {'questionTypes': ['written', 'matching', 'multiple', 'true'], 'questionLimit': 10, 'starredTerms': 'starred', 'showImages': False}
 

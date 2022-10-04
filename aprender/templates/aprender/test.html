@@ -103,12 +103,12 @@
         // console.log(element.value)
         // console.log(path);
         fetch(path, {
-            method: 'POST',
-            body: JSON.stringify({
-                'id': element.dataset.id,
-                'definition': element.value
+                method: 'POST',
+                body: JSON.stringify({
+                    'id': element.dataset.id,
+                    'definition': element.value
+                })
             })
-        })
             .then(response => response.json())
             .then(result => {
                 if (result['answer'] === true) {
@@ -122,15 +122,26 @@
 
 
                 setTimeout(() => {
-                    toggleNextDiv(currentWord);
-                    toggleNextDiv(currentWord + 1);
-                    currentWord++;
+                    if (currentWord != numberOfWordsGeneral - 1) {
+                        toggleNextDiv(currentWord);
+                        toggleNextDiv(currentWord + 1);
+                        currentWord++;
+                    } else {
+                        toggleFinishMenu();
+                    }
                 }, 2000)
             })
     }
 
     function toggleNextDiv(id) {
         document.querySelector(`#id_${id}`).classList.toggle('hidden');
+    }
+
+    function toggleFinishMenu() {
+        document.querySelector('#result').classList.toggle('hidden');
+        document.querySelector('#wordsSection').classList.toggle('hidden');
+        document.querySelector('#resultStat').innerHTML = `${numberOfWordsCorrect}/${numberOfWordsGeneral}<br/>
+        ${100 * numberOfWordsCorrect / numberOfWordsGeneral}%`;
     }
 
 
@@ -163,7 +174,7 @@
 {% comment %} TODO show one after another all the divs, check their answer , at the end show end menu with
 score{% endcomment %}
 {% block body %}
-<section>
+<section id='wordsSection'>
     {% csrf_token %}
     {% comment %} each word has it's keys: word, definition, id {% endcomment %}
     {% for key,value in questions.items %}
@@ -216,7 +227,7 @@ score{% endcomment %}
 <section id='result' class="hidden">
 
     <h2>Result</h2>
-
+    <span id='resultStat'></span>
 
 </section>
 {% endblock %}
