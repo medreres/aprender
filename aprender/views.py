@@ -15,7 +15,7 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit
 
 # Create your views here.
 
@@ -326,3 +326,9 @@ def getTrueWord(words: list):
     # chose definition for true/false statemnt on random
     faultyDef = sample([*words, randWord], 1)[0].definition
     return {'word': randWord.term, 'definitionRandom': faultyDef, 'definitionTrue': randWord.definition, 'id': randWord.id}
+
+# TODO
+def match(request,id):
+    return render(request, 'aprender/match.html',{
+        'id': id
+    })

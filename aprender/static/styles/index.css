@@ -1,3 +1,7 @@
+body {
+    background-color: grey !important;
+}
+
 #setsButton:hover,
 #foldersButton:hover {
     cursor: pointer;

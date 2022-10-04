@@ -9,7 +9,9 @@ from django.contrib import messages
 from random import randint, sample, shuffle
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 WORDSPERSET = 10
+WORDSPERPAGE = 10
 
 
 # fetch sets via ajax
@@ -20,12 +22,14 @@ def fetchSets(request, user):
 
 # fetch folde via ajax
 
+
 @login_required
 def fetchFolders(request, user):
     folders = Folder.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([folder.serialize() for folder in folders], safe=False)
 
 # create learn path for user
+
 
 @login_required
 def createLearnPath(request, id):
@@ -45,6 +49,7 @@ def createLearnPath(request, id):
     newPath.poorKnown.add(*setToLearn[0].words.all())
 
     return JsonResponse({'success': "Learn Path successfully created!"})
+
 
 @login_required
 def nextWord(request, id):
@@ -99,8 +104,9 @@ def prevWord(request, id):
 
     return JsonResponse({'word': learnPath.lastWord.term, 'definition': learnPath.lastWord.definition, 'index': indexOfWord + 1, 'allWordsCount': len(allWords)}, status=200)
 
+
 @login_required
-def getWords(request, id,numberOfWords=10):
+def getWords(request, id, numberOfWords=10):
     """getWord() sends a list of n(numberOfwords) words, if availble, or all the words left in one of the sets(poorKnown or intermediateKnown)"""
 
     # find the learnpath in database
@@ -110,7 +116,6 @@ def getWords(request, id,numberOfWords=10):
     if learnPath.set.words.count() == learnPath.wellKnown.count():
         return JsonResponse({'finish': 'The learn way is finished'}, status=200)
 
-
     # if poorknown set is empty, take word from intermediate
     if learnPath.poorKnown.count() > 0:
         studySet = learnPath.poorKnown
@@ -118,7 +123,8 @@ def getWords(request, id,numberOfWords=10):
         studySet = learnPath.intermediateKnown
 
     # get a list of words from the set available
-    numberOfWordsToStudy = numberOfWords if studySet.count() > numberOfWords else studySet.count()
+    numberOfWordsToStudy = numberOfWords if studySet.count(
+    ) > numberOfWords else studySet.count()
 
     # list of words to be studied
     wordsToStudy = []
@@ -198,6 +204,24 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
         learnPath.intermediateKnown.remove(word)
         learnPath.poorKnown.add(word)
 
+
+@csrf_exempt
+def getWordsToEdit(request, id):
+    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
+    allWords = [*learnPath.set.words.all()]
+
+    # get number of page needed via ajax
+    body = json.loads(request.body)
+    pageNumber = body['page']
+
+    # create instance of paginaotr
+    #? could be saved in cache
+    wordsPages = Paginator(allWords, WORDSPERPAGE)
+    page = wordsPages.page(pageNumber).object_list
+    # print(wordsPages.page(2).object_list)
+    return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
+
+
 @login_required
 # if learning is finihsed, propose restart learning
 def restartLearnWay(request, id):
@@ -206,7 +230,7 @@ def restartLearnWay(request, id):
     # remove all words from wellknown set
     for word in learnPath.wellKnown.all():
         learnPath.wellKnown.remove(word)
-        
+
     # add those words to poorknown
     learnPath.poorKnown.add(*learnPath.set.words.all())
     return JsonResponse({'success': 'Learn Way successfully restarted!'})

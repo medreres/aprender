@@ -80,10 +80,10 @@
 		carousel.prev();
 	}
 </script>
-
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js" />
 {% endblock head %}
 {% block body %}
-<section class='set'>
+<article class='set'>
 	<h1>{{set.label}}</h1>
 	<div class="menuContainer">
 		<a type="button" class="btn btn-primary" href="{% url 'flashcards' id %}">Flashcards</a>
@@ -223,7 +223,8 @@
 				</div>
 			</div>
 		</div>
-		<button type="button" class="btn btn-primary">Match</button>
+		{% comment %} TODO {% endcomment %}
+		{% comment %} <a type="button" class="btn btn-primary" href="{% url 'match' id %}">Match</a> {% endcomment %}
 		<hr class="dropdown-divider">
 		<!-- carousel for taking look at cards with words -->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
@@ -273,12 +274,151 @@
 		{% endif %}
 	</div>
 	<hr class="dropdown-divider">
-	<div>
-		Created by user, his photo, at the reight icons for adding this set fo a folder, editing the set or sharing
-	</div>
-	<div>
-		here start sections with cards , words on them, pagintaion for 10-15 carcs per page, search bar
-		Each card must have word, definitoin, button to add to favorites, edit btn, photo (optional)
-	</div>
-</section>
+	<style>
+		#author-info {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		span>p {
+			margin-bottom: 0px;
+		}
+
+		.profile-pic {
+			height: 48px;
+			width: 48px;
+			margin-right: 10px;
+		}
+
+		.icon {
+			height: 32px;
+			width: 32px;
+		}
+
+		#author {
+			display: flex
+		}
+
+		.word {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			border: 1px solid black;
+			background-color: blue;
+			padding: 10px;
+			margin: 10px 0;
+		}
+	</style>
+	<section id="author-info">
+		<!-- INFO ABOUT CREATOR -->
+		<!-- TODO add icons for users and use their own icons  -->
+		<div id='author'>
+			<img src="{% static 'icons/user.png' %}" alt="" class="profile-pic">
+			<span>
+				<p>Created by</p>
+				<strong>{{set.author}}</strong>
+			</span>
+		</div>
+		<span>
+			<!-- icons for adding set to folder,editing,sharing -->
+			<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
+			<img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
+			<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
+		</span>
+	</section>
+	{% comment %} here start all the terms with their definition with ability to edit them via ajax {% endcomment %}
+	<script>
+
+		document.addEventListener('DOMContentLoaded', () => {
+			// load first page of words initially
+			getWords();
+		})
+		var page = 1;
+		//  scripts for loading words 
+		function getWords() {
+			const url = location.href + '/getWordsToEdit';
+			fetch(url, {
+					method: 'POST',
+					body: JSON.stringify({
+						page: page
+					})
+				})
+				.then(response => response.json())
+				.then(result => {
+					// process all words and add them to the page
+
+					/* 
+					<div class='word'>
+						<span class='term'>Table</span>
+						<span class='definition'>Стіл</span>
+						<span class='icons'>
+							<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
+							<img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
+							<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
+						</span>
+					</div>
+					*/
+					let container = document.querySelector('#wordsContainer');
+					result['words'].forEach(word => {
+						let div = document.createElement('div');
+						// assign class word
+						div.classList.add('word');
+						div.innerHTML = `
+						<span class='term'>${word['term']}</span>
+						<span class='definition'>${word['definition']}</span>
+						<span class='icons'>
+							<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
+							<img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
+							<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
+						</span>
+						`;
+
+
+						container.append(div);
+						// wordsContainer
+					})
+				})
+		}
+	</script>
+	<article id='words'>
+		<h2>Terms in this set</h2>
+		{% comment %} TODO query django paginator to find out how many pages set contains, create appropriate nubmer of pages {% endcomment %}
+		<nav>
+			<ul class="pagination">
+				<li class="page-item disabled">
+					<a class="page-link" href="#" tabindex="-1">Previous</a>
+				</li>
+				<li class="page-item active"><a class="page-link" href="#">1</a></li>
+				<li class="page-item ">
+					<a class="page-link" href="#">2</a>
+				</li>
+
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item">
+					<a class="page-link" href="#">Next</a>
+				</li>
+			</ul>
+		</nav>
+		<section id='wordsContainer'>
+		</section>
+		<nav aria-label="...">
+			<ul class="pagination">
+				<li class="page-item disabled">
+					<a class="page-link" href="#" tabindex="-1">Previous</a>
+				</li>
+				<li class="page-item active"><a class="page-link" href="#">1</a></li>
+				<li class="page-item ">
+					<a class="page-link" href="#">2</a>
+				</li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item">
+					<a class="page-link" href="#">Next</a>
+				</li>
+			</ul>
+		</nav>
+	</article>
+</article>
 {% endblock body %}

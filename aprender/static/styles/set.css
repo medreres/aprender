@@ -57,7 +57,8 @@
 
 .set {
     display: block;
-    margin-left: 10vw;
+    /* margin-left: 5vw; */
+    margin: 0 3em;
 }
 
 .blur {
