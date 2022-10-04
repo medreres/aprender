@@ -1,0 +1,3 @@
+[submodule "aprender/static/plugins/twbs-pagination"]
+	path = aprender/static/plugins/twbs-pagination
+	url = https://github.com/josecebe/twbs-pagination
