@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 from random import randint, sample, shuffle
 from secrets import randbelow
 from django.db import IntegrityError
@@ -19,16 +20,21 @@ from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentW
 
 
 def index(request):
-    # messages.success(request, "Success message")
-    # recentSets = []
-    # if request.user.is_authenticated:
-    #     recentSets = request.user.recentSets[:6]
+    if request.user.is_authenticated:
+        # get list of recent items in json
+        recentSetsId = request.user.recentSetsJson
+        # parse it into list
+        try:
+            recentSetsId = json.loads(recentSetsId)
+            recentSets = Set.objects.filter(pk__in=recentSetsId)
+        except:
+            recentSets = None
     
     # print(recentSets)
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
         'CreateFolder': CreateFolder(),
-        # 'recentSets':  recentSets
+        'recentSets':  recentSets if request.user.is_authenticated else None
     })
 
 
@@ -174,8 +180,27 @@ def set(request, id):
 
     set =  Set.objects.get(pk=id).serialize()
 
-    recentSets = request.user.recentSets
-    print(recentSets)
+    # recentSets = request.user.recentSets
+    # print(json.loads(recentSets))
+    
+    # print(json.dumps([1,3,], separators=(',',';')))
+
+
+    # get recentSets from user, parse it, add or move, parse back to json and save
+    
+    recentSetsid = json.loads(request.user.recentSetsJson)
+    
+    if id in recentSetsid:
+        recentSetsid.insert(0, recentSetsid.pop(recentSetsid.index(id)))
+    else:
+        recentSetsid.insert(0, id)
+    recentSetsid = json.dumps(recentSetsid)
+    user = User.objects.get(pk=request.user.id)
+    user.recentSetsJson=recentSetsid
+    user.save()
+    
+
+    # recentSets.append(set)
 
     return render(request, 'aprender/set.html', {
         'set':set,

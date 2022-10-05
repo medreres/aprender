@@ -1,3 +1,4 @@
+from email.policy import default
 from multiprocessing import AuthenticationError
 from re import T
 from django.db import models
@@ -9,8 +10,8 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     favoriteSets = models.ManyToManyField('Set', blank=True)
     favoriteFolders = models.ManyToManyField('Folder', blank=True)
-    # recentSets stores id of sets recently visited to be shown on main
-    recentSets = []
+    # recentSets stores id of sets recently visited to be shown on main, stored as JSON
+    recentSetsJson = models.CharField(max_length=64, default='[]')
     # ? could be better?
     # implement back end algorithm for learning words via card
     # the main goal is to separe words into 3 categories: well-known, intermediate and poor-known
