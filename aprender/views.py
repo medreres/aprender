@@ -15,7 +15,7 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord,deleteWord
 
 # Create your views here.
 
@@ -330,5 +330,10 @@ def getTrueWord(words: list):
 # TODO
 def match(request,id):
     return render(request, 'aprender/match.html',{
+        'id': id
+    })
+
+def edit(request,id):
+    return render(request, 'aprender/edit.html', {
         'id': id
     })

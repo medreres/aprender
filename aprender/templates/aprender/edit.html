@@ -1,0 +1,302 @@
+{% extends 'aprender/index.html' %}
+{% load static %}
+{% block head %}
+{% endblock head %}
+{% block body %}
+<p>this is editting of the set {{id}}</p>
+<style>
+    #author-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    span>p {
+        margin-bottom: 0px;
+    }
+
+    .profile-pic {
+        height: 48px;
+        width: 48px;
+        margin-right: 10px;
+    }
+
+    .icon {
+        height: 32px;
+        width: 32px;
+    }
+
+    #author {
+        display: flex
+    }
+
+    .word {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        border: 1px solid black;
+        background-color: blue;
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .createBtn:hover {
+        cursor: pointer;
+    }
+</style>
+<script>
+    // for assigning id for divs with words
+    var id = 1;
+
+    function addField() {
+        let termContainer = document.querySelector('#wordsContainer');
+        termContainer.append(createField())
+        toggleInput(id - 1);
+        return false;
+    }
+
+    function deleteWord(element) {
+        //make post query to change the word in database
+        let div = document.querySelector(`div[id=word_${element.id}]`)
+        let dataId = div.dataset.id;
+        console.log(dataId)
+        // if word is freshly added and hasn't been saved, then its not in database yet
+        if (div.dataset.id) {
+            const url = new URL(location.href);
+            const setId = '{{id}}';
+            const path = `${url.origin}/sets/${setId}/deleteWord`;
+            fetch(path, {
+                method: "POST",
+                body: JSON.stringify({
+                    id: dataId
+                })
+            })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                })
+        }
+        div.remove();
+
+        // const url = new URL(location.href);
+        // const setId = '{{id}}';
+        // const path = `${url.origin}/sets/${setId}/changeWord`;
+        // fetch(path, {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         id: id,
+        //         term: term,
+        //         definition: definition
+        //     })
+        // })
+        //     .then(response => response.json())
+        //     .then(result => {
+        //         console.log(result);
+        //     })
+    }
+    function createField() {
+
+
+        let div = document.createElement('div');
+        // assign class word
+        div.classList.add('word');
+        div.id = `word_${id}`;
+        div.innerHTML = `
+                    <span class='term'>
+                        ${id}
+                        <span id='term_label_${id}'></span>
+                        <input id='term_input_${id}' type='text' class='hidden' value=>
+                    </span>
+                    <span class='definition'>
+                        <span id='definition_label_${id}'></span>
+                        <input id='definition_input_${id}' type='text' class='hidden' value=>
+                    </span>
+                    <span class='icons'>
+                        <button data-changemode=true id=${id} data-id=${id} onclick='changeWord(this);'><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit word"></button>
+                        <button  onclick='deleteWord(this);' id=${id} data-id=${id}><img src="{% static 'icons/delete.png' %}" class="icon" alt="Delete word"></button>
+                    </span>
+                    `;
+        id++;
+
+        // make deep copy of node
+        // let termDefinitionNodeCopy = termDefinitionNode.cloneNode(true);
+
+        // // change IDs appropriately, clean input 
+        // let termField = termDefinitionNodeCopy.querySelector('#term_label_0');
+        // termField.id = `term_label_${id}`;
+        // termField.value = '';
+        // termField.required = '';
+
+        // let definitionField = termDefinitionNodeCopy.querySelector('#definition_label_0');
+        // definitionField.id = `#definition_label_${id}`;
+        // definitionField.value = '';
+        // definitionField.required = '';
+
+        // termDefinitionNodeCopy.id = id;
+
+        // // increment id for next possible fields
+        // id++;
+
+
+        // // create cross-sign button to delete if not needed
+        // let crossSign = document.createElement('span');
+        // let crossIcon = document.createElement('img');
+        // // add src and click event to delete 
+        // crossIcon.src = "{% static 'icons/close.png' %}";
+        // crossIcon.classList.add('closeBtn');
+        // crossSign.append(crossIcon);
+        // termDefinitionNodeCopy.append(crossSign);
+        // crossSign.onclick = () => {
+        //     termDefinitionNodeCopy.remove();
+        // }
+
+        // return ready to use node
+        return div;
+    }
+
+    function changeWord(element) {
+        console.log(element)
+        // hide label and show input or vice versa
+        toggleInput(element.dataset.id);
+        if (element.dataset['changemode'] == 'false') {
+            element.dataset['changemode'] = 'true';
+        } else {
+            element.dataset['changemode'] = 'false';
+            saveWord(element.dataset.id);
+        }
+    }
+
+    function saveWord(id) {
+        let term = document.querySelector(`#term_input_${id}`).value;
+        let definition = document.querySelector(`#definition_input_${id}`).value;
+
+        console.log(term, definition);
+
+        document.querySelector(`#term_label_${id}`).innerHTML = term;
+        document.querySelector(`#definition_label_${id}`).innerHTML = definition;
+
+        //make post query to change the word in database
+        const url = new URL(location.href);
+        const setId = '{{id}}';
+        const path = `${url.origin}/sets/${setId}/changeWord`;
+        fetch(path, {
+            method: 'POST',
+            body: JSON.stringify({
+                id: id,
+                term: term,
+                definition: definition
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                if ('id' in result) {
+                    console.log('word saved')
+                    // TODO bug with editing new made word
+                    //document.querySelectorAll(`.icons > button[dataset-id=${id}`).forEach(element => element.dataset.id = result['id'])
+
+                }
+            })
+    }
+
+    function toggleInput(id) {
+        //console.log(`term_label_${id}`);
+        // for term
+        document.querySelector(`#term_input_${id}`).classList.toggle('hidden');
+        document.querySelector(`#term_label_${id}`).classList.toggle('hidden');
+
+        // for definition
+        document.querySelector(`#definition_label_${id}`).classList.toggle('hidden');
+        document.querySelector(`#definition_input_${id}`).classList.toggle('hidden');
+    }
+
+    var termDefinitionNode;
+    document.addEventListener('DOMContentLoaded', () => {
+        loadWords();
+        termDefinitionNode = document.querySelector('.word');
+    })
+
+    function loadWords() {
+        //console.log('loading function loadPage;')
+        //console.log('Page number ' + i);
+        const url = new URL(location.href);
+        const setId = '{{id}}';
+        const path = `${url.origin}/sets/${setId}/getWordsToEdit`;
+        fetch(path, {
+            method: 'POST',
+            body: JSON.stringify({
+                wordsPerPage: 'all'
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                /*  process all words and add them to the page
+                    <div class='word'>
+                        <span class='term'>Table</span>
+                        <span class='definition'>Стіл</span>
+                        <span class='icons'>
+                            <img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
+                            <img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
+                            <img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
+                        </span>
+                    </div> 
+
+                    // ! temprorary DELETE!
+                    <div class='term-definition' id="0">
+                        <label for=""> Term
+                            {{CreateSet.words}}
+                        </label>
+                        <label for=""> definition
+                            {{CreateSet.definitions}}
+                        </label>
+                    </div>
+
+                */
+
+
+                let container = document.querySelector('#wordsContainer');
+                container.innerHTML = '';
+                result['words'].forEach((word) => {
+                    let div = document.createElement('div');
+                    // assign class word
+                    div.classList.add('word');
+                    div.id = `word_${id}`;
+                    div.dataset.id = word['id']
+                    div.innerHTML = `
+                    <span class='term'>
+                        ${id}
+                        <span id='term_label_${word['id']}'>${word['term']}</span>
+                        <input id='term_input_${word['id']}' type='text' class='hidden' value=${word['term']} />
+                    </span>
+                    <span class='definition'>
+                        <span id='definition_label_${word['id']}'>${word['definition']}</span>
+                        <input id='definition_input_${word['id']}' type='text' class='hidden' value=${word['definition']} />
+                    </span>
+                    <span class='icons'>
+                        <button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit word"></button>
+                        <button  onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="{% static 'icons/delete.png' %}" class="icon" alt="Delete word"></button>
+                    </span>
+                    `;
+                    id++;
+
+                    container.append(div);
+                    // wordsContainer
+                })
+                // let div = document.createElement('div');
+                //div.innerHTML = 'Create Card';
+                //div.classList.add('word');
+                //container.append(div);
+            })
+    }
+</script>
+<label for="setLabel">Set Label
+    <input type="text" name="set label" id="setLabel">
+</label>
+<label for="setDescription">Set Description
+    <input type="text" name="set description" id="setDescription">
+</label>
+<section id='wordsContainer'>
+</section>
+<div class='word createBtn' onclick="return addField();">Create Card</div>
+<a type="button" class="btn btn-primary" href={% url 'set' id%}>Done</a>
+{% endblock body %}

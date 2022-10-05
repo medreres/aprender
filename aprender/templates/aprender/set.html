@@ -324,7 +324,7 @@
 		<span>
 			<!-- icons for adding set to folder,editing,sharing -->
 			<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
-			<img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set">
+			<a href="{% url 'edit' id %}"><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set"></a>
 			<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
 		</span>
 	</section>
@@ -425,7 +425,8 @@
 			fetch(url, {
 					method: 'POST',
 					body: JSON.stringify({
-						page: i
+						page: i,
+						wordsPerPage: 'default'
 					})
 				})
 				.then(response => response.json())

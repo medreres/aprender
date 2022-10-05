@@ -212,14 +212,18 @@ def getWordsToEdit(request, id):
 
     # get number of page needed via ajax
     body = json.loads(request.body)
-    pageNumber = body['page']
-
-    # create instance of paginaotr
-    # ? could be saved in cache
-    wordsPages = Paginator(allWords, WORDSPERPAGE)
-    page = wordsPages.page(pageNumber).object_list
-    # print(wordsPages.page(2).object_list)
-    return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
+    # if request made from set main page, then load 10 words per page
+    if body['wordsPerPage'] == 'default':
+        pageNumber = body['page']
+        # create instance of paginaotr
+        # ? could be saved in cache
+        wordsPages = Paginator(allWords, WORDSPERPAGE)
+        page = wordsPages.page(pageNumber).object_list
+        # print(wordsPages.page(2).object_list)
+        return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
+    # else if in edit mode, load all words
+    elif body['wordsPerPage'] == 'all':
+        return JsonResponse({'words': [word.serialize() for word in allWords]}, status=200)
 
 
 def getNumberOfPages(request, id):
@@ -231,23 +235,34 @@ def getNumberOfPages(request, id):
     wordsPages = Paginator(allWords, WORDSPERPAGE)
     return JsonResponse({'numberOfPages': wordsPages.num_pages}, status=200)
 
+
 @csrf_exempt
-def changeWord(request,id):
+def changeWord(request, id):
     body = json.loads(request.body)
 
     # {'id': '53', 'term': 'coffe', 'definition': 'кава'}
     try:
+        # user is changing existing word
         wordToChange = Word.objects.get(pk=body['id'])
-        
+
         if (wordToChange.term == body['term'] and wordToChange.definition == body['definition']):
             return JsonResponse({'success': 'word hasnt been changed'}, status=200)
 
         wordToChange.term = body['term']
         wordToChange.definition = body['definition']
         wordToChange.save()
+        return JsonResponse({'success': 'word changed successfully!'}, status=200)
     except:
-        return JsonResponse({'error': 'word couldnt be found'}, status=200)
-    return JsonResponse({'success': 'word changed successfully!'}, status=200)
+        # user is adding new word
+        print(body)
+        newWord = Word.objects.create(
+            term=body['term'], definition=body['definition'])
+        learnPath = LearnWay.objects.filter(
+            author=request.user).get(set__pk=id)
+        # TODO create model for notstarred word and add there instead
+        learnPath.set.words.add(newWord)
+
+        return JsonResponse({'success': 'Word added successfully!', 'id': newWord.id}, status=200)
 
 
 @login_required
@@ -262,3 +277,14 @@ def restartLearnWay(request, id):
     # add those words to poorknown
     learnPath.poorKnown.add(*learnPath.set.words.all())
     return JsonResponse({'success': 'Learn Way successfully restarted!'})
+
+@csrf_exempt
+def deleteWord(request,id):
+    body = json.loads(request.body)
+    print(body['id'])
+    # {'id': '53', 'term': 'coffe', 'definition': 'кава'}
+    # user is changing existing word
+    wordToChange = Word.objects.get(pk=body['id'])
+    print('delete', wordToChange)
+    wordToChange.delete()
+    return JsonResponse({'success': 'word deleted successfully!'}, status=200)
