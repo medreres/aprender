@@ -1,0 +1,21 @@
+{% extends 'aprender/index.html' %}
+{% load static %}
+{% block head %}
+{% endblock head %}
+{% block body %}
+{% for set in result %}
+<a class='set' href={% url 'set' set.id%}>
+    <div class='set-info'>
+        <span>
+            <span> {{set.label}}</span>
+            <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+        </span>
+        <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+    </div>
+    <div style=''>
+        <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+        <span>{{set.author}}</span>
+    </div>
+</a>
+{% endfor %}
+{% endblock body %}

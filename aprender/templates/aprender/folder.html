@@ -1,0 +1,59 @@
+{% extends 'aprender/index.html' %}
+{% block head %}
+{% endblock head %}
+{% block body %}
+<section>
+    {{folder.label}}
+    TODO fodler blabla finish when back end is ready
+</section>
+<section>
+    {% if not folder.sets %}
+    <p>It seems that any sets are in folder yet!</p>
+
+    <script>
+
+    </script>
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+        onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>
+        Add Set
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Add a Set</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h3>Recent sets</h3>
+                    <div id='sets'>
+
+                    </div>
+                </div>
+                {% comment %} <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Understood</button>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    TODO
+    add here all the sets in the folder
+    {% comment %} {% for key in folder %}
+    {{value}}
+    {{set}}
+    {% endfor %}{% endcomment %}
+    {% endif %}
+
+    <h3>{{folder}}</h3>
+    {% for set in folder.sets %}
+    {{set}}
+    {% endfor %}
+
+</section>
+{% endblock body %}

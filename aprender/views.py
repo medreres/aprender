@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet
 
 # Create your views here.
 
@@ -246,7 +246,17 @@ def folders(request, user):
 
 @login_required
 def folder(request, id):
-    return HttpResponse("TODO")
+    try:
+        folder = Folder.objects.get(pk=id)
+    except:
+        # TODO folder is not found
+        return HttpResponseRedirect(reverse('index'))
+
+        
+    return render(request, 'aprender/folder.html', {
+        'folder': folder.serialize(),
+    })
+    
 
 
 @login_required

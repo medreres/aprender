@@ -13,11 +13,24 @@ from django.core.paginator import Paginator
 WORDSPERSET = 10
 WORDSPERPAGE = 10
 
+# add set to folder
+@csrf_exempt
+def addSet(request,id):
+    body = json.loads(request.body)
+    #{'folderId': '11', 'setId': 23}
+    try:
+        folder = Folder.objects.get(pk=body['folderId'])
+        folder.sets.add(Set.objects.get(pk=body['setId']))
+        print(body)
+    except:
+        # TODO
+        pass
+    return JsonResponse({'success': 'set was added successfully!'}, status=200)
 
 # fetch sets via ajax
 @login_required
 def fetchSets(request, user):
-    sets = Set.objects.filter(author=User.objects.get(username=user))[:3]
+    sets = Set.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
 # fetch folde via ajax
@@ -25,7 +38,7 @@ def fetchSets(request, user):
 
 @login_required
 def fetchFolders(request, user):
-    folders = Folder.objects.filter(author=User.objects.get(username=user))[:3]
+    folders = Folder.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([folder.serialize() for folder in folders], safe=False)
 
 # create learn path for user
