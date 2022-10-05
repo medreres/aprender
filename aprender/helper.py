@@ -17,7 +17,7 @@ WORDSPERPAGE = 10
 # fetch sets via ajax
 @login_required
 def fetchSets(request, user):
-    sets = Set.objects.filter(author=User.objects.get(username=user))
+    sets = Set.objects.filter(author=User.objects.get(username=user))[:3]
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
 # fetch folde via ajax
@@ -25,7 +25,7 @@ def fetchSets(request, user):
 
 @login_required
 def fetchFolders(request, user):
-    folders = Folder.objects.filter(author=User.objects.get(username=user))
+    folders = Folder.objects.filter(author=User.objects.get(username=user))[:3]
     return JsonResponse([folder.serialize() for folder in folders], safe=False)
 
 # create learn path for user
@@ -278,8 +278,9 @@ def restartLearnWay(request, id):
     learnPath.poorKnown.add(*learnPath.set.words.all())
     return JsonResponse({'success': 'Learn Way successfully restarted!'})
 
+
 @csrf_exempt
-def deleteWord(request,id):
+def deleteWord(request, id):
     body = json.loads(request.body)
     print(body['id'])
     # {'id': '53', 'term': 'coffe', 'definition': 'кава'}

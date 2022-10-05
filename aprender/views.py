@@ -14,12 +14,16 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.db.models import Count
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord
 
 # Create your views here.
 
 
 def index(request):
+
+
+    allSets = Set.objects.all()
     if request.user.is_authenticated:
         # get list of recent items in json
         recentSetsId = request.user.recentSetsJson
@@ -34,7 +38,8 @@ def index(request):
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
         'CreateFolder': CreateFolder(),
-        'recentSets':  recentSets if request.user.is_authenticated else None
+        'recentSets':  recentSets if request.user.is_authenticated else None,
+        'allSets': allSets
     })
 
 
@@ -76,7 +81,7 @@ def logoutUser(request):
 
 
 def register(request):
-    if request.user:
+    if request.user.is_authenticated:
         messages.warning(request, 'You are already logged!')
         return HttpResponseRedirect(reverse('index'))
 
@@ -186,18 +191,19 @@ def set(request, id):
     # print(json.dumps([1,3,], separators=(',',';')))
 
 
-    # get recentSets from user, parse it, add or move, parse back to json and save
+    # get recentSets from user, parse it, add or move, parse back to json and save  
+    if request.user.is_authenticated:
     
-    recentSetsid = json.loads(request.user.recentSetsJson)
-    
-    if id in recentSetsid:
-        recentSetsid.insert(0, recentSetsid.pop(recentSetsid.index(id)))
-    else:
-        recentSetsid.insert(0, id)
-    recentSetsid = json.dumps(recentSetsid)
-    user = User.objects.get(pk=request.user.id)
-    user.recentSetsJson=recentSetsid
-    user.save()
+        recentSetsid = json.loads(request.user.recentSetsJson)
+        
+        if id in recentSetsid:
+            recentSetsid.insert(0, recentSetsid.pop(recentSetsid.index(id)))
+        else:
+            recentSetsid.insert(0, id)
+        recentSetsid = json.dumps(recentSetsid)
+        user = User.objects.get(pk=request.user.id)
+        user.recentSetsJson=recentSetsid
+        user.save()
     
 
     # recentSets.append(set)

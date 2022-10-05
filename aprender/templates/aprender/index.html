@@ -46,6 +46,7 @@
             color: black;
             border-bottom: 3px solid transparent;
         }
+
         .set:hover {
             color: black;
             cursor: pointer;
@@ -336,6 +337,7 @@
     {% bootstrap_messages %}
 
     {% block body %}
+    {% if user.is_authenticated %}
     <h1>Recent Sets Studied</h1>
     <div class='recentSet'>
         {% for set in recentSets %}
@@ -351,10 +353,27 @@
                 <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
                 <span>{{set.author}}</span>
             </div>
-
         </a>
         {% endfor %}
-
+    </div>
+    {% endif %}
+    <h2>All sets</h2>
+    <div class='recentSet'>
+        {% for set in allSets %}
+        <a class='set' href={% url 'set' set.id%}>
+            <div class='set-info'>
+                <span>
+                    <span> {{set.label}}</span>
+                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+                </span>
+                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+            </div>
+            <div style=''>
+                <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                <span>{{set.author}}</span>
+            </div>
+        </a>
+        {% endfor %}
     </div>
     {% endblock body %}
 </body>
