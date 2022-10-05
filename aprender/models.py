@@ -9,12 +9,17 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     favoriteSets = models.ManyToManyField('Set', blank=True)
     favoriteFolders = models.ManyToManyField('Folder', blank=True)
+    # recentSets stores id of sets recently visited to be shown on main
+    recentSets = []
     # ? could be better?
     # implement back end algorithm for learning words via card
     # the main goal is to separe words into 3 categories: well-known, intermediate and poor-known
     # if user gives the right answer for the same words 2 times in a row, the word acquires a higher state
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
+
+
+
 class LearnWay(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     set = models.ForeignKey('Set', on_delete=models.Case, null=True)

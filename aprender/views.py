@@ -1,6 +1,4 @@
 from datetime import datetime
-from doctest import debug_script
-from operator import is_
 from random import randint, sample, shuffle
 from secrets import randbelow
 from django.db import IntegrityError
@@ -15,16 +13,22 @@ from django.contrib import messages  # import messages
 from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord,deleteWord
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord
 
 # Create your views here.
 
 
 def index(request):
     # messages.success(request, "Success message")
+    # recentSets = []
+    # if request.user.is_authenticated:
+    #     recentSets = request.user.recentSets[:6]
+    
+    # print(recentSets)
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
-        'CreateFolder': CreateFolder()
+        'CreateFolder': CreateFolder(),
+        # 'recentSets':  recentSets
     })
 
 
@@ -164,12 +168,17 @@ def sets(request, user):
 
 def set(request, id):
     # find out if user has already started learning way
-    print('SET')
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
 
+
+    set =  Set.objects.get(pk=id).serialize()
+
+    recentSets = request.user.recentSets
+    print(recentSets)
+
     return render(request, 'aprender/set.html', {
-        'set': Set.objects.get(pk=id).serialize(),
+        'set':set,
         'learnStarted': learnStarted,
         'id': id,
         'LoginForm': LoginForm(),
@@ -328,12 +337,15 @@ def getTrueWord(words: list):
     return {'word': randWord.term, 'definitionRandom': faultyDef, 'definitionTrue': randWord.definition, 'id': randWord.id}
 
 # TODO
-def match(request,id):
-    return render(request, 'aprender/match.html',{
+
+
+def match(request, id):
+    return render(request, 'aprender/match.html', {
         'id': id
     })
 
-def edit(request,id):
+
+def edit(request, id):
     return render(request, 'aprender/edit.html', {
         'id': id
     })

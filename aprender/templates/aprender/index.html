@@ -20,6 +20,52 @@
             cursor: pointer;
             box-shadow: 0 0 5px #fd7e14;
         }
+
+        .recentSet {
+            border: 1px solid black;
+            background-color: grey;
+
+            display: flex;
+            flex-flow: row wrap;
+            margin: 0 3em;
+
+        }
+
+        .set {
+            background-color: antiquewhite;
+
+            min-height: 100px;
+            min-width: 300px;
+            margin: 10px;
+            border: 1px solid red;
+            padding: 10px;
+
+            display: flex;
+            flex-flow: row wrap;
+            text-decoration: none;
+            color: black;
+            border-bottom: 3px solid transparent;
+        }
+        .set:hover {
+            color: black;
+            cursor: pointer;
+            border-bottom: 3px solid black;
+        }
+
+        .set-icon {
+            width: 64px;
+            height: 64px;
+        }
+
+        .set-info {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .set-info>span {
+            margin: 1px 0;
+        }
     </style>
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
@@ -243,9 +289,10 @@
                                 <label for="DropdownFormPassword1" class="form-label">Password</label>
                                 {{LoginForm.password}}
                             </div>
-                            {% comment %} <a class="btn btn-primary" href="{% url 'login' %}?next={{request.path}}">Sign In</a>
-                             {% endcomment %}
-                             <input type="hidden" value='{{request.path}}'>
+                            {% comment %} <a class="btn btn-primary" href="{% url 'login' %}?next={{request.path}}">Sign
+                                In</a>
+                            {% endcomment %}
+                            <input type="hidden" value='{{request.path}}'>
                             <button type="submit" class="btn btn-primary">Sign in</button>
                         </form>
                         <div class="dropdown-divider"></div>
@@ -289,6 +336,26 @@
     {% bootstrap_messages %}
 
     {% block body %}
+    <h1>Recent Sets Studied</h1>
+    <div class='recentSet'>
+        {% for set in recentSets %}
+        <a class='set' href={% url 'set' set.id%}>
+            <div class='set-info'>
+                <span>
+                    <span> {{set.label}}</span>
+                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+                </span>
+                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+            </div>
+            <div style=''>
+                <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                <span>{{set.author}}</span>
+            </div>
+
+        </a>
+        {% endfor %}
+
+    </div>
     {% endblock body %}
 </body>
 

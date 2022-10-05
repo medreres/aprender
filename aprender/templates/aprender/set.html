@@ -324,7 +324,9 @@
 		<span>
 			<!-- icons for adding set to folder,editing,sharing -->
 			<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
+			{% if set.author == request.user.username %}
 			<a href="{% url 'edit' id %}"><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set"></a>
+			{% endif %}
 			<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
 		</span>
 	</section>
