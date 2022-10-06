@@ -7,6 +7,7 @@ urlpatterns = [
     path('login', views.loginUser, name='login'),
     path('logout', views.logoutUser, name='logout'),
     path('createset', views.createset, name='createset'),
+    path('search', views.search, name='search'),
     path('createfolder', views.createfolder, name='createfolder'),
     path('<str:user>/folders', views.folders, name='folders'),
     path('folders/<int:id>', views.folder, name='folder'),

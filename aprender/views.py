@@ -169,6 +169,13 @@ def createset(request):
     })
 
 
+def search(request):
+    body = request.GET
+    
+    return render(request, 'aprender/search.html', {
+        'result': Set.objects.filter(label__contains=body['search'])
+    })
+
 @login_required
 def sets(request, user):
     return render(request, 'aprender/sets.html',

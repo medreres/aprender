@@ -296,8 +296,8 @@
                     {% endif %}
                 </ul>
                 {% comment %} TODO search form for searching sets/folders {% endcomment %}
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <form class="d-flex" role="search" action="{% url 'search' %}">
+                    <input class="form-control me-2" type="search" name='search' placeholder="Search" aria-label="Search">
                 </form>
                 {% if not request.user.is_authenticated %}
                 <div class="btn-group">
