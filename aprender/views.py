@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 # from django.utils.http import is_safe_url
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet
 
 # Create your views here.
@@ -176,14 +177,34 @@ def sets(request, user):
                       'LoginForm': LoginForm(),
                   })
 
+@csrf_exempt
+def toggleFavorite(request,id):
+    set = Set.objects.get(pk=id)
+    user = User.objects.get(pk=request.user.id)
+    favoriteSets = user.favoriteSets
+    isFavorite = favoriteSets.contains(set)
+
+    if not isFavorite:
+        user.favoriteSets.add(set)
+        user.save()
+        return JsonResponse({'add': 'liked successfully!'}, status=200)
+    else:
+        user.favoriteSets.remove(set)
+        user.save()
+        return JsonResponse({'delete': 'disliked successfully!'}, status=200)
 
 def set(request, id):
+
+    set = Set.objects.get(pk=id)
+
+    isFavorite = User.objects.get(pk=request.user.id).favoriteSets.contains(set)
+
     # find out if user has already started learning way
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
 
 
-    set =  Set.objects.get(pk=id).serialize()
+    set = set.serialize()
 
     # recentSets = request.user.recentSets
     # print(json.loads(recentSets))
@@ -207,6 +228,7 @@ def set(request, id):
     
 
     # recentSets.append(set)
+   
 
     return render(request, 'aprender/set.html', {
         'set':set,
@@ -214,6 +236,7 @@ def set(request, id):
         'id': id,
         'LoginForm': LoginForm(),
         'TestForm': TestForm(),
+        'isFavorite': isFavorite
     })
 
 

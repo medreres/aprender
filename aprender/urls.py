@@ -20,6 +20,7 @@ urlpatterns = [
     path('sets/<int:id>/deleteWord', views.deleteWord, name='deleteWord'),
     path('sets/<int:id>/flashcards', views.flashcards, name='flashcards'),
     path('sets/<int:id>/learn', views.learn, name='learn'),
+    path('sets/<int:id>/toggleFavorite', views.toggleFavorite, name='toggleFavorite'),
     path('sets/<int:id>/learn/restartLearnWay', views.restartLearnWay, name='restartLearnWay'),
     path('sets/<int:id>/learn/getWords', views.getWords, name='getwords'),
     path('sets/<int:id>/learn/check', views.check, name='check'),
