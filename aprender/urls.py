@@ -12,6 +12,7 @@ urlpatterns = [
     path('<str:user>/folders', views.folders, name='folders'),
     path('folders/<int:id>', views.folder, name='folder'),
     path('folders/<int:id>/addSet', views.addSet, name='addSet'),
+    path('folders/<int:id>/getSetsId', views.getSetsId, name='getSetsId'),
     path('<str:user>/sets', views.sets, name='sets'),
     path('sets/<int:id>', views.set, name='set'),
     path('sets/<int:id>/edit', views.edit, name='edit'),

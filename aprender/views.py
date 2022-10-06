@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId
 
 # Create your views here.
 

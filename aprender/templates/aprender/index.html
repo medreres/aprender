@@ -11,6 +11,7 @@
     {% bootstrap_css %}
 
     {% bootstrap_javascript %}
+    <!-- // TODO separate to styles -->
     <style>
         .card {
             margin: 5px 0;
@@ -71,6 +72,7 @@
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
     {%if user.is_authenticated%}
+    <!-- // TODO separate to scripts -->
     <script>
         // to make absolute url instead of relative
         let url = new URL(location.href);
@@ -109,12 +111,27 @@
                     if (result.length === 0) {
                         addCard(undefined, id);
                     } else {
-                        result.forEach(card => addCard(card, id, addToFolder));
+
+                        if (addToFolder) {
+                            const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
+                            fetch(`${path}/folders/${folderId}/getSetsId`, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    folderId: folderId
+                                })
+                            })
+                                .then(response => response.json())
+                                .then(response => {
+                                    result.forEach(card => addCard(card, id, addToFolder, response['setId']));
+                                })
+                        }
+                        else
+                            result.forEach(card => addCard(card, id, addToFolder));
                     }
                 })
         }
 
-        function addCard(card, id = 'containerAjax', addToFolder = false) {
+        function addCard(card, id = 'containerAjax', addToFolder = false, setInFolderId) {
 
             if (card === undefined) {
                 document.querySelector(`#${id}`).innerHTML =
@@ -144,11 +161,26 @@
                 }
             }
             else {
+                const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
+                console.log(card['id'])
+                console.log(setInFolderId)
+
+
+
+
+
+
+                // check if set already in folder, accrodingly process click on card, add when is not in folder, remove when is in the on
+                if (setInFolderId.some(e => e.id == card['id'])) {
+                    console.log(card['id'] + 'already exists')
+                    template.classList.toggle('included');
+                }
+
                 template.onclick = () => {
                     // make fetch query to add this set to folder
-                    const folderId = location.href.substring(location.href.lastIndexOf('/')+1);
-                    console.log(folderId)
-                    console.log('adding to folder!', card['id'])
+
+                    // console.log(folderId)
+                    // console.log('adding to folder!', card['id'])
                     const path = `${location.href}/addSet`;
                     fetch(path, {
                         method: 'POST',
@@ -157,17 +189,41 @@
                             setId: card['id']
                         })
                     })
-                    .then(response => response.json())
-                    .then(result => {
-                        console.log(result);
-                    })
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log(result);
+                            template.classList.toggle('included');
+                            if (template.classList.contains('included')) {
+                                toggleCard(card, false)
+                            }
+                            else {
+                                toggleCard(card, true);
+                            }
+                        })
                 }
+
             }
 
 
             setTimeout(() => {
                 document.querySelector(`#${id}`).append(template);
             }, 1)
+        }
+
+        function toggleCard(element, remove) {
+            let folderContainer = document.querySelector('#folderContainer');
+            console.log(element['id']);
+            if (remove) {
+                document.querySelector(`#set_${element['id']}`).remove();
+            }
+            else {
+                // add card
+                let div = document.createElement('div');
+                div.classList.add('folder');
+                div.id = `set_${element['id']}`;
+                div.innerHTML = element['label'];
+                folderContainer.append(div);
+            }
         }
 
         function addSetToFolder(setId) {
@@ -297,7 +353,8 @@
                 </ul>
                 {% comment %} TODO search form for searching sets/folders {% endcomment %}
                 <form class="d-flex" role="search" action="{% url 'search' %}">
-                    <input class="form-control me-2" type="search" name='search' placeholder="Search" aria-label="Search">
+                    <input class="form-control me-2" type="search" name='search' placeholder="Search"
+                        aria-label="Search">
                 </form>
                 {% if not request.user.is_authenticated %}
                 <div class="btn-group">

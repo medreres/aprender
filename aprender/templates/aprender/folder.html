@@ -3,21 +3,32 @@
 {% endblock head %}
 {% block body %}
 <section>
+    <!-- //TODO fodler blabla finish when back end is ready -->
     {{folder.label}}
-    TODO fodler blabla finish when back end is ready
 </section>
 <section>
     {% if not folder.sets %}
     <p>It seems that any sets are in folder yet!</p>
 
-    <script>
 
-    </script>
+    {% else %}
+    <!-- TODO -->
+    add here all the sets in the folder
+    {% comment %} {% for key in folder %}
+    {{value}}
+    {{set}}
+    {% endfor %}{% endcomment %}
+    {% endif %}
+
+    <style>
+        .included {
+            background-color: green !important;
+        }
+    </style>
+
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>
-        Add Set
-    </button>
+        onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>Add Set</button>
 
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -41,19 +52,19 @@
             </div>
         </div>
     </div>
-    {% else %}
-    TODO
-    add here all the sets in the folder
-    {% comment %} {% for key in folder %}
-    {{value}}
-    {{set}}
-    {% endfor %}{% endcomment %}
-    {% endif %}
 
-    <h3>{{folder}}</h3>
-    {% for set in folder.sets %}
-    {{set}}
-    {% endfor %}
+    
+
+    <h3>folder</h3>
+    <section id="folderContainer">
+        {% for set in folder.sets %}
+        <div class="folder" id="set_{{set.id}}">
+            <section>
+                {{set.label}}
+            </section>
+        </div>
+        {% endfor %}
+    </section>
 
 </section>
 {% endblock body %}

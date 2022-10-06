@@ -13,19 +13,32 @@ from django.core.paginator import Paginator
 WORDSPERSET = 10
 WORDSPERPAGE = 10
 
+
+@csrf_exempt
+def getSetsId(request,id):
+    body = json.loads(request.body)
+    result = Folder.objects.get(pk=id).sets.all()
+    return JsonResponse({'setId': [set.serialize() for set in result]}, status=200)
+
 # add set to folder
 @csrf_exempt
 def addSet(request,id):
     body = json.loads(request.body)
+    print(body)
     #{'folderId': '11', 'setId': 23}
-    try:
-        folder = Folder.objects.get(pk=body['folderId'])
-        folder.sets.add(Set.objects.get(pk=body['setId']))
-        print(body)
-    except:
-        # TODO
-        pass
-    return JsonResponse({'success': 'set was added successfully!'}, status=200)
+    folder = Folder.objects.get(pk=body['folderId'])
+    set = Set.objects.get(pk=body['setId'])
+    print(folder,set)
+    if not folder.sets.contains(set):
+        folder.sets.add(set)
+        folder.save()
+        return JsonResponse({'success': 'set was added successfully!'}, status=200)
+    else:
+        folder.sets.remove(set)
+        folder.save()
+        return JsonResponse({'success': 'set was deleted successfully!'}, status=200)
+    
+    
 
 # fetch sets via ajax
 @login_required
