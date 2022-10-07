@@ -23,7 +23,6 @@ from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentW
 
 def index(request):
 
-
     allSets = Set.objects.all()
     if request.user.is_authenticated:
         # get list of recent items in json
@@ -34,7 +33,7 @@ def index(request):
             recentSets = Set.objects.filter(pk__in=recentSetsId)
         except:
             recentSets = None
-    
+
     # print(recentSets)
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
@@ -166,15 +165,17 @@ def createset(request):
 
     return render(request, 'aprender/createset.html', {
         'CreateSet': CreateSet(),
+        'CreateFolder': CreateFolder()
     })
 
 
 def search(request):
     body = request.GET
-    
+
     return render(request, 'aprender/search.html', {
         'result': Set.objects.filter(label__contains=body['search'])
     })
+
 
 @login_required
 def sets(request, user):
@@ -184,8 +185,9 @@ def sets(request, user):
                       'LoginForm': LoginForm(),
                   })
 
+
 @csrf_exempt
-def toggleFavorite(request,id):
+def toggleFavorite(request, id):
     set = Set.objects.get(pk=id)
     user = User.objects.get(pk=request.user.id)
     favoriteSets = user.favoriteSets
@@ -200,45 +202,46 @@ def toggleFavorite(request,id):
         user.save()
         return JsonResponse({'delete': 'disliked successfully!'}, status=200)
 
+
 def set(request, id):
 
     set = Set.objects.get(pk=id)
 
-    isFavorite = User.objects.get(pk=request.user.id).favoriteSets.contains(set)
+    if request.user.is_authenticated:
+        isFavorite = User.objects.get(
+            pk=request.user.id).favoriteSets.contains(set)
+    else:
+        isFavorite = False
 
     # find out if user has already started learning way
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
 
-
     set = set.serialize()
 
     # recentSets = request.user.recentSets
     # print(json.loads(recentSets))
-    
+
     # print(json.dumps([1,3,], separators=(',',';')))
 
-
-    # get recentSets from user, parse it, add or move, parse back to json and save  
+    # get recentSets from user, parse it, add or move, parse back to json and save
     if request.user.is_authenticated:
-    
+
         recentSetsid = json.loads(request.user.recentSetsJson)
-        
+
         if id in recentSetsid:
             recentSetsid.insert(0, recentSetsid.pop(recentSetsid.index(id)))
         else:
             recentSetsid.insert(0, id)
         recentSetsid = json.dumps(recentSetsid)
         user = User.objects.get(pk=request.user.id)
-        user.recentSetsJson=recentSetsid
+        user.recentSetsJson = recentSetsid
         user.save()
-    
 
     # recentSets.append(set)
-   
 
     return render(request, 'aprender/set.html', {
-        'set':set,
+        'set': set,
         'learnStarted': learnStarted,
         'id': id,
         'LoginForm': LoginForm(),
@@ -264,6 +267,7 @@ def createfolder(request):
         date=datetime.now()
     )
 
+    return redirect('folder', folder.id)
     return HttpResponseRedirect(reverse('folders', args=(request.user,)))
 
 
@@ -275,6 +279,12 @@ def folders(request, user):
 
 
 @login_required
+def deleteFolder(request,id):
+    Folder.objects.get(pk=id).delete()
+    messages.success(request, 'Folder deleted successfully!')
+    return HttpResponseRedirect(reverse('index'))
+
+@login_required
 def folder(request, id):
     try:
         folder = Folder.objects.get(pk=id)
@@ -282,11 +292,11 @@ def folder(request, id):
         # TODO folder is not found
         return HttpResponseRedirect(reverse('index'))
 
-        
     return render(request, 'aprender/folder.html', {
         'folder': folder.serialize(),
+        'CreateFolder': CreateFolder(),
+        'folderId': id
     })
-    
 
 
 @login_required

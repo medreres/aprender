@@ -1,34 +1,72 @@
 {% extends 'aprender/index.html' %}
+{% load static %}
 {% block head %}
 {% endblock head %}
 {% block body %}
 <section>
     <!-- //TODO fodler blabla finish when back end is ready -->
-    {{folder.label}}
+
+    <h1>{{folder.label}}</h1>
+    {% if folder.description %}
+    <p>{{folder.description}}</p>
+    {% endif %}
 </section>
 <section>
     {% if not folder.sets %}
     <p>It seems that any sets are in folder yet!</p>
-
-
-    {% else %}
-    <!-- TODO -->
-    add here all the sets in the folder
-    {% comment %} {% for key in folder %}
-    {{value}}
-    {{set}}
-    {% endfor %}{% endcomment %}
     {% endif %}
-
+    <script type="text/javascript" src="{% static 'js/jquery.js'%}"></script>
     <style>
         .included {
             background-color: green !important;
         }
     </style>
+    <script>
+        let popoverTriggerList, popoverList;
+        document.addEventListener('DOMContentLoaded', () => {
+            popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+            popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+        })
+
+
+
+    </script>
+
 
     <!-- Button trigger modal -->
+    <!-- TODO loadSets() functino is from index  separate in scripts.js-->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
         onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>Add Set</button>
+    <button type="button" class="btn btn-secondary">Edit</button>
+    <!-- Button trigger modal -->
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">
+        Delete
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <form action="{% url 'deleteFolder' folderId %}" method='POST'>
+            {% csrf_token %}
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Delete folder</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this folder?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete Folder</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
 
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -45,24 +83,39 @@
 
                     </div>
                 </div>
-                {% comment %} <div class="modal-footer">
+                <!-- <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary">Understood</button>
-                </div> {% endcomment %}
+                </div> -->
             </div>
         </div>
     </div>
 
-    
+
 
     <h3>folder</h3>
     <section id="folderContainer">
+
         {% for set in folder.sets %}
-        <div class="folder" id="set_{{set.id}}">
+        <a class='set' href="{% url 'set' set.id%}" id="set_{{set.id}}">
+            <div class='set-info'>
+                <span>
+                    <span> {{set.label}}</span>
+                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+                </span>
+                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+            </div>
+            <div style=''>
+                <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                <span>{{set.author}}</span>
+            </div>
+        </a>
+
+        <!-- <div class="folder" >
             <section>
                 {{set.label}}
             </section>
-        </div>
+        </div> -->
         {% endfor %}
     </section>
 

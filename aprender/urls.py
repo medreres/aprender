@@ -13,6 +13,7 @@ urlpatterns = [
     path('folders/<int:id>', views.folder, name='folder'),
     path('folders/<int:id>/addSet', views.addSet, name='addSet'),
     path('folders/<int:id>/getSetsId', views.getSetsId, name='getSetsId'),
+    path('folders/<int:id>/deleteFolder', views.deleteFolder, name='deleteFolder'),
     path('<str:user>/sets', views.sets, name='sets'),
     path('sets/<int:id>', views.set, name='set'),
     path('sets/<int:id>/edit', views.edit, name='edit'),

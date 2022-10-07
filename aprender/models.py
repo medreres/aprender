@@ -90,5 +90,6 @@ class Folder(models.Model):
             'label': self.label,
             'setsNumber': self.sets.count(),
             'author': self.author.username,
-            'sets': [set.serialize() for set in self.sets.all()]
+            'sets': [set.serialize() for set in self.sets.all()],
+            'description': self.description
         }

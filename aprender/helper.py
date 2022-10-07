@@ -41,9 +41,19 @@ def addSet(request,id):
     
 
 # fetch sets via ajax
+@csrf_exempt
 @login_required
 def fetchSets(request, user):
+    body = json.loads(request.body)
     sets = Set.objects.filter(author=User.objects.get(username=user))
+    if body['addToFolder']:
+        folderSets = Folder.objects.get(pk=body['folderId']).sets.all()
+        # print(folderSets)
+        sets = [*sets]
+        for set in folderSets:
+            if set not in sets:
+                sets.append(set)
+                
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
 # fetch folde via ajax

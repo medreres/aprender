@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     {% load bootstrap5 %}
 
     {% bootstrap_css %}
@@ -105,7 +106,14 @@
 
         function loadSets(event, username = '{{request.user}}', id = 'containerAjax', addToFolder = false) {
 
-            fetch(`${path}/${username}/fetchSetsAjax`)
+            const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
+            fetch(`${path}/${username}/fetchSetsAjax`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    addToFolder: addToFolder,
+                    folderId: folderId
+                })
+            })
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
@@ -217,12 +225,27 @@
                 document.querySelector(`#set_${element['id']}`).remove();
             }
             else {
+                const url = new URL(location.href);
+                const path = url.origin + '/sets';
+                let set = `<a class='set' href="${path}/${element['id']}" id="set_${element['id']}">
+                    <div class='set-info'>
+                        <span>
+                            <span> ${element['label']}</span>
+                            <span style='display: block; margin-top: -.5em;'>${element['wordsNumber']} terms</span>
+                        </span>
+                        <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+                    </div>
+                    <div style=''>
+                        <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                        <span>${element['author']}</span>
+                    </div>
+                </a>`;
                 // add card
-                let div = document.createElement('div');
-                div.classList.add('folder');
-                div.id = `set_${element['id']}`;
-                div.innerHTML = element['label'];
-                folderContainer.append(div);
+                // let div = document.createElement('div');
+                // div.classList.add('folder');
+                set.id = `set_${element['id']}`;
+                set.innerHTML = element['label'];
+                folderContainer.innerHTML += set;
             }
         }
 
@@ -353,7 +376,7 @@
                 </ul>
                 {% comment %} TODO search form for searching sets/folders {% endcomment %}
                 <form class="d-flex" role="search" action="{% url 'search' %}">
-                    <input class="form-control me-2" type="search" name='search' placeholder="Search"
+                    <input class="form-control me-2" type="search" name='search' placeholder="Search Set"
                         aria-label="Search">
                 </form>
                 {% if not request.user.is_authenticated %}
@@ -443,7 +466,7 @@
     <h2>All sets</h2>
     <div class='recentSet'>
         {% for set in allSets %}
-        <a class='set' href={% url 'set' set.id%}>
+        <a class='set' href="{% url 'set' set.id%}">
             <div class='set-info'>
                 <span>
                     <span> {{set.label}}</span>
