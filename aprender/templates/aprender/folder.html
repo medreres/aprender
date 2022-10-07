@@ -28,22 +28,21 @@
             popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
         })
 
-
-
+        function toggleEdit() {
+            let buttons = document.querySelectorAll('button[name=cardDelete]');
+            buttons.forEach(button => button.classList.toggle("hidden"));
+        }
     </script>
-
-
     <!-- Button trigger modal -->
     <!-- TODO loadSets() functino is from index  separate in scripts.js-->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
         onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>Add Set</button>
-    <button type="button" class="btn btn-secondary">Edit</button>
+    <button type="button" class="btn btn-secondary" onclick="toggleEdit();">Edit</button>
     <!-- Button trigger modal -->
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">
         Delete
     </button>
-
     <!-- Modal -->
     <div class="modal fade" id="deleteConfirmation" tabindex="-1" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -66,8 +65,6 @@
             </div>
         </form>
     </div>
-
-
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -90,13 +87,30 @@
             </div>
         </div>
     </div>
-
-
-
     <h3>folder</h3>
     <section id="folderContainer">
-
+        <script>
+            function deleteSet(element, evt) {
+                evt.preventDefault();
+                const path = `${location.href}/addSet`;
+                const setId = element.dataset.id;
+                const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
+                fetch(path, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        setId: setId,
+                        folderId: folderId
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log(`#set_${setId}`)
+                    document.querySelector(`#set_${setId}`).remove();
+                })
+            }
+        </script>
         {% for set in folder.sets %}
+        <!-- href="{% url 'set' set.id%}" -->
         <a class='set' href="{% url 'set' set.id%}" id="set_{{set.id}}">
             <div class='set-info'>
                 <span>
@@ -104,6 +118,9 @@
                     <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
                 </span>
                 <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+                <button type="button" name="cardDelete" class="btn btn-primary hidden" data-id='{{set.id}}'
+                    onclick="deleteSet(this, event);"><img src="{% static 'icons/bin.png' %}"
+                        alt="delete set from folder"></button>
             </div>
             <div style=''>
                 <img src="{% static 'icons/user.png' %}" alt="Author profile icon">

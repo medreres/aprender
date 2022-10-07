@@ -234,6 +234,9 @@
                             <span style='display: block; margin-top: -.5em;'>${element['wordsNumber']} terms</span>
                         </span>
                         <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+                        <button name="cardDelete" type="button" class="btn btn-primary hidden" data-id='${element['id']}'
+                    onclick="deleteSet(this, event);"><img src="{% static 'icons/bin.png' %}"
+                        alt="delete set from folder"></button>
                     </div>
                     <div style=''>
                         <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
@@ -267,7 +270,6 @@
                     }
                 })
         }
-
 
         function toggleActive(...ids) {
             // console.log(a1,a2);
