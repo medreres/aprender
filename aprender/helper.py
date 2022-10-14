@@ -39,6 +39,21 @@ def addSet(request,id):
         return JsonResponse({'success': 'set was deleted successfully!'}, status=200)
     
     
+@csrf_exempt
+def folderEdit(request,id):
+    body = json.loads(request.body)
+    folder = Folder.objects.get(pk=id)
+
+    if 'description' in body:
+        folder.description = body['description']
+    
+    if 'label' in body:
+        folder.label = body['label']
+    
+    folder.save()
+
+    
+    return JsonResponse({'message': 'changed succesfully'}, status=200)
 
 # fetch sets via ajax
 @csrf_exempt

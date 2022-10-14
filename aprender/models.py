@@ -19,6 +19,8 @@ class User(AbstractUser):
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
 
+    profilePic = models.CharField(max_length=64, default='icons/user.png')
+
 
 
 class LearnWay(models.Model):

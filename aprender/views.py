@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit
 
 # Create your views here.
 
@@ -42,6 +42,12 @@ def index(request):
         'allSets': allSets
     })
 
+def settings(request):
+    user = User.objects.get(pk=request.user.id)
+    print(user.last_name)
+    return render(request, 'aprender/settings.html', {
+        'user': user
+    })
 
 def loginUser(request):
     if request.method != 'POST':
