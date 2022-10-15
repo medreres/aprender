@@ -1,5 +1,7 @@
 from django.urls import path
+from django.contrib.auth import views as auth_views
 from . import views
+from .views import PassowrdsChangeView
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -10,7 +12,7 @@ urlpatterns = [
     path('search', views.search, name='search'),
     path('createfolder', views.createfolder, name='createfolder'),
     path('settings', views.settings, name='settings'),
-    path('changePassword', views.changePassword, name='changePassword'),
+    path('settings/password', PassowrdsChangeView.as_view(template_name="aprender/change-password.html"), name='changePassword'),
     path('<str:user>/folders', views.folders, name='folders'),
     path('folders/<int:id>', views.folder, name='folder'),
     path('folders/<int:id>/edit', views.folderEdit, name='folderEdit'),
@@ -40,4 +42,5 @@ urlpatterns = [
     path('<str:user>/fetchSetsAjax', views.fetchSets, name='fetchsets'),
     path('<str:user>', views.profile, name='profile'),
     path('<int:id>/createLearnPath', views.createLearnPath, name='createlearnpath'),
+    path(r'^(.*)$', views.index)
 ]

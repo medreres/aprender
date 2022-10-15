@@ -5,7 +5,7 @@ from secrets import randbelow
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder, TestForm, EditUser
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
@@ -17,9 +17,20 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.messages.views import SuccessMessageMixin
+
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit
 
 # Create your views here.
+
+
+
+class PassowrdsChangeView(SuccessMessageMixin, PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('settings')
+    success_message = "Your password was changed successfully!"
 
 
 def index(request):
@@ -51,7 +62,11 @@ def changePassword(request):
     print(request.POST)
     return HttpResponseRedirect(reverse('settings'))
 
+
 def settings(request):
+
+    if not request.user.is_authenticated:
+        return redirect('index')
     
     if request.method == 'POST':
         form = EditUser(request.POST, request.FILES)
@@ -66,7 +81,6 @@ def settings(request):
         user.save()
         messages.success(request, 'Changed successfully!')
         return HttpResponseRedirect(reverse('settings'))
-
     user = User.objects.get(pk=request.user.id)
     return render(request, 'aprender/settings.html', {
         'user': user,
@@ -106,7 +120,10 @@ def logoutUser(request):
     logout(request)
     next_url = request.GET.get('next', None)
     if next_url is not None:
-        return redirect(next_url)
+        try:
+            return redirect(next_url)
+        except:
+            return HttpResponseRedirect(reverse('index'))
 
     return HttpResponseRedirect(reverse('index'))
 
