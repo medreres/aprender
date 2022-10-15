@@ -4,9 +4,61 @@
 
 {% endblock head %}
 {% block body %}
-<p>{{user.first_name}}</p>
+{% comment %} <p>{{user.first_name}}</p>
 
 <p>{{user.last_name}}</p>
 <p>{{user.password}}</p>
 <p>{{user.email}}</p>
+<img style='height: 800px;' src="{{ user.profilePic.url }}" alt=""> {% endcomment %}
+<section class='d-flex justify-content-between p-4'>
+    <form method='post' enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{EditUser.as_ul}}
+        {% comment %}
+        <label for="">
+            {{EditUser.profile_image.label}}
+            {{EditUser.profile_image}}
+        </label> {% endcomment %}
+
+
+        <input type="submit" value='Update Profile' class='btn btn-primary'>
+        <button type="button" class="btn btn-primary " data-bs-toggle="modal"
+            data-bs-target="#changePasswordModal">Change Password</button>
+        <!-- Button trigger modal -->
+
+
+    </form>
+    <!-- Modal -->
+
+   
+    <div class="modal fade" id="changePasswordModal"  aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{% url 'changePassword' %}" method='post'>
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="">Old Password:
+                            <input autofocus required id='passwordOld' name='passwordOld' type="password">
+                        </label>
+                        <label for="">New Password:
+                            <input required id='passwordNew' name='passwordNew' type="password">
+                        </label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <img class="align-self-center" style='height: 200px; border-radius: 20px;' src="
+    {{request.user.profile_image.url}}" alt="Author profile icon">
+</section>
 {% endblock body %}

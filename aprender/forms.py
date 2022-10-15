@@ -1,6 +1,16 @@
 from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
-from .models import Set, Folder
+from .models import Set, Folder, User
+from django.forms import ModelForm
+
+
+class EditUser(ModelForm):
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name','email', 'profile_image')
+    
+
 
 
 class LoginForm(forms.Form):

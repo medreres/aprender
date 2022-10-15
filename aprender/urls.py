@@ -10,6 +10,7 @@ urlpatterns = [
     path('search', views.search, name='search'),
     path('createfolder', views.createfolder, name='createfolder'),
     path('settings', views.settings, name='settings'),
+    path('changePassword', views.changePassword, name='changePassword'),
     path('<str:user>/folders', views.folders, name='folders'),
     path('folders/<int:id>', views.folder, name='folder'),
     path('folders/<int:id>/edit', views.folderEdit, name='folderEdit'),

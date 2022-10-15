@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder, TestForm
+from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder, TestForm, EditUser
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit
 
 # Create your views here.
@@ -37,17 +38,41 @@ def index(request):
     # print(recentSets)
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
-        'CreateFolder': CreateFolder(),
+        'CreateFolder': CreateFolder,
         'recentSets':  recentSets if request.user.is_authenticated else None,
         'allSets': allSets
     })
 
-def settings(request):
+def changePassword(request):
     user = User.objects.get(pk=request.user.id)
-    print(user.last_name)
+    # passwordOld = request.POST['passwordOld']
+    # passwordNew = request.POST['passwordNew']
+    # print(passwordOld, passwordNew)
+    print(request.POST)
+    return HttpResponseRedirect(reverse('settings'))
+
+def settings(request):
+    
+    if request.method == 'POST':
+        form = EditUser(request.POST, request.FILES)
+        if not form.is_valid():
+            # TODO throw error
+            pass
+
+        print(form.cleaned_data)
+        user = User.objects.get(pk=request.user.id)
+        user.__dict__.update(form.cleaned_data)
+        user.profile_image = form.cleaned_data['profile_image']
+        user.save()
+        messages.success(request, 'Changed successfully!')
+        return HttpResponseRedirect(reverse('settings'))
+
+    user = User.objects.get(pk=request.user.id)
     return render(request, 'aprender/settings.html', {
-        'user': user
+        'user': user,
+        'EditUser': EditUser(initial=model_to_dict(request.user))
     })
+
 
 def loginUser(request):
     if request.method != 'POST':

@@ -19,7 +19,7 @@ class User(AbstractUser):
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
 
-    profilePic = models.CharField(max_length=64, default='icons/user.png')
+    profile_image = models.ImageField(default='icons/user.png' , upload_to='icons/')
 
 
 
@@ -72,7 +72,8 @@ class Set(models.Model):
             'id': self.id,
             'label': self.label,
             'wordsNumber': self.words.count(),
-            'author': self.author.username
+            'author': self.author.username,
+            'author-pic': self.author.profile_image.url
         }
 
     def get_all_words(self):

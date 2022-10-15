@@ -227,7 +227,7 @@
             else {
                 const url = new URL(location.href);
                 const path = url.origin + '/sets';
-                let set = `<a class='set' href="${path}/${element['id']}" id="set_${element['id']}">
+                let set = `<a class='set bla' href="${path}/${element['id']}" id="set_${element['id']}">
                     <div class='set-info'>
                         <span>
                             <span> ${element['label']}</span>
@@ -419,7 +419,7 @@
                         <li>
                             <div id='container'>
                                 {% comment %} TODO USERS PIC {% endcomment %}
-                                <img class="profilePicSm" src="{% static 'icons/image.jpeg' %}" alt="profile pic">
+                                <img class="profilePicSm" src="{{request.user.profile_image}}" alt="profile pic">
                                 <div id='body'>
                                     <p id='username'> <strong>{{request.user}}</strong></p>
                                     <p id='email'>{{request.user.email}}</p>
@@ -477,7 +477,8 @@
                 <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
             </div>
             <div style=''>
-                <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                <img class="profilePicSm" src="
+                {{set.author.profile_image.url}}" alt="Author profile icon">
                 <span>{{set.author}}</span>
             </div>
         </a>
