@@ -3,7 +3,8 @@ body {
 }
 
 #setsButton:hover,
-#foldersButton:hover {
+#foldersButton:hover,
+#favorite:hover {
     cursor: pointer;
 }
 

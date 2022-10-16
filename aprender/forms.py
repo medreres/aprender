@@ -96,6 +96,8 @@ class CreateSet(forms.ModelForm):
         'id': 'definition_0',
     }))
 
+    set_image = forms.ImageField()
+
     wordsList = []
 
     def __init__(self, *args, **kwargs):

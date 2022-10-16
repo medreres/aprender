@@ -21,10 +21,9 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.messages.views import SuccessMessageMixin
 
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit, favorite
 
 # Create your views here.
-
 
 
 class PassowrdsChangeView(SuccessMessageMixin, PasswordChangeView):
@@ -54,6 +53,7 @@ def index(request):
         'allSets': allSets
     })
 
+
 def changePassword(request):
     user = User.objects.get(pk=request.user.id)
     # passwordOld = request.POST['passwordOld']
@@ -67,7 +67,7 @@ def settings(request):
 
     if not request.user.is_authenticated:
         return redirect('index')
-    
+
     if request.method == 'POST':
         form = EditUser(request.POST, request.FILES)
         if not form.is_valid():
@@ -77,7 +77,7 @@ def settings(request):
         print(form.cleaned_data)
         user = User.objects.get(pk=request.user.id)
         user.__dict__.update(form.cleaned_data)
-        user.profile_image = form.cleaned_data['profile_image']
+        # user.profile_image = form.cleaned_data['profile_image']
         user.save()
         messages.success(request, 'Changed successfully!')
         return HttpResponseRedirect(reverse('settings'))
@@ -265,7 +265,7 @@ def set(request, id):
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
 
-    set = set.serialize()
+    # set = set
 
     # recentSets = request.user.recentSets
     # print(json.loads(recentSets))
@@ -327,10 +327,11 @@ def folders(request, user):
 
 
 @login_required
-def deleteFolder(request,id):
+def deleteFolder(request, id):
     Folder.objects.get(pk=id).delete()
     messages.success(request, 'Folder deleted successfully!')
     return HttpResponseRedirect(reverse('index'))
+
 
 @login_required
 def folder(request, id):

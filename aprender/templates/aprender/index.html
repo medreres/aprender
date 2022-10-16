@@ -75,6 +75,9 @@
     {%if user.is_authenticated%}
     <!-- // TODO separate to scripts -->
     <script>
+
+        const tabs = ['setsButton', 'foldersButton', 'favorite'];
+        const links = ['setsLink', 'foldersLink', 'favoritesLink'];
         // to make absolute url instead of relative
         let url = new URL(location.href);
         let path = url.origin;
@@ -89,8 +92,10 @@
                 evt.stopPropagation();
                 loadSets(evt);
 
-                toggleActive('setsButton', 'foldersButton');
-                toggleHidden('foldersLink', 'setsLink');
+                // toggleActive('setsButton', 'foldersButton');
+                toggleActive('setsButton');
+                // 
+                toggleLink('setsLink');
             });
 
             let foldersButton = document.querySelector("#foldersButton");
@@ -98,11 +103,42 @@
                 evt.stopPropagation();
                 loadFolders(evt);
 
-                toggleActive('setsButton', 'foldersButton');
-                toggleHidden('foldersLink', 'setsLink');
+                // toggleActive('setsButton', 'foldersButton');
+                toggleActive('foldersButton');
+                toggleLink('foldersLink');
             });
+
+
+            let favoriteButton = document.querySelector('#favorite');
+            favoriteButton.addEventListener('click', (evt) => {
+                evt.stopPropagation();
+                loadFavoriteSets(evt);
+
+                toggleActive('favorite');
+                toggleLink('favoritesLink');
+            })
             // document.querySelector('#libraryBtn').addEventListener('click', loadSets);
         })
+
+        function loadFavoriteSets(event,username = "{{request.user}}", id='containerAjax') {
+            if (username == undefined) {
+                const path = location.href;
+                const url = new URL(path);
+                const username = url.href.substring(url.href.lastIndexOf('/') + 1);
+                // console.log(username);
+            }
+            else {
+                // console.log(username);
+                // console.log('check')
+            }
+            console.log(url.origin + '/' + username + '/favorite')
+            fetch(url.origin + '/' + username + '/favorite')
+                .then(response => response.json())
+                .then(result => {
+                    result['set'].forEach(element => addCard(element,id))
+                    // console.log(result);
+                })
+        }
 
         function loadSets(event, username = '{{request.user}}', id = 'containerAjax', addToFolder = false) {
 
@@ -132,8 +168,7 @@
                                 .then(response => {
                                     result.forEach(card => addCard(card, id, addToFolder, response['setId']));
                                 })
-                        }
-                        else
+                        } else
                             result.forEach(card => addCard(card, id, addToFolder));
                     }
                 })
@@ -167,8 +202,7 @@
                         location.href = `${path}/sets/${card['id']}`;
                     }
                 }
-            }
-            else {
+            } else {
                 const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
                 console.log(card['id'])
                 console.log(setInFolderId)
@@ -203,8 +237,7 @@
                             template.classList.toggle('included');
                             if (template.classList.contains('included')) {
                                 toggleCard(card, false)
-                            }
-                            else {
+                            } else {
                                 toggleCard(card, true);
                             }
                         })
@@ -223,8 +256,7 @@
             console.log(element['id']);
             if (remove) {
                 document.querySelector(`#set_${element['id']}`).remove();
-            }
-            else {
+            } else {
                 const url = new URL(location.href);
                 const path = url.origin + '/sets';
                 let set = `<a class='set bla' href="${path}/${element['id']}" id="set_${element['id']}">
@@ -252,8 +284,7 @@
             }
         }
 
-        function addSetToFolder(setId) {
-        }
+        function addSetToFolder(setId) { }
 
         function loadFolders(event, username = '{{request.user}}', id = 'containerAjax') {
 
@@ -271,21 +302,31 @@
                 })
         }
 
-        function toggleActive(...ids) {
+        function toggleActive(id) {
+
+
+            tabs.forEach(tab => document.querySelector(`#${tab}`).classList.remove('active'))
+            document.querySelector(`#${id}`).classList.add('active');
             // console.log(a1,a2);
             // toggle classes for css
-            ids.forEach(id => {
-                document.querySelector(`#${id}`).classList.toggle('active');
-            })
+            // ids.forEach(id => {
+            //     document.querySelector(`#${id}`).classList.toggle('active');
+            // })
         }
 
-        function toggleHidden(...ids) {
-            ids.forEach(id => {
-                document.querySelector(`#${id}`).classList.toggle('hidden');
-            })
+        function toggleLink(id) {
+            console.log(id)
+            links.forEach(link => document.querySelector(`#${link}`).classList.add('hidden'))
+
+            console.log(document.querySelector(`#${id}`))
+            document.querySelector(`#${id}`).classList.remove('hidden');
+
+            // ids.forEach(id => {
+            //     document.querySelector(`#${id}`).classList.toggle('hidden');
+            // })
         }
     </script>
-    {%endif%}
+    {% endif %}
     {% block head %}
     {% endblock head %}
     <title>live</title>
@@ -320,6 +361,9 @@
                                 <li class="nav-item">
                                     <a id='foldersButton' class="nav-link text-dark" aria-current="page">Folders</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a id='favorite' class="nav-link text-dark" aria-current="page">Favorite</a>
+                                </li>
                             </ul>
                             <div id="containerAjax">
                                 <!-- Here goes folders and sets -->
@@ -331,6 +375,8 @@
                             <a href="{% url 'profile' request.user %}" id="setsLink">View all sets</a>
                             <a href="{% url 'profile' request.user %}" id="foldersLink" class="hidden">View all
                                 folders</a>
+                            <a href="{% url 'profile' request.user %}" id="favoritesLink" class="hidden">View all
+                                favorites</a>
                         </ul>
                     </li>
 
@@ -419,7 +465,11 @@
                         <li>
                             <div id='container'>
                                 {% comment %} TODO USERS PIC {% endcomment %}
-                                <img class="profilePicSm" src="{{request.user.profile_image}}" alt="profile pic">
+                                {% if request.user.profile_image %}
+                                <img class="profilePicSm" src="{{request.user.profile_image.url}}" alt="profile pic">
+                                {% else %}
+                                <img class="profilePicSm" src="{% static 'icons/user.png'%}" alt="profile pic">
+                                {% endif %}
                                 <div id='body'>
                                     <p id='username'> <strong>{{request.user}}</strong></p>
                                     <p id='email'>{{request.user.email}}</p>
@@ -455,10 +505,14 @@
                     <span> {{set.label}}</span>
                     <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
                 </span>
-                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+                {%if set.set_image%}
+                <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
+                {%endif%}
             </div>
             <div style=''>
-                <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
+                <img class="profilePicSm"
+                    src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+                    alt="profile icon">
                 <span>{{set.author}}</span>
             </div>
         </a>
@@ -474,11 +528,14 @@
                     <span> {{set.label}}</span>
                     <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
                 </span>
-                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+                {%if set.set_image%}
+                <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
+                {%endif%}
             </div>
             <div style=''>
-                <img class="profilePicSm" src="
-                {{set.author.profile_image.url}}" alt="Author profile icon">
+                <img class="profilePicSm"
+                    src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+                    alt="profile icon">
                 <span>{{set.author}}</span>
             </div>
         </a>

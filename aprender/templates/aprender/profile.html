@@ -44,7 +44,7 @@
 </script>
 <div class='containerCol' style='margin: 5vh 10vw;'>
     <div class='containerRow' style='margin-bottom: 2vh;'>
-        <img class='profilePicBg' src="{% static 'icons/image.jpeg' %}">
+        <img class='profilePicBg' src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'icons/image.jpeg' %}{%endif%}">
         <div class='containerCol' style='margin-left: 10px;'>
             <h3>{{request.user}}</h3>
             <p>{{request.user.first_name}} {{request.user.last_name}}</p>

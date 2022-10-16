@@ -72,7 +72,7 @@
         return termDefinitionNodeCopy;
     }
 </script>
-<form method="post" action="{% url 'createset' %}">
+<form method="post" action="{% url 'createset' %}" enctype="multipart/form-data">
     {% csrf_token %}
     <div>
         <label for=""> Study Set Label:
@@ -82,6 +82,11 @@
     <div>
         <label for=""> description
             {{CreateSet.description}}
+        </label>
+    </div>
+    <div>
+        <label for=""> Set Image
+            {{CreateSet.set_image}}
         </label>
     </div>
     <button onclick="return addField();">Add term</button>

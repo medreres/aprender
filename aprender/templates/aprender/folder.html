@@ -178,7 +178,10 @@
                     <span> {{set.label}}</span>
                     <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
                 </span>
-                <img class='set-icon' src="{% static 'icons/image.jpeg' %}" alt="set icon">
+
+                {%if set.set_image%}
+                <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
+                {%endif%}
                 <button type="button" name="cardDelete" class="btn btn-primary hidden" data-id='{{set.id}}'
                     onclick="deleteSet(this, event);"><img src="{% static 'icons/bin.png' %}"
                         alt="delete set from folder"></button>

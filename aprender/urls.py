@@ -41,6 +41,6 @@ urlpatterns = [
     path('<str:user>/fetchFoldersAjax', views.fetchFolders, name='fetchfolders'),
     path('<str:user>/fetchSetsAjax', views.fetchSets, name='fetchsets'),
     path('<str:user>', views.profile, name='profile'),
+    path('<str:user>/favorite', views.favorite, name='favorite'),
     path('<int:id>/createLearnPath', views.createLearnPath, name='createlearnpath'),
-    path(r'^(.*)$', views.index)
 ]

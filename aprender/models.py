@@ -19,7 +19,7 @@ class User(AbstractUser):
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
 
-    profile_image = models.ImageField(default='icons/user.png' , upload_to='icons/')
+    profile_image = models.ImageField(blank=True, null=True)
 
 
 
@@ -63,6 +63,7 @@ class Set(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # words that user like to learn more than the others
     chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True)
+    set_image = models.ImageField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"{self.label} {self.id}"

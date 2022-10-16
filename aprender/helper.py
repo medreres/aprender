@@ -13,6 +13,13 @@ from django.core.paginator import Paginator
 WORDSPERSET = 10
 WORDSPERPAGE = 10
 
+@login_required
+def favorite(request,user):
+    favoriteSets = User.objects.get(username=user)
+    print(favoriteSets)
+    print(favoriteSets.favoriteSets.all())
+    return JsonResponse({'set': [set.serialize() for set in favoriteSets.favoriteSets.all()]}, status=200)
+
 
 @csrf_exempt
 def getSetsId(request,id):

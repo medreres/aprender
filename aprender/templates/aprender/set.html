@@ -335,7 +335,9 @@
 		<!-- INFO ABOUT CREATOR -->
 		<!-- TODO add icons for users and use their own icons  -->
 		<div id='author'>
-			<img src="{% static 'icons/user.png' %}" alt="" class="profile-pic">
+			<img class="profilePicSm"
+				src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+				alt="profile icon">
 			<span>
 				<p>Created by</p>
 				<strong>{{set.author}}</strong>
