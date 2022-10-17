@@ -23,13 +23,14 @@
 
 
         <input type="submit" value='Update Profile' class='btn btn-primary'>
-        <a  type="button" class="btn btn-primary " href="{% url 'changePassword' %}">Change Password</a>
+        <a type="button" class="btn btn-primary " href="{% url 'changePassword' %}">Change Password</a>
         <!-- Button trigger modal -->
 
 
     </form>
     <!-- Modal -->
-    <img class="align-self-center" style='height: 200px; border-radius: 20px;' src="
-    {{request.user.profile_image.url}}" alt="Author profile icon">
+    <img class="align-self-center" style='height: 200px; border-radius: 20px;'
+        src="{% if user.profile_image and user.profile_image != 'False' %}{{user.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+        alt="Author profile icon">
 </section>
 {% endblock body %}

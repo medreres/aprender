@@ -74,8 +74,11 @@ def settings(request):
             # TODO throw error
             pass
 
-        print(form.cleaned_data)
         user = User.objects.get(pk=request.user.id)
+        if form.cleaned_data['profile_image'] is None:
+            form.cleaned_data['profile_image'] = user.profile_image
+        elif form.cleaned_data['profile_image'] == False:
+            user.profile_image.delete()
         user.__dict__.update(form.cleaned_data)
         # user.profile_image = form.cleaned_data['profile_image']
         user.save()
@@ -84,7 +87,7 @@ def settings(request):
     user = User.objects.get(pk=request.user.id)
     return render(request, 'aprender/settings.html', {
         'user': user,
-        'EditUser': EditUser(initial=model_to_dict(request.user))
+        'EditUser': EditUser(initial=model_to_dict(user))
     })
 
 
