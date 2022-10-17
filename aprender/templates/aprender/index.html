@@ -72,10 +72,9 @@
     </style>
 
     <link rel="stylesheet" href="{% static 'styles/index.css' %}">
-    {%if user.is_authenticated%}
+
     <!-- // TODO separate to scripts -->
     <script>
-
         const tabs = ['setsButton', 'foldersButton', 'favorite'];
         const links = ['setsLink', 'foldersLink', 'favoritesLink'];
         // to make absolute url instead of relative
@@ -84,50 +83,55 @@
         document.addEventListener("DOMContentLoaded", () => {
 
             // initially load colelction of sets
+            {% if request.user.is_authenticated %}
             loadSets(undefined);
+            {% endif %}
 
             // on click for eact tab load content correspondingly (sets/folders)
+            {% if request.user.is_authenticated %}
             let setsButton = document.querySelector("#setsButton");
             setsButton.addEventListener('click', (evt) => {
                 evt.stopPropagation();
                 loadSets(evt);
 
                 // toggleActive('setsButton', 'foldersButton');
-                toggleActive('setsButton');
+                toggleActive('setsButton', tabs);
                 // 
-                toggleLink('setsLink');
+                toggleLink('setsLink', links);
             });
-
+            {% endif %}
+            
+            {% if request.user.is_authenticated %}
             let foldersButton = document.querySelector("#foldersButton");
             foldersButton.addEventListener('click', (evt) => {
                 evt.stopPropagation();
                 loadFolders(evt);
 
                 // toggleActive('setsButton', 'foldersButton');
-                toggleActive('foldersButton');
-                toggleLink('foldersLink');
+                toggleActive('foldersButton', tabs);
+                toggleLink('foldersLink', links);
             });
-
-
+            {% endif %}
+            {% if request.user.is_authenticated %}
             let favoriteButton = document.querySelector('#favorite');
             favoriteButton.addEventListener('click', (evt) => {
                 evt.stopPropagation();
                 loadFavoriteSets(evt);
 
-                toggleActive('favorite');
-                toggleLink('favoritesLink');
+                toggleActive('favorite', tabs);
+                toggleLink('favoritesLink', links);
             })
+            {% endif %}
             // document.querySelector('#libraryBtn').addEventListener('click', loadSets);
         })
 
-        function loadFavoriteSets(event,username = "{{request.user}}", id='containerAjax') {
+        function loadFavoriteSets(event, username = "{{request.user}}", id = 'containerAjax') {
             if (username == undefined) {
                 const path = location.href;
                 const url = new URL(path);
                 const username = url.href.substring(url.href.lastIndexOf('/') + 1);
                 // console.log(username);
-            }
-            else {
+            } else {
                 // console.log(username);
                 // console.log('check')
             }
@@ -135,7 +139,10 @@
             fetch(url.origin + '/' + username + '/favorite')
                 .then(response => response.json())
                 .then(result => {
-                    result['set'].forEach(element => addCard(element,id))
+                    if (result['set'].length == 0) {
+                        addCard(undefined);
+                    }
+                    result['set'].forEach(element => addCard(element, id))
                     // console.log(result);
                 })
         }
@@ -143,13 +150,14 @@
         function loadSets(event, username = '{{request.user}}', id = 'containerAjax', addToFolder = false) {
 
             const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
+            console.log(`${path}/${username}/fetchSetsAjax`)
             fetch(`${path}/${username}/fetchSetsAjax`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    addToFolder: addToFolder,
-                    folderId: folderId
+                    method: 'POST',
+                    body: JSON.stringify({
+                        addToFolder: addToFolder,
+                        folderId: folderId
+                    })
                 })
-            })
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
@@ -159,11 +167,11 @@
                         if (addToFolder) {
                             const folderId = location.href.substring(location.href.lastIndexOf('/') + 1);
                             fetch(`${path}/folders/${folderId}/getSetsId`, {
-                                method: 'POST',
-                                body: JSON.stringify({
-                                    folderId: folderId
+                                    method: 'POST',
+                                    body: JSON.stringify({
+                                        folderId: folderId
+                                    })
                                 })
-                            })
                                 .then(response => response.json())
                                 .then(response => {
                                     result.forEach(card => addCard(card, id, addToFolder, response['setId']));
@@ -225,12 +233,12 @@
                     // console.log('adding to folder!', card['id'])
                     const path = `${location.href}/addSet`;
                     fetch(path, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            folderId: folderId,
-                            setId: card['id']
+                            method: 'POST',
+                            body: JSON.stringify({
+                                folderId: folderId,
+                                setId: card['id']
+                            })
                         })
-                    })
                         .then(response => response.json())
                         .then(result => {
                             console.log(result);
@@ -284,17 +292,18 @@
             }
         }
 
-        function addSetToFolder(setId) { }
+        function addSetToFolder(setId) {}
 
         function loadFolders(event, username = '{{request.user}}', id = 'containerAjax') {
 
             let url = new URL(location.href);
             let path = url.origin;
+            console.log(`${path}/${username}/fetchFoldersAjax`)
             fetch(`${path}/${username}/fetchFoldersAjax`)
                 .then(response => response.json())
                 .then(result => {
                     if (result.length === 0) {
-                        addCard(undefined);
+                        addCard(undefined,id);
                         return;
                     } else {
                         result.forEach(card => addCard(card, id))
@@ -302,7 +311,7 @@
                 })
         }
 
-        function toggleActive(id) {
+        function toggleActive(id,tabs) {
 
 
             tabs.forEach(tab => document.querySelector(`#${tab}`).classList.remove('active'))
@@ -314,7 +323,7 @@
             // })
         }
 
-        function toggleLink(id) {
+        function toggleLink(id,links) {
             console.log(id)
             links.forEach(link => document.querySelector(`#${link}`).classList.add('hidden'))
 
@@ -326,7 +335,6 @@
             // })
         }
     </script>
-    {% endif %}
     {% block head %}
     {% endblock head %}
     <title>live</title>
@@ -347,7 +355,7 @@
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
                     </li>
-                    {% if user.is_authenticated %}
+                    {% if request.user.is_authenticated %}
                     <li class="nav-item dropdown">
                         <a id="libraryBtn" class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">

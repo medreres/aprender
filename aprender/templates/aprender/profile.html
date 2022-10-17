@@ -14,8 +14,8 @@
     }
 </style>
 <script>
-    {% comment %} const url = new URL(window.location.href); {% endcomment %}
-    const username = (url.pathname.replace('/', ''));
+    // const url = new URL(window.location.href);
+    const username = '{{user}}';
 
     // by default load user sets
     loadSets(undefined, username, 'contentContainer');
@@ -30,24 +30,24 @@
         // load posts via ajax
         if (!evt.target.classList.contains('active')) {
             loadSets(undefined, username, 'contentContainer');
-            toggleActive('userFoldersLink', 'userSetsLink');
+            toggleActive('userSetsLink', ['userSetsLink','userFoldersLink']);
         }
     }
 
     function loadUserFolders(evt) {
         if (!evt.target.classList.contains('active')) {
             loadFolders(undefined, username, 'contentContainer');
-            toggleActive('userFoldersLink', 'userSetsLink');
+            toggleActive('userFoldersLink', ['userSetsLink','userFoldersLink']);
         }
     }
 
 </script>
 <div class='containerCol' style='margin: 5vh 10vw;'>
     <div class='containerRow' style='margin-bottom: 2vh;'>
-        <img class='profilePicBg' src="{% if request.user.profile_image %}{{request.user.profile_image.url}}{% else %}{% static 'icons/image.jpeg' %}{%endif%}">
+        <img class='profilePicBg' src="{% if user.profile_image %}{{user.profile_image.url}}{% else %}{% static 'icons/image.jpeg' %}{%endif%}">
         <div class='containerCol' style='margin-left: 10px;'>
-            <h3>{{request.user}}</h3>
-            <p>{{request.user.first_name}} {{request.user.last_name}}</p>
+            <h3>{{user}}</h3>
+            <p>{{user.first_name}} {{user.last_name}}</p>
         </div>
     </div>
     <ul class="nav nav-tabs">

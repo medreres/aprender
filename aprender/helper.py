@@ -64,10 +64,11 @@ def folderEdit(request,id):
 
 # fetch sets via ajax
 @csrf_exempt
-@login_required
+# @login_required
 def fetchSets(request, user):
     body = json.loads(request.body)
-    sets = Set.objects.filter(author=User.objects.get(username=user))
+    author = User.objects.get(username=user)
+    sets = Set.objects.filter(author=author)
     if body['addToFolder']:
         folderSets = Folder.objects.get(pk=body['folderId']).sets.all()
         # print(folderSets)
@@ -81,7 +82,7 @@ def fetchSets(request, user):
 # fetch folde via ajax
 
 
-@login_required
+# @login_required
 def fetchFolders(request, user):
     folders = Folder.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([folder.serialize() for folder in folders], safe=False)

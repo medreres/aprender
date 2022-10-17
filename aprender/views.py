@@ -20,6 +20,7 @@ from django.forms.models import model_to_dict
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import Http404
 
 from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, changeWord, deleteWord, addSet, getSetsId, folderEdit, favorite
 
@@ -122,6 +123,7 @@ def logoutUser(request):
     # log out and reverse back to main page
     logout(request)
     next_url = request.GET.get('next', None)
+    print(next_url)
     if next_url is not None:
         try:
             return redirect(next_url)
@@ -351,9 +353,12 @@ def folder(request, id):
     })
 
 
-@login_required
 def profile(request, user):
-    return render(request, 'aprender/profile.html')
+
+    return render(request, 'aprender/profile.html', {
+        'LoginForm': LoginForm,
+        'user': User.objects.get(username=user)
+    })
 
 
 @login_required
@@ -376,8 +381,12 @@ def test(request, id):
 
     # {'questionTypes': ['written', 'matching', 'multiple', 'true'], 'questionLimit': 10, 'starredTerms': 'starred', 'showImages': False}
 
+    test = createTest(request, id, form.cleaned_data)
+    print(test)
+    if test == -1:
+        return HttpResponseRedirect(reverse('set', kwargs={'id': id}))
     return render(request, 'aprender/test.html', {
-        'questions': createTest(request, id, form.cleaned_data),
+        'questions': test,
         'numberOfWordsGeneral': form.cleaned_data['questionLimit'],
         'id': id,
     })
@@ -389,6 +398,8 @@ def testCheck(request, id):
 
 
 def createTest(request, id, testForm) -> list:
+
+    # TODO not starred choice
 
     # keys for accessing dictionary
     numberOfQuestionTypes = {'written': 0,
@@ -412,10 +423,14 @@ def createTest(request, id, testForm) -> list:
     allWords = [*(learnPath.poorKnown.all()), *
                 (learnPath.intermediateKnown.all()), *(learnPath.wellKnown.all())]
 
+    # print('ALL WORDS')
+    # print(allWords)
+
     if testForm['questionLimit'] > len(allWords):
         # TODO
         messages.warning(request, 'Too few words in dictionary')
-        print("EROR\n\n")
+        # return error
+        return -1
     # print('ALL WORDS')
     # print('----------------------------------')
     # print(allWords)
@@ -435,6 +450,8 @@ def createTest(request, id, testForm) -> list:
 
 def getRandWord(words: list) -> Word:
     # get rand word
+    # print('LEN\n')
+    # print(len(words)-1)
     randInd = randint(0, len(words)-1)
     randWord = words[randInd]
 
