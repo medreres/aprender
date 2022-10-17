@@ -87,7 +87,7 @@ class CreateSet(forms.ModelForm):
 
     class Meta:
         model = Set
-        fields = ('label', 'words', 'description')
+        fields = ('label', 'words', 'description', 'set_image')
 
     words = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'term_0',
@@ -96,7 +96,7 @@ class CreateSet(forms.ModelForm):
         'id': 'definition_0',
     }))
 
-    set_image = forms.ImageField()
+    # set_image = forms.ImageField(blank=True)
 
     wordsList = []
 

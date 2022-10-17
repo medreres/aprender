@@ -62,8 +62,8 @@ class Set(models.Model):
     # if author is null, then author was deleted, but set was saved
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     # words that user like to learn more than the others
-    chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True)
-    set_image = models.ImageField(blank=True, null=True)
+    chosenWords = models.ManyToManyField(Word, related_name="chosenWords", blank=True, null=True)
+    set_image = models.ImageField(blank=True, null=True, upload_to='set/')
 
     def __str__(self) -> str:
         return f"{self.label} {self.id}"
