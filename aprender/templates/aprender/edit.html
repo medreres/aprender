@@ -211,7 +211,9 @@
         fetch('saveChanges', {
             method: 'PATCH',
             body: JSON.stringify({
-                words: words
+                words: words,
+                label: document.querySelector('#setLabel').value,
+                description: document.querySelector('#setDescription').value
             })
         })
             .then(response => response.json())
@@ -268,6 +270,12 @@
 
 
                 let container = document.querySelector('#wordsContainer');
+
+
+                // set label and descripiton
+                document.querySelector('#setDescription').value = result['description'];
+                document.querySelector('#setLabel').value = result['label'];
+
                 container.innerHTML = '';
                 result['words'].forEach((word) => {
                     //TODO word has 3 status: initial, change, add
@@ -307,10 +315,10 @@
     }
 </script>
 <label for="setLabel">Set Label
-    <input type="text" name="set label" id="setLabel">
+    <input type="text" name="set label" id="setLabel" value="">
 </label>
 <label for="setDescription">Set Description
-    <input type="text" name="set description" id="setDescription">
+    <input type="text" name="set description" id="setDescription" value="">
 </label>
 <section id='wordsContainer'>
 </section>

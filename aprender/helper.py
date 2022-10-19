@@ -139,10 +139,8 @@ def nextWord(request, id):
 
 def currentWord(request, id):
 
-
     if not request.user.is_authenticated:
         return JsonResponse({'message': 'user isnt authorized'}, status=403)
-
 
     # if  not request.user.is_authorized:
         # return JsonResponse({'message': 'user isnt authorised'}, status=403)
@@ -159,7 +157,6 @@ def currentWord(request, id):
 
 def prevWord(request, id):
 
-    
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
@@ -301,14 +298,14 @@ def getWordsToEdit(request, id):
         return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
     # else if in edit mode, load all words
     elif body['wordsPerPage'] == 'all':
-        return JsonResponse({'words': [word.serialize() for word in allWords]}, status=200)
+        return JsonResponse({'words': [word.serialize() for word in allWords], 'label': learnPath.set.label,
+                             'description': learnPath.set.description}, status=200)
 
 
 def getNumberOfPages(request, id):
 
     if not request.user.is_authenticated:
         return JsonResponse({'message': 'user isnt authorized'}, status=403)
-
 
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     allWords = [*learnPath.set.words.all()]
@@ -324,6 +321,14 @@ def saveChanges(request, id):
     body = json.loads(request.body)
 
     set = Set.objects.get(pk=id)
+
+    if set.label != body['label']:
+        set.label = body['label']
+        set.save()
+    
+    if set.description != body['description']:
+        set.description = body['description']
+        set.save()
 
     if set.author.id != request.user.id:
         return JsonResponse({'error': "not author to edit"}, status=403)
@@ -347,7 +352,7 @@ def saveChanges(request, id):
                 wordToAdd.save()
 
                 # add word to set
-                
+
                 set.words.add(wordToAdd)
 
                 # add to not starred in all learnways

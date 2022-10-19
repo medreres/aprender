@@ -1,3 +1,30 @@
+#questionTypes {
+    min-height: 100px;
+    display: flex;
+    flex-flow: column;
+}
+
+.form-check-label {}
+
+/* .modal-body {
+				display: flex;
+
+			} */
+
+.form-check {
+    padding-left: 0;
+}
+
+#starredTerms {
+    min-width: 70%;
+}
+
+.container {
+    display: flex;
+}
+
+
+
 .flip-card {
     background-color: transparent;
     width: 100%;

@@ -1,7 +1,9 @@
 from datetime import datetime
 import json
+import copy
 from random import randint, sample, shuffle
 from secrets import randbelow
+from xmlrpc.client import Boolean
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -363,7 +365,9 @@ def profile(request, user):
 
 @login_required
 def flashcards(request, id):
-    return render(request, 'aprender/flashcards.html')
+    return render(request, 'aprender/flashcards.html', {
+        'id': id
+    })
 
 
 def learn(request, id):
@@ -397,6 +401,32 @@ def testCheck(request, id):
     return HttpResponseRedirect(reverse('index'))
 
 
+def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
+    """Get all possible words from learnway"""
+    allWords = []
+    # if not only starred then get all words
+    if starred == 'all':
+        return [*(learnPath.set.words.all())]
+    
+    # if only starred then fetch poor known first
+    allWords = [*(learnPath.poorKnown.all())]
+
+
+    # if not enough, append from intermedate
+    if questionLimit > len(allWords) and learnPath.intermediateKnown.count():
+        allWords.extend(*(learnPath.intermediateKnown.all()))
+
+    # if thats not enough, then add from wellknown
+    if questionLimit > len(allWords) and learnPath.wellKnown.count():
+        allWords.extend(*(learnPath.wellKnown.all()))
+
+    # if not enough throw an error
+    if questionLimit > len(allWords):
+        return -1
+    
+    else:
+        return allWords
+
 def createTest(request, id, testForm) -> list:
 
     # TODO not starred choice
@@ -420,17 +450,23 @@ def createTest(request, id, testForm) -> list:
     # choose for each question type(all are ought to be different)
     # TODO replace all instances of seraching user's path with one function
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
-    allWords = [*(learnPath.poorKnown.all()), *
-                (learnPath.intermediateKnown.all()), *(learnPath.wellKnown.all())]
+    allWords = getAllWords(request, learnPath, testForm['questionLimit'], testForm['starredTerms'])
 
-    # print('ALL WORDS')
-    # print(allWords)
-
-    if testForm['questionLimit'] > len(allWords):
+    if allWords == -1:
         # TODO
         messages.warning(request, 'Too few words in dictionary')
         # return error
         return -1
+
+    possibleAnswers = copy.deepcopy(allWords)
+   
+
+    
+    
+
+    # print('ALL WORDS')
+    # print(allWords)
+
     # print('ALL WORDS')
     # print('----------------------------------')
     # print(allWords)
@@ -440,11 +476,11 @@ def createTest(request, id, testForm) -> list:
         for i in range(numberOfQuestionTypes[key]):
             # chose random word in accordace to question type
             if key == 'multiple':
-                questions[key].append(getMultipleWord(allWords))
+                questions[key].append(getMultipleWord(allWords, possibleAnswers))
             elif key == 'written':
                 questions[key].append(getWrittenWord(allWords))
             elif key == 'true':
-                questions[key].append(getTrueWord(allWords))
+                questions[key].append(getTrueWord(allWords, possibleAnswers))
     return questions
 
 
@@ -469,24 +505,30 @@ def getWrittenWord(words: list):
     return {'word': randWord.term, 'definition': randWord.definition, 'id': randWord.id}
 
 
-def getMultipleWord(words: list):
+def getMultipleWord(words: list, answers: list):
     randWord = getRandWord(words)
+
+    possibleAnswers = answers[:]
+    possibleAnswers.remove(randWord)
     # add definition of the word, rest chose randomly
 
-    # !!! TODO
+    # TODO
     definition = [randWord.definition, *
-                  ([word.definition for word in sample(words, 3)])]
+                  ([word.definition for word  in sample(possibleAnswers, 3)])]
     shuffle(definition)
     return {'word': randWord.term, 'definition': definition, 'id': randWord.id}
 
 
-def getTrueWord(words: list):
+def getTrueWord(words: list, answers: list):
     randWord = getRandWord(words)
+
+    possibleAnswers = answers[:]
+    possibleAnswers.remove(randWord)
     # chose definition for true/false statemnt on random
-    faultyDef = sample([*words, randWord], 1)[0].definition
+    faultyDef = sample([*possibleAnswers, randWord], 1)[0].definition
     return {'word': randWord.term, 'definitionRandom': faultyDef, 'definitionTrue': randWord.definition, 'id': randWord.id}
 
-# TODO
+# TODO maybe
 
 
 def match(request, id):
@@ -496,6 +538,12 @@ def match(request, id):
 
 
 def edit(request, id):
+
+    set = Set.objects.get(pk=id)
+    if not request.user.is_authenticated or set.author.id != request.user.id:
+        messages.error(request, 'Permission denied')
+        return HttpResponseRedirect(reverse('set', kwargs={'id': id}))
+
     return render(request, 'aprender/edit.html', {
         'id': id
     })

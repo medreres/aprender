@@ -1,80 +1,9 @@
 {% extends 'aprender/study.html' %}
+{% load static %}
 {% block head %}
-<style>
-    .learn-card {
-        background-color: grey;
-        border-radius: 30px;
-        min-height: 100px;
-        min-width: 100px;
-        max-width: 800px;
-        margin: 0 auto;
-        margin-top: 5vh;
-        padding: 10px;
-
-        display: flex;
-        flex-flow: column nowrap;
-    }
-
-
-    .definition {
-        /* margin-bottom: 10vh; */
-        align-self: flex-start;
-        /* margin: 10px; */
-    }
-
-    .definitions {
-        margin: 0 auto;
-        display: flex;
-        flex-flow: row wrap;
-        max-width: 700px;
-
-        justify-content: center;
-    }
-
-    .answer {
-        min-width: 300px;
-        margin: 10px;
-        transition-duration: 1s;
-        transition-property: background-color;
-    }
-
-    .answer:focus {
-        content: none;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    .word {
-        display: flex;
-        justify-content: center;
-
-        justify-content: space-between;
-    }
-
-    .roundMenu {
-        margin: 10vh auto;
-        padding: 10px;
-        border: 1px solid black;
-    }
-
-    .correct {
-        background-color: green !important;
-        opacity: 1 !important;
-    }
-
-    .incorrect {
-        background-color: red !important;
-        opacity: 1 !important;
-    }
-
-    input[name="written"],
-    input[name="multiple"] {
-        transition: background-color 1s;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'styles/test.css' %}">
 <script>
+    //TODO separate
     function checkResults(form) {
         const data = new FormData(form);
         console.log(data.getAll('np'))
@@ -171,8 +100,8 @@
 
 {% endblock head %}
 
-{% comment %} TODO show one after another all the divs, check their answer , at the end show end menu with
-score{% endcomment %}
+<!-- <-- TODO show one after another all the divs, check their answer , at the end show end menu with score --> -->
+
 {% block body %}
 <section id='wordsSection'>
     {% csrf_token %}

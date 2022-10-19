@@ -41,6 +41,13 @@
 			})
 	}
 
+	function resetFlip() {
+		document.querySelectorAll('.flipped').forEach(card => {
+			if (card.classList.contains('flipped')) 
+				card.classList.remove('flipped');
+		})
+	}
+
 	function nextWord() {
 
 		fetch(`${path}/sets/${idOfSet}/nextWord`)
@@ -52,6 +59,7 @@
 				front.innerHTML = result['word'];
 				back.innerHTML = result['definition'];
 				slideNext();
+				resetFlip();
 			})
 	}
 
@@ -65,6 +73,7 @@
 				front.innerHTML = result['word'];
 				back.innerHTML = result['definition'];
 				slidePrev();
+				resetFlip();
 			})
 	}
 
@@ -96,32 +105,6 @@
 		{% if  set.author.id == request.user.id %}
 		<a type="button" class="btn btn-primary" href="{% url 'edit' id %}">Edit</a>
 		{% endif %}
-		<style>
-			#questionTypes {
-				min-height: 100px;
-				display: flex;
-				flex-flow: column;
-			}
-
-			.form-check-label {}
-
-			/* .modal-body {
-				display: flex;
-
-			} */
-
-			.form-check {
-				padding-left: 0;
-			}
-
-			#starredTerms {
-				min-width: 70%;
-			}
-
-			.container {
-				display: flex;
-			}
-		</style>
 		<!-- Modal -->
 		<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModal" aria-hidden="true">
 			<div class="modal-dialog">
@@ -136,8 +119,6 @@
 
 								<script>
 									document.addEventListener('DOMContentLoaded', () => {
-
-
 										let questionTypes = document.querySelectorAll('input[name=questionTypes]');
 										console.log(questionTypes)
 										questionTypes.forEach(checkbox => {
@@ -278,6 +259,7 @@
 	</div>
 	<hr class="dropdown-divider">
 	<style>
+		/* TODO separate in css */
 		#author-info {
 			display: flex;
 			justify-content: space-between;
@@ -370,6 +352,7 @@
 		// script for rght pagination
 	</script>
 	<script>
+		// TODO separate in js
 		var numberOfPages;
 
 
