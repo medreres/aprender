@@ -1,3 +1,4 @@
+from ast import match_case
 from email import message
 import json
 from multiprocessing.dummy import active_children
@@ -13,8 +14,9 @@ from django.core.paginator import Paginator
 WORDSPERSET = 10
 WORDSPERPAGE = 10
 
+
 @login_required
-def favorite(request,user):
+def favorite(request, user):
     favoriteSets = User.objects.get(username=user)
     print(favoriteSets)
     print(favoriteSets.favoriteSets.all())
@@ -22,20 +24,22 @@ def favorite(request,user):
 
 
 @csrf_exempt
-def getSetsId(request,id):
+def getSetsId(request, id):
     body = json.loads(request.body)
     result = Folder.objects.get(pk=id).sets.all()
     return JsonResponse({'setId': [set.serialize() for set in result]}, status=200)
 
 # add set to folder
+
+
 @csrf_exempt
-def addSet(request,id):
+def addSet(request, id):
     body = json.loads(request.body)
     print(body)
     #{'folderId': '11', 'setId': 23}
     folder = Folder.objects.get(pk=body['folderId'])
     set = Set.objects.get(pk=body['setId'])
-    print(folder,set)
+    print(folder, set)
     if not folder.sets.contains(set):
         folder.sets.add(set)
         folder.save()
@@ -44,25 +48,26 @@ def addSet(request,id):
         folder.sets.remove(set)
         folder.save()
         return JsonResponse({'success': 'set was deleted successfully!'}, status=200)
-    
-    
+
+
 @csrf_exempt
-def folderEdit(request,id):
+def folderEdit(request, id):
     body = json.loads(request.body)
     folder = Folder.objects.get(pk=id)
 
     if 'description' in body:
         folder.description = body['description']
-    
+
     if 'label' in body:
         folder.label = body['label']
-    
+
     folder.save()
 
-    
     return JsonResponse({'message': 'changed succesfully'}, status=200)
 
 # fetch sets via ajax
+
+
 @csrf_exempt
 # @login_required
 def fetchSets(request, user):
@@ -76,7 +81,7 @@ def fetchSets(request, user):
         for set in folderSets:
             if set not in sets:
                 sets.append(set)
-                
+
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
 # fetch folde via ajax
@@ -296,32 +301,58 @@ def getNumberOfPages(request, id):
 
 
 @csrf_exempt
-def changeWord(request, id):
+def saveChanges(request, id):
     body = json.loads(request.body)
+    # {'words': [{'id': 1, 'term': 'wordads', 'definition': 'слово'},
+    #  {'id': 2, 'term': 'new word', 'definition': 'нове слово'},
+    #  {'id': 3, 'term': 'table', 'definition': 'стілdsa'}]}
+    # TODO word has 3 statuses: initial,change, add
+    for word in body['words']:
+        print(word)
+        match word['status']:
+            case 'change':
+                wordToChange = Word.objects.get(pk=word['id'])
+                wordToChange.term = word['term']
+                wordToChange.definition = word['definition']
+                wordToChange.save()
+            case 'initial':
+                pass
+            case 'add':
+                wordToAdd = Word.objects.create(term=word['term'], definition=word['definition'])
+                wordToAdd.save()
 
-    # {'id': '53', 'term': 'coffe', 'definition': 'кава'}
-    try:
-        # user is changing existing word
-        wordToChange = Word.objects.get(pk=body['id'])
 
-        if (wordToChange.term == body['term'] and wordToChange.definition == body['definition']):
-            return JsonResponse({'success': 'word hasnt been changed'}, status=200)
+                # add word to set
+                set = Set.objects.get(pk=id)
+                set.words.add(wordToAdd)
+            case _:
+                pass
 
-        wordToChange.term = body['term']
-        wordToChange.definition = body['definition']
-        wordToChange.save()
-        return JsonResponse({'success': 'word changed successfully!'}, status=200)
-    except:
-        # user is adding new word
-        print(body)
-        newWord = Word.objects.create(
-            term=body['term'], definition=body['definition'])
-        learnPath = LearnWay.objects.filter(
-            author=request.user).get(set__pk=id)
-        # TODO create model for notstarred word and add there instead
-        learnPath.set.words.add(newWord)
+    return JsonResponse({'message': 'zbs'}, status=200)
 
-        return JsonResponse({'success': 'Word added successfully!', 'id': newWord.id}, status=200)
+    # # {'id': '53', 'term': 'coffe', 'definition': 'кава', 'deleted': True}
+    # try:
+    #     # user is changing existing word
+    #     wordToChange = Word.objects.get(pk=body['id'])
+
+    #     if (wordToChange.term == body['term'] and wordToChange.definition == body['definition']):
+    #         return JsonResponse({'success': 'word hasnt been changed'}, status=200)
+
+    #     wordToChange.term = body['term']
+    #     wordToChange.definition = body['definition']
+    #     wordToChange.save()
+    #     return JsonResponse({'success': 'word changed successfully!'}, status=200)
+    # except:
+    #     # user is adding new word
+    #     print(body)
+    #     newWord = Word.objects.create(
+    #         term=body['term'], definition=body['definition'])
+    #     learnPath = LearnWay.objects.filter(
+    #         author=request.user).get(set__pk=id)
+    #     # TODO create model for notstarred word and add there instead
+    #     learnPath.set.words.add(newWord)
+
+    #     return JsonResponse({'success': 'Word added successfully!', 'id': newWord.id}, status=200)
 
 
 @login_required

@@ -10,10 +10,16 @@
     // for assigning id for divs with words
     var id = 1;
 
+    // set id
+    const setId = '{{id}}';
+
+    // store all words in json
+    var words = []
+
     function addField() {
         let termContainer = document.querySelector('#wordsContainer');
         termContainer.append(createField())
-        toggleInput(id - 1);
+        // toggleInput(id - 1);
         return false;
     }
 
@@ -21,9 +27,13 @@
         //make post query to change the word in database
         let div = document.querySelector(`div[id=word_${element.id}]`)
         let dataId = div.dataset.id;
-        console.log(dataId)
+        // console.log(dataId)
         // if word is freshly added and hasn't been saved, then its not in database yet
-        if (div.dataset.id) {
+        console.log(dataId)
+        console.log(words);
+        wordToDelete = words.find(word => word['id'] == dataId);
+        console.log(wordToDelete)
+        if (wordToDelete && wordToDelete['status'] != 'add') {
             const url = new URL(location.href);
             const setId = '{{id}}';
             const path = `${url.origin}/sets/${setId}/deleteWord`;
@@ -38,6 +48,11 @@
                     console.log(result);
                 })
         }
+        else {
+            console.log('freshly added')
+        }
+        // delete from word array
+        words.splice(words.indexOf(wordToDelete,1))
         div.remove();
 
         // const url = new URL(location.href);
@@ -56,6 +71,7 @@
         //         console.log(result);
         //     })
     }
+
     function createField() {
 
 
@@ -63,18 +79,21 @@
         // assign class word
         div.classList.add('word');
         div.id = `word_${id}`;
+        div.dataset.id = id;
         div.innerHTML = `
                     <span class='term'>
                         ${id}
-                        <span id='term_label_${id}'></span>
-                        <input id='term_input_${id}' type='text' class='hidden' value=>
+                        <input id='term_input_${id}' type='text'  value=''
+                        oninput="changeWord(this, ${id})";
+                        />
                     </span>
                     <span class='definition'>
-                        <span id='definition_label_${id}'></span>
-                        <input id='definition_input_${id}' type='text' class='hidden' value=>
+                        <input id='definition_input_${id}' type='text'  value=''
+                        oninput="changeWord(this, ${id})";
+                        />
+                        
                     </span>
                     <span class='icons'>
-                        <button data-changemode=true id=${id} data-id=${id} onclick='changeWord(this);'><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit word"></button>
                         <button  onclick='deleteWord(this);' id=${id} data-id=${id}><img src="{% static 'icons/delete.png' %}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
@@ -116,16 +135,28 @@
         return div;
     }
 
-    function changeWord(element) {
-        console.log(element)
-        // hide label and show input or vice versa
-        toggleInput(element.dataset.id);
-        if (element.dataset['changemode'] == 'false') {
-            element.dataset['changemode'] = 'true';
-        } else {
-            element.dataset['changemode'] = 'false';
-            saveWord(element.dataset.id);
+    function changeWord(element, id) {
+        // console.log(element, id);
+        wordToChange = words.find(word => word['id'] === id);
+        if (typeof (wordToChange) == 'undefined') {
+            wordToChange = { 'id': id, 'term': '', 'definition': '', 'status': 'add' }
+            words.push(wordToChange)
         }
+        else if (wordToChange['status'] != 'add') {
+            wordToChange['status'] = 'change';
+        }
+        // console.log('before ');
+        // console.log(wordToChange)
+
+        if (element.id.includes('term')) {
+            wordToChange['term'] = element.value;
+        }
+        else {
+            wordToChange['definition'] = element.value;
+        }
+
+        // console.log('after ')
+        // console.log(wordToChange)
     }
 
     function saveWord(id) {
@@ -140,7 +171,7 @@
         //make post query to change the word in database
         const url = new URL(location.href);
         const setId = '{{id}}';
-        const path = `${url.origin}/sets/${setId}/changeWord`;
+        const path = `${url.origin}/sets/${setId}/saveChanges`;
         fetch(path, {
             method: 'POST',
             body: JSON.stringify({
@@ -153,23 +184,22 @@
             .then(result => {
                 if ('id' in result) {
                     console.log('word saved')
-                    // TODO bug with editing new made word
                     //document.querySelectorAll(`.icons > button[dataset-id=${id}`).forEach(element => element.dataset.id = result['id'])
 
                 }
             })
     }
 
-    function toggleInput(id) {
-        //console.log(`term_label_${id}`);
-        // for term
-        document.querySelector(`#term_input_${id}`).classList.toggle('hidden');
-        document.querySelector(`#term_label_${id}`).classList.toggle('hidden');
+    // function toggleInput(id) {
+    //     //console.log(`term_label_${id}`);
+    //     // for term
+    //     document.querySelector(`#term_input_${id}`).classList.toggle('hidden');
+    //     document.querySelector(`#term_label_${id}`).classList.toggle('hidden');
 
-        // for definition
-        document.querySelector(`#definition_label_${id}`).classList.toggle('hidden');
-        document.querySelector(`#definition_input_${id}`).classList.toggle('hidden');
-    }
+    //     // for definition
+    //     document.querySelector(`#definition_label_${id}`).classList.toggle('hidden');
+    //     document.querySelector(`#definition_input_${id}`).classList.toggle('hidden');
+    // }
 
     var termDefinitionNode;
     document.addEventListener('DOMContentLoaded', () => {
@@ -177,11 +207,33 @@
         termDefinitionNode = document.querySelector('.word');
     })
 
+    function saveChanges() {
+        fetch('saveChanges', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                words: words
+            })
+        })
+            .then(response => response.json())
+            .then(result => {
+                console.log(result)
+
+            })
+
+
+    }
+
+    function submitForm() {
+        saveChanges();
+        const url = "{% url 'set' id%}";
+        window.location.href = url;
+
+    }
+
     function loadWords() {
         //console.log('loading function loadPage;')
         //console.log('Page number ' + i);
         const url = new URL(location.href);
-        const setId = '{{id}}';
         const path = `${url.origin}/sets/${setId}/getWordsToEdit`;
         fetch(path, {
             method: 'POST',
@@ -218,6 +270,9 @@
                 let container = document.querySelector('#wordsContainer');
                 container.innerHTML = '';
                 result['words'].forEach((word) => {
+                    //TODO word has 3 status: initial, change, add
+                    word['status'] = 'initial';
+                    words.push(word);
                     let div = document.createElement('div');
                     // assign class word
                     div.classList.add('word');
@@ -226,15 +281,16 @@
                     div.innerHTML = `
                     <span class='term'>
                         ${id}
-                        <span id='term_label_${word['id']}'>${word['term']}</span>
-                        <input id='term_input_${word['id']}' type='text' class='hidden' value=${word['term']} />
+                        <input id='term_input_${word['id']}' type='text' value="${word['term']}" 
+                        oninput="changeWord(this, ${word['id']})";
+                        />
                     </span>
                     <span class='definition'>
-                        <span id='definition_label_${word['id']}'>${word['definition']}</span>
-                        <input id='definition_input_${word['id']}' type='text' class='hidden' value=${word['definition']} />
+                        <input id='definition_input_${word['id']}' type='text'  value="${word['definition']}" 
+                        oninput="changeWord(this, ${word['id']})";
+                        />
                     </span>
                     <span class='icons'>
-                        <button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit word"></button>
                         <button  onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="{% static 'icons/delete.png' %}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
@@ -259,5 +315,5 @@
 <section id='wordsContainer'>
 </section>
 <div class='word createBtn' onclick="return addField();">Create Card</div>
-<a type="button" class="btn btn-primary" href={% url 'set' id%}>Done</a>
+<button type="button" class="btn btn-primary" onclick='submitForm();'>Done</button>
 {% endblock body %}
