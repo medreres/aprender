@@ -138,6 +138,14 @@ def nextWord(request, id):
 
 
 def currentWord(request, id):
+
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'user isnt authorized'}, status=403)
+
+
+    # if  not request.user.is_authorized:
+        # return JsonResponse({'message': 'user isnt authorised'}, status=403)
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
@@ -150,6 +158,8 @@ def currentWord(request, id):
 
 
 def prevWord(request, id):
+
+    
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
@@ -271,6 +281,10 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
 
 @csrf_exempt
 def getWordsToEdit(request, id):
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'user isnt authorized'}, status=403)
+
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     allWords = [*learnPath.set.words.all()]
 
@@ -291,6 +305,11 @@ def getWordsToEdit(request, id):
 
 
 def getNumberOfPages(request, id):
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'message': 'user isnt authorized'}, status=403)
+
+
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     allWords = [*learnPath.set.words.all()]
 
@@ -303,12 +322,17 @@ def getNumberOfPages(request, id):
 @csrf_exempt
 def saveChanges(request, id):
     body = json.loads(request.body)
+
+    set = Set.objects.get(pk=id)
+
+    if set.author.id != request.user.id:
+        return JsonResponse({'error': "not author to edit"}, status=403)
     # {'words': [{'id': 1, 'term': 'wordads', 'definition': 'слово'},
     #  {'id': 2, 'term': 'new word', 'definition': 'нове слово'},
     #  {'id': 3, 'term': 'table', 'definition': 'стілdsa'}]}
     # TODO word has 3 statuses: initial,change, add
     for word in body['words']:
-        print(word)
+        # print(word)
         match word['status']:
             case 'change':
                 wordToChange = Word.objects.get(pk=word['id'])
@@ -318,16 +342,22 @@ def saveChanges(request, id):
             case 'initial':
                 pass
             case 'add':
-                wordToAdd = Word.objects.create(term=word['term'], definition=word['definition'])
+                wordToAdd = Word.objects.create(
+                    term=word['term'], definition=word['definition'])
                 wordToAdd.save()
 
-
                 # add word to set
-                set = Set.objects.get(pk=id)
+                
                 set.words.add(wordToAdd)
+
+                # add to not starred in all learnways
+                learnWays = LearnWay.objects.filter(set__id=id)
+                for learnWay in learnWays:
+                    learnWay.notStarred.add(wordToAdd)
             case _:
                 pass
 
+    # TODO change succes message
     return JsonResponse({'message': 'zbs'}, status=200)
 
     # # {'id': '53', 'term': 'coffe', 'definition': 'кава', 'deleted': True}

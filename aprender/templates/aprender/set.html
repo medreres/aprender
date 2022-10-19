@@ -93,7 +93,9 @@
 		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testModal">
 			Test
 		</button>
+		{% if  set.author.id == request.user.id %}
 		<a type="button" class="btn btn-primary" href="{% url 'edit' id %}">Edit</a>
+		{% endif %}
 		<style>
 			#questionTypes {
 				min-height: 100px;

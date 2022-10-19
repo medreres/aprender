@@ -32,6 +32,7 @@ class LearnWay(models.Model):
     # rank of knowing words
     lastWord = models.ForeignKey('Word', null=True,blank=True, on_delete=models.SET_NULL, related_name='lastKnown')
     poorKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='poorKnown')
+    notStarred = models.ManyToManyField('Word', null=True, blank=True, related_name='notStarred')
     intermediateKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='intermediateKnown')
     wellKnown = models.ManyToManyField('Word', null=True,blank=True, related_name='wellKnown')
 
