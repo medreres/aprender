@@ -74,7 +74,7 @@ class Set(models.Model):
             'label': self.label,
             'wordsNumber': self.words.count(),
             'author': self.author.username,
-            'author-pic': self.author.profile_image.url
+            'author-pic': self.author.profile_image.url if self.author.profile_image else None
         }
 
     def get_all_words(self):
