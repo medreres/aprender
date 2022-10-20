@@ -2,46 +2,8 @@
 {% load static %}
 {% block body %}
 
-<style>
-    .containerCol {
-        display: flex;
-        flex-flow: column nowrap;
-    }
-
-    .containerRow {
-        display: flex;
-        flex-flow: row nowrap;
-    }
-</style>
-<script>
-    // const url = new URL(window.location.href);
-    const username = '{{user}}';
-
-    // by default load user sets
-    loadSets(undefined, username, 'contentContainer');
-
-
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('#setsBtn').addEventListener('click', loadUserSets);
-        document.querySelector('#foldersBtn').addEventListener('click', loadUserFolders);
-    })
-
-    function loadUserSets(evt) {
-        // load posts via ajax
-        if (!evt.target.classList.contains('active')) {
-            loadSets(undefined, username, 'contentContainer');
-            toggleActive('userSetsLink', ['userSetsLink','userFoldersLink']);
-        }
-    }
-
-    function loadUserFolders(evt) {
-        if (!evt.target.classList.contains('active')) {
-            loadFolders(undefined, username, 'contentContainer');
-            toggleActive('userFoldersLink', ['userSetsLink','userFoldersLink']);
-        }
-    }
-
-</script>
+<link rel="stylesheet" href="{% static 'styles/profile.css' %}">
+<script src="{% static 'plugins/profile.js' %}"></script>
 <div class='containerCol' style='margin: 5vh 10vw;'>
     <div class='containerRow' style='margin-bottom: 2vh;'>
         <img class='profilePicBg' src="{% if user.profile_image %}{{user.profile_image.url}}{% else %}{% static 'icons/user.png' %}{%endif%}">

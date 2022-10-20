@@ -2,85 +2,8 @@
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'styles/set.css' %}">
-<script>
-    function flip(flipCard) {
-        flipCard.classList.toggle('flipped');
-    }
-
-    function slideNext() {
-        const myCarouselEl = document.querySelector('#carouselExampleInterval')
-        const carousel = bootstrap.Carousel.getInstance(myCarouselEl) // Retrieve a Carousel instance
-        carousel.next();
-    }
-
-    function slidePrev() {
-        const myCarouselEl = document.querySelector('#carouselExampleInterval')
-        const carousel = bootstrap.Carousel.getInstance(myCarouselEl) // Retrieve a Carousel instance
-        carousel.prev();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        currentWord();
-    })
-
-    function currentWord() {
-        fetch(`${path}/sets/${idOfSet}/currentWord`)
-            .then(response => response.json())
-            .then(result => {
-                // go to the next flipcard and change it contexr
-                let frontSide = document.querySelector('#carouselItemOneFront');
-                frontSide.innerHTML = result['word'];
-
-                let flipSide = document.querySelector('#carouselItemOneBack');
-                flipSide.innerHTML = result['definition'];
-
-                let progressBar = document.querySelector('#progressFlashCards');
-                progressBar.innerHTML = `${result['index']}/${result['allWordsCount']}`;
-                setProgressBar(result);
-            })
-    }
-
-    function nextWord() {
-
-        fetch(`${path}/sets/${idOfSet}/nextWord`)
-            .then(response => response.json())
-            .then(result => {
-                let nextSlide = document.querySelector('.carousel-item:not(.active)');
-                let front = nextSlide.querySelector('.flip-card-front');
-                let back = nextSlide.querySelector('.flip-card-back');
-                front.innerHTML = result['word'];
-                back.innerHTML = result['definition'];
-
-                let progressBar = document.querySelector('#progressFlashCards');
-                progressBar.innerHTML = `${result['index']}/${result['allWordsCount']}`;
-                setProgressBar(result);
-                slideNext();
-            })
-    }
-
-    function prevWord() {
-        fetch(`${path}/sets/${idOfSet}/prevWord`)
-            .then(response => response.json())
-            .then(result => {
-                let nextSlide = document.querySelector('.carousel-item:not(.active)');
-                let front = nextSlide.querySelector('.flip-card-front');
-                let back = nextSlide.querySelector('.flip-card-back');
-                front.innerHTML = result['word'];
-                back.innerHTML = result['definition'];
-
-                let progressBar = document.querySelector('#progressFlashCards');
-                progressBar.innerHTML = `${result['index']}/${result['allWordsCount']}`;
-                setProgressBar(result);
-                slidePrev();
-            })
-    }
-
-    function setProgressBar(result)
-    {
-        let progressBar = document.querySelector('#progressBar');
-        progressBar.style.width = `${result['index'] * 100 / result['allWordsCount']}%`;
-    }
-</script>
+<link rel="stylesheet" href="{% static 'styles/flashcards.css' %}">
+<script src="{% static 'plugins/flashcards.js' %}"></script>
 {% endblock head %}
 {% block body %}
 <div class="progress" style='height: 5px;'>
@@ -106,30 +29,15 @@
                 <div class="flip-card" onclick='flip(this)' id="flipCardTwo">
                     <div class="flip-card-inner">
                         <div class="flip-card-front" id='carouselItemTwoFront'>
-                            
+
                         </div>
                         <div class="flip-card-back" id='carouselItemTwoBack'>
-                            
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <style>
-            .controls-container {
-                display: flex;
-                justify-content: center;
-                padding: 10px;
-                ;
-            }
-
-
-            .control {
-                width: 100%;
-                margin: 10px;
-                background-color: transparent;
-            }
-        </style>
         <div class='controls-container'>
             <button class="btn btn-dark control" type="button" onclick='prevWord();'>
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>

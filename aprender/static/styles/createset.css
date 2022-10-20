@@ -1,0 +1,14 @@
+
+    .term-definition {
+        display: flex;
+        margin: 10px 10px;
+        border: 1px solid black;
+    }
+
+    .closeBtn {
+        height: 24px;
+    }
+
+    .closeBtn:hover {
+        cursor: pointer;
+    }

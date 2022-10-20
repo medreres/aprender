@@ -1,0 +1,13 @@
+.controls-container {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    ;
+}
+
+
+.control {
+    width: 100%;
+    margin: 10px;
+    background-color: transparent;
+}
