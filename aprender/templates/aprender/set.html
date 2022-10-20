@@ -24,19 +24,21 @@
 {%endif %}
 {% endblock head %}
 {% block body %}
-<article class='set'>
+<section class='setContainer'>
 	<h1>{{set.label}}</h1>
 	<div class="menuContainer">
-		<a type="button" class="btn btn-primary" href="{% url 'flashcards' id %}">Flashcards</a>
-		<a type="button" class="btn btn-primary" href="{% url 'learn' id %}">Learn</a>
-		<!-- <a type="button" class="btn btn-primary" href="{% url 'test' id %}">Test</a> -->
-		<!-- Button trigger modal -->
-		<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testModal">
-			Test
-		</button>
-		{% if set.author.id == request.user.id %}
-		<a type="button" class="btn btn-primary" href="{% url 'edit' id %}">Edit</a>
-		{% endif %}
+		<div class='buttonContainer'>
+			<a type="button" class="btn btn-primary" href="{% url 'flashcards' id %}">Flashcards</a>
+			<a type="button" class="btn btn-primary" href="{% url 'learn' id %}">Learn</a>
+			<!-- <a type="button" class="btn btn-primary" href="{% url 'test' id %}">Test</a> -->
+			<!-- Button trigger modal -->
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#testModal">
+				Test
+			</button>
+			{% if set.author.id == request.user.id %}
+			<a type="button" class="btn btn-primary" href="{% url 'edit' id %}">Edit</a>
+			{% endif %}
+		</div>
 		<!-- Modal -->
 		<div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModal" aria-hidden="true">
 			<div class="modal-dialog">
@@ -94,7 +96,7 @@
 				</div>
 			</div>
 		</div>
-		<hr class="dropdown-divider">
+		{% comment %} <hr class="dropdown-divider"> {% endcomment %}
 		<!-- carousel for taking look at cards with words -->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
 			<div class="carousel-inner">
@@ -157,7 +159,6 @@
 		</div>
 		<span>
 			<!-- icons for adding set to folder,editing,sharing -->
-			<img src="{% static 'icons/add.png' %}" class="icon" alt="Add set to folder">
 			{% if set.author == request.user.username %}
 			<a href="{% url 'edit' id %}"><img src="{% static 'icons/pencil.png' %}" class="icon" alt="Edit set"></a>
 			{% endif %}
@@ -170,11 +171,10 @@
 					alt="heart"></button>
 			{% endif %}
 			{% endif %}
-			<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
 		</span>
 	</section>
 	<script src="{% static 'plugins/twbs-pagination/jquery.twbsPagination.js' %}">
-	// script for rght pagination
+		// script for rght pagination
 	</script>
 	<article id='words'>
 		<h2>Terms in this set</h2>
@@ -198,5 +198,5 @@
 		<section id='wordsContainer'>
 		</section>
 	</article>
-</article>
+</section>
 {% endblock body %}

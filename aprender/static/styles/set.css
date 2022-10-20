@@ -8,6 +8,31 @@ span>p {
     margin-bottom: 0px;
 }
 
+.setContainer {
+    padding: 10px;
+}
+
+.buttonContainer {
+    display: flex;
+    flex-flow: row nowrap;
+    padding: 10px;
+}
+
+.buttonContainer .btn {
+    margin: 0px 1px;
+    
+}
+
+@media screen and (max-width: 800px) {
+    .buttonContainer {
+        align-items: stretch;
+    }
+
+    .buttonContainer .btn {
+        flex: 1;
+    }
+}
+
 .profile-pic {
     height: 48px;
     width: 48px;
@@ -41,12 +66,6 @@ span>p {
     flex-flow: column;
 }
 
-.form-check-label {}
-
-/* .modal-body {
-				display: flex;
-
-			} */
 
 .form-check {
     padding-left: 0;
@@ -59,8 +78,6 @@ span>p {
 .container {
     display: flex;
 }
-
-
 
 .flip-card {
     background-color: transparent;
@@ -122,7 +139,8 @@ span>p {
 .set {
     display: block;
     /* margin-left: 5vw; */
-    margin: 0 3em;
+    /* margin: 0 3em; */
+
 }
 
 .blur {

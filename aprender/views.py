@@ -215,7 +215,7 @@ def createset(request):
         )
         studySet.words.add(*[w.id for w in wordsObjectList])
 
-        return HttpResponseRedirect(reverse('createset'))
+        return HttpResponseRedirect(reverse('set', kwargs={'id': studySet.id}))
 
     return render(request, 'aprender/createset.html', {
         'CreateSet': CreateSet(),

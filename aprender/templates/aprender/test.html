@@ -38,7 +38,7 @@
             {% endfor %}
             {% elif key == 'written' %}
             <!-- just check spelling via checkWord() function -->
-            <input type="text" data-id='{{word.id}}' name='written' autocomplete="off">
+            <input autofocus type="text" data-id='{{word.id}}' name='written' autocomplete="off">
             <button onclick="checkWord(this);" data-id="{{word.id}}" name="written"
                 class="btn btn-primary">Check</button>
             {% elif key == 'true' %}

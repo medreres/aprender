@@ -29,7 +29,7 @@
         })
     </script>
     {% endif %}
-    
+
     {% block head %}
     {% endblock head %}
     <title>live</title>
@@ -197,54 +197,57 @@
     </nav>
     {% bootstrap_messages %}
 
-    {% block body %}
-    {% if user.is_authenticated %}
-    <h1>Recent Sets Studied</h1>
-    <div class='recentSet'>
-        {% for set in recentSets %}
-        <a class='set' href={% url 'set' set.id%}>
-            <div class='set-info'>
-                <span>
-                    <span> {{set.label}}</span>
-                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
-                </span>
-                {%if set.set_image%}
-                <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
-                {%endif%}
-            </div>
-            <div style=''>
-                <img class="profilePicSm"
-                    src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
-                    alt="profile icon">
-                <span>{{set.author}}</span>
-            </div>
-        </a>
-        {% endfor %}
+    <div style="margin: 0 10px;">
+        {% block body %}
+        {% if user.is_authenticated %}
+        <h1>Recent Sets Studied</h1>
+        <div class='recentSet'>
+            {% for set in recentSets %}
+            <a class='set' href={% url 'set' set.id%}>
+                <div class='set-info'>
+                    <span>
+                        <span> {{set.label}}</span>
+                        <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+                    </span>
+                    {%if set.set_image%}
+                    <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
+                    {%endif%}
+                </div>
+                <div style=''>
+                    <img class="profilePicSm"
+                        src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+                        alt="profile icon">
+                    <span>{{set.author}}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <h2>All sets</h2>
+
+        <div class='recentSet'>
+            {% for set in allSets %}
+            <a class='set' href="{% url 'set' set.id%}">
+                <div class='set-info'>
+                    <span>
+                        <span> {{set.label}}</span>
+                        <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+                    </span>
+                    {%if set.set_image%}
+                    <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
+                    {%endif%}
+                </div>
+                <div style=''>
+                    <img class="profilePicSm"
+                        src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
+                        alt="profile icon">
+                    <span>{{set.author}}</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% endblock body %}
     </div>
-    {% endif %}
-    <h2>All sets</h2>
-    <div class='recentSet'>
-        {% for set in allSets %}
-        <a class='set' href="{% url 'set' set.id%}">
-            <div class='set-info'>
-                <span>
-                    <span> {{set.label}}</span>
-                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
-                </span>
-                {%if set.set_image%}
-                <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
-                {%endif%}
-            </div>
-            <div style=''>
-                <img class="profilePicSm"
-                    src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
-                    alt="profile icon">
-                <span>{{set.author}}</span>
-            </div>
-        </a>
-        {% endfor %}
-    </div>
-    {% endblock body %}
 </body>
 
 </html>

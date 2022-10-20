@@ -4,6 +4,7 @@ var id = 1;
 // saving interval
 const SAVEPAUSE = 300000;
 
+
 // set id
 
 
@@ -59,7 +60,7 @@ function createField() {
     div.dataset.id = id;
     div.innerHTML = `
                     <span class='term'>
-                        ${id}
+                    <span class='id'>#${id}</span>
                         <input  id='term_input_${id}' type='text'  value=''
                         oninput="changeWord(this, ${id})";
                         />
@@ -216,7 +217,8 @@ function loadWords() {
                 div.dataset.id = word['id']
                 div.innerHTML = `
                     <span class='term'>
-                        ${id}
+                    <span class='id'>#${id}</span>
+                    
                         <input id='term_input_${word['id']}' type='text' value="${word['term']}" 
                         oninput="changeWord(this, ${word['id']})";
                         />
