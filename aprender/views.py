@@ -102,7 +102,6 @@ def loginUser(request):
     # check form for validity, else show error
     if not form.is_valid():
         messages.error(request, "Error. Invalid form")
-        return JsonResponse({'error': 'Invalid form!'})
 
     user = authenticate(
         request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
@@ -111,7 +110,7 @@ def loginUser(request):
     else:
         messages.warning(
             request, "User with such password/username doesnt exist")
-        return JsonResponse({'error': 'User doesnt exist!'})
+        
 
     # get page from which user logged
     next_url = request.GET.get('next', None)

@@ -70,7 +70,9 @@
 										{% for field in TestForm.starredTerms %}
 										<div>
 											<input type="radio" name="starredTerms" class="btn-check"
-												id="{{ field.id_for_label }}" name="{{ field.html_name }}" {% if field.choice_label == 'Starred' %}checked{%endif%} value='{{field.choice_label|lower}}' role='group'>
+												id="{{ field.id_for_label }}" name="{{ field.html_name }}"
+												{% if field.choice_label == 'Starred' %}checked{%endif%}
+												value='{{field.choice_label|lower}}' role='group'>
 											<label
 												class="btn btn-outline-{% if field.choice_label == 'All'%}warning{% else %}success{%endif%}"
 												for="{{ field.id_for_label }}">{{field.choice_label}}</label>
@@ -89,8 +91,6 @@
 				</div>
 			</div>
 		</div>
-		{% comment %} TODO {% endcomment %}
-		{% comment %} <a type="button" class="btn btn-primary" href="{% url 'match' id %}">Match</a> {% endcomment %}
 		<hr class="dropdown-divider">
 		<!-- carousel for taking look at cards with words -->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
@@ -170,10 +170,8 @@
 			<img src="{% static 'icons/share.png' %}" class="icon" alt="Share set">
 		</span>
 	</section>
-	{% comment %} here start all the terms with their definition with ability to edit them via ajax {% endcomment %}
-
 	<script src="{% static 'plugins/twbs-pagination/jquery.twbsPagination.js' %}">
-		// script for rght pagination
+	// script for rght pagination
 	</script>
 	<article id='words'>
 		<h2>Terms in this set</h2>
