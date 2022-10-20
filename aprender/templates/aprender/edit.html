@@ -8,7 +8,8 @@
 <p>this is editting of the set {{id}}</p>
 <script>
     const setId = '{{id}}';
-    const deleteIconPath = "{% static 'icons/delete.png' %}";
+    const deleteIconPath = '{% static 'icons/delete.png' %}';
+    const setPath = "{% url 'set' id%}";
 </script>
 <section>
     <label for="setLabel">Set Label
@@ -21,6 +22,6 @@
 </section>
 <section id='wordsContainer'>
 </section>
-<div class='word createBtn' onclick="return addField();">Create Card</div>
+<button class='word createBtn' onclick="return addField();">Create Card</button>
 <button type="button" class="btn btn-primary" onclick='submitForm();'>Done</button>
 {% endblock body %}

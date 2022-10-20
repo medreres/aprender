@@ -92,18 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleLike(element) {
     const url = new URL(location.href)
-    const setId = parseInt('{{id}}');
+    
     const path = `${url.origin}/sets/${setId}/toggleFavorite`;
     fetch(path)
         .then(response => response.json())
         .then(result => {
             let img = element.querySelector('img');
             if ('delete' in result) {
-                const path = "{% static 'icons/heart.png' %}";
+                // TODO replace static
+                const path = heartIconPath;
                 img.src = path;
                 // change to blank heart
             } else {
-                const path = "{% static 'icons/heart-red.png' %}";
+                const path = heartRedIconPath;
                 img.src = path;
             }
         })
@@ -217,16 +218,18 @@ function loadPage(i) {
                 div.innerHTML = `
 						<span class='term'>
 							<span id='term_label_${word['id']}'>${word['term']}</span>
-							<input id='term_input_${word['id']}' type='text' class='hidden' value=${word['term']} />
+							<input id='term_input_${word['id']}' type='text' class='hidden' value="${word['term']}" />
 						</span>
 						<span class='definition'>
 							<span id='definition_label_${word['id']}'>${word['definition']}</span>
-							<input id='definition_input_${word['id']}' type='text' class='hidden' value=${word['definition']} />
+							<input id='definition_input_${word['id']}' type='text' class='hidden' value="${word['definition']}" />
 						</span>
 						<span class='icons'>
-							<button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src=${pencilIconPath} class="icon" alt="Edit word"></button>
+							
 						</span>
 						`;
+
+                        //<button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src=${pencilIconPath} class="icon" alt="Edit word"></button>
 
 
                 container.append(div);

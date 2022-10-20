@@ -13,6 +13,7 @@ var words = []
 function addField() {
     let termContainer = document.querySelector('#wordsContainer');
     termContainer.append(createField())
+    document.querySelector(`#term_input_${id-1}`).focus();
     // toggleInput(id - 1);
     return false;
 }
@@ -59,7 +60,7 @@ function createField() {
     div.innerHTML = `
                     <span class='term'>
                         ${id}
-                        <input id='term_input_${id}' type='text'  value=''
+                        <input  id='term_input_${id}' type='text'  value=''
                         oninput="changeWord(this, ${id})";
                         />
                     </span>
@@ -70,10 +71,11 @@ function createField() {
                         
                     </span>
                     <span class='icons'>
-                        <button  onclick='deleteWord(this);' id=${id} data-id=${id}><img src="{% static 'icons/delete.png' %}" class="icon" alt="Delete word"></button>
+                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} data-id=${id}><img src=${deleteIconPath} class="icon" alt="Delete word"></button>
                     </span>
                     `;
     id++;
+
 
     return div;
 }
@@ -179,7 +181,7 @@ function saveChanges() {
 
 function submitForm() {
     saveChanges();
-    const url = "{% url 'set' id%}";
+    const url = setPath;
     window.location.href = url;
 
 }
@@ -225,12 +227,14 @@ function loadWords() {
                         />
                     </span>
                     <span class='icons'>
-                        <button  onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
+                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
+
                 id++;
 
                 container.append(div);
+                
             })
         })
 }
