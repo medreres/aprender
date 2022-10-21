@@ -4,13 +4,13 @@
 <link rel="stylesheet" href="{% static 'styles/test.css' %}">
 <script src="{% static 'plugins/test.js' %}"></script>
 <script>
-    var numberOfWordsGeneral = {{numberOfWordsGeneral}};
-    const setId = {{id}};
+    var numberOfWordsGeneral = '{{numberOfWordsGeneral}}';
+    const setId = '{{id}}';
 </script>
 
 {% endblock head %}
 
-<!-- TODO show one after another all the divs, check their answer , at the end show end menu with score --> 
+<!-- TODO show one after another all the divs, check their answer , at the end show end menu with score -->
 
 {% block body %}
 <section id='wordsSection'>
@@ -19,11 +19,13 @@
     {% for key,value in questions.items %}
     {% for word in value %}
     <div class='learn-card'>
-        <span>Definition</span>
+        <span style='text-align: center'>Definition</span>
         <div class='word-container'>
-            <span class='word'>{{word.word}}</span>
+            <span style='text-align: center' class='word'>{{word.word}}</span>
             {% if key == 'true' %}
-            means {{word.definitionRandom}}
+            means
+            <br>
+            {{word.definitionRandom}}
             {% endif %}
             <div class='picture'></div>
         </div>
@@ -63,10 +65,15 @@
     <button type="submit" class='btn btn-primary hidden'>Submit</button>
 </section>
 
-<section id='result' class="hidden">
+
+<section id='result' style='display: none;'>
 
     <h2>Result</h2>
-    <span id='resultStat'></span>
-
+    <div class="progress mb-5" id='resultStat' style='width: 50vw;'>
+        <div class="progress-bar" id='percents' role="progressbar" aria-label="Example with label" style="width: 1%;"
+            aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">1%</div>
+    </div>
+    <button class="btn-lg btn-primary" onclick="location.reload()">Try Again!</button>
+    <a class='btn btn-primary mt-2' href="{% url 'set' id %}" role="button">Get back to Set</a>
 </section>
 {% endblock %}

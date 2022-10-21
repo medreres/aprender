@@ -34,7 +34,6 @@ urlpatterns = [
     path('sets/<int:id>/learn/check', views.check, name='check'),
     path('sets/<int:id>/test', views.test, name='test'),
     path('sets/<int:id>/testCheck', views.testCheck, name='testCheck'),
-    # TODO --------- path('sets/<int:id>/match', views.match, name='match'),
     path('sets/<int:id>/nextWord', views.nextWord, name='nextWord'),
     path('sets/<int:id>/prevWord', views.prevWord, name='prevWord'),
     path('sets/<int:id>/currentWord', views.currentWord, name='currentWord'),

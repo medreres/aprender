@@ -74,8 +74,8 @@ def settings(request):
     if request.method == 'POST':
         form = EditUser(request.POST, request.FILES)
         if not form.is_valid():
-            # TODO throw error
-            pass
+            messages.warning(request, 'Form is not valid')
+            return HttpResponseRedirect(reverse('profile'))
 
         user = User.objects.get(pk=request.user.id)
         if form.cleaned_data['profile_image'] is None:
@@ -140,8 +140,6 @@ def register(request):
         return HttpResponseRedirect(reverse('index'))
 
     if request.method == 'POST':
-        # TODO throw warning
-        pass
 
         form = RegisterForm(request.POST)
         if not form.is_valid():
@@ -198,7 +196,7 @@ def createset(request):
         # ! CRUTCHES
         formFields = request.POST
         # didn't manage to implement correctly, so all terms and their definitions
-        # will be fetched via request.POST than it would be better to do via django form
+        # will be fetched via request.POST than it would have been better to do via django form
 
         # iterate through all terms and create corresponding object Word
         wordsObjectList = []
@@ -344,7 +342,6 @@ def folder(request, id):
     try:
         folder = Folder.objects.get(pk=id)
     except:
-        # TODO folder is not found
         return HttpResponseRedirect(reverse('index'))
 
     return render(request, 'aprender/folder.html', {
@@ -377,10 +374,9 @@ def learn(request, id):
 
 def test(request, id):
     form = TestForm(request.GET)
-    # TODO
-    if form.is_valid():
-        pass
-        # messages.warning(request, 'Form is not valid')
+    if not form.is_valid():
+        messages.warning(request, 'Form is not valid')
+        return HttpResponseRedirect(reverse('set', krargs={'id':id}))
 
     # {'questionTypes': ['written', 'matching', 'multiple', 'true'], 'questionLimit': 10, 'starredTerms': 'starred', 'showImages': False}
 
@@ -428,7 +424,6 @@ def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
 
 def createTest(request, id, testForm) -> list:
 
-    # TODO not starred choice
 
     # keys for accessing dictionary
     numberOfQuestionTypes = {'written': 0,
@@ -447,12 +442,10 @@ def createTest(request, id, testForm) -> list:
 
     # fetch all words from all sets(poorKnown, intermediate and well) and randomly
     # choose for each question type(all are ought to be different)
-    # TODO replace all instances of seraching user's path with one function
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     allWords = getAllWords(request, learnPath, testForm['questionLimit'], testForm['starredTerms'])
 
     if allWords == -1:
-        # TODO
         messages.warning(request, 'Too few words in dictionary')
         # return error
         return -1
@@ -510,8 +503,6 @@ def getMultipleWord(words: list, answers: list):
     possibleAnswers = answers[:]
     possibleAnswers.remove(randWord)
     # add definition of the word, rest chose randomly
-
-    # TODO
     definition = [randWord.definition, *
                   ([word.definition for word  in sample(possibleAnswers, 3)])]
     shuffle(definition)
@@ -526,14 +517,6 @@ def getTrueWord(words: list, answers: list):
     # chose definition for true/false statemnt on random
     faultyDef = sample([*possibleAnswers, randWord], 1)[0].definition
     return {'word': randWord.term, 'definitionRandom': faultyDef, 'definitionTrue': randWord.definition, 'id': randWord.id}
-
-# TODO maybe
-
-
-def match(request, id):
-    return render(request, 'aprender/match.html', {
-        'id': id
-    })
 
 
 def edit(request, id):

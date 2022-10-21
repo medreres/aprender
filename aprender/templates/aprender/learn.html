@@ -2,6 +2,9 @@
 {% load static %}
 {% block head %}
 <link rel="stylesheet" href="{% static 'styles/learn.css' %}">
+<script>
+    const restartLearnWayPath = "{% url 'restartLearnWay' id %}";
+</script>
 <script src="{% static 'plugins/learn.js' %}"></script>
 {% endblock head %}
 {% block body %}
@@ -15,7 +18,7 @@
     <div id="wordsLearned">
         <!-- here goes all the learned words throught a round -->
     </div>
-    <button onclick="startNewRound();">Start a New Round</button>
+    <button class="btn btn-primary" onclick="startNewRound();">Start a New Round</button>
 </div>
 <div id="restartMenu" class="restartMenu hidden">
     <button onclick="restartLearnWay();">Restart</button>

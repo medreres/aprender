@@ -1,73 +1,100 @@
+.learn-card {
+    background-color: grey;
+    border-radius: 30px;
+    min-height: 100px;
+    min-width: 100px;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 5vh;
+    padding: 10px;
 
-    .learn-card {
-        background-color: grey;
-        border-radius: 30px;
-        min-height: 100px;
-        min-width: 100px;
-        max-width: 800px;
-        margin: 0 auto;
-        margin-top: 5vh;
-        padding: 10px;
+    display: flex;
+    flex-flow: column nowrap;
+}
 
-        display: flex;
-        flex-flow: column nowrap;
-    }
+.wordsSection {
+    height: 40vh;
+}
 
 
-    .definition {
-        /* margin-bottom: 10vh; */
-        align-self: flex-start;
-        /* margin: 10px; */
-    }
+.definition {
+    /* margin-bottom: 10vh; */
+    align-self: flex-start;
+    /* margin: 10px; */
+}
 
-    .definitions {
-        margin: 0 auto;
-        display: flex;
-        flex-flow: row wrap;
-        max-width: 700px;
 
-        justify-content: center;
-    }
 
-    .answer {
-        min-width: 300px;
-        margin: 10px;
-        transition-duration: 1s;
-        transition-property: background-color;
-    }
+.definitions {
+    margin: 0 auto;
+    display: flex;
+    flex-flow: row wrap;
+    max-width: 700px;
 
-    .answer:focus {
-        content: none;
-    }
+    justify-content: center;
+}
 
-    .hidden {
-        display: none;
-    }
+.answer {
+    min-width: 300px;
+    margin: 10px;
+    transition-duration: 1s;
+    transition-property: background-color;
+}
 
-    .word {
-        display: flex;
-        justify-content: center;
+.answer:focus {
+    content: none;
+}
 
-        justify-content: space-between;
-    }
+.hidden {
+    display: none;
+}
 
-    .roundMenu {
-        margin: 10vh auto;
-        padding: 10px;
-        border: 1px solid black;
-    }
+.word {
+    display: flex;
+    justify-content: center;
 
-    .correct {
-        background-color: green !important;
-        opacity: 1 !important;
-    }
+    justify-content: space-between;
+}
 
-    .incorrect {
-        background-color: red !important;
-        opacity: 1 !important;
-    }
+.roundMenu {
+    margin: 10vh auto;
+    padding: 10px;
+    border: 1px solid black;
+}
 
-    input[name="written"],
-    input[name="multiple"] {
-        transition: background-color 1s;
-    }
+.correct {
+    background-color: green !important;
+    opacity: 1 !important;
+}
+
+.incorrect {
+    background-color: red !important;
+    opacity: 1 !important;
+}
+
+input[name="written"],
+input[name="multiple"] {
+    transition: background-color 1s;
+}
+
+
+#result {
+
+    margin: 0 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: flex-end;
+    align-items: center;
+    height: 40vh;
+}
+
+#result>h2 {
+    font-size: 4em;
+}
+
+.word-container {
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+}

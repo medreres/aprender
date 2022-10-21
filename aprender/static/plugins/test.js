@@ -62,10 +62,13 @@ function toggleNextDiv(id) {
 }
 
 function toggleFinishMenu() {
-    document.querySelector('#result').classList.toggle('hidden');
+    document.querySelector('#result').style.display = 'flex';
     document.querySelector('#wordsSection').classList.toggle('hidden');
-    document.querySelector('#resultStat').innerHTML = `${numberOfWordsCorrect}/${numberOfWordsGeneral}<br/>
-        ${100 * numberOfWordsCorrect / numberOfWordsGeneral}%`;
+    let percent = 100 * numberOfWordsCorrect / numberOfWordsGeneral;
+    console.log(percent);
+    console.log(`${percent}%`);
+    document.querySelector('#percents').innerHTML = `${percent}%`;
+    document.querySelector('#percents').style.width = `${percent}%`;
 }
 
 

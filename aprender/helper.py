@@ -4,7 +4,6 @@ import json
 from multiprocessing.dummy import active_children
 from random import random
 from django.http import JsonResponse
-
 from .models import LearnWay, Set, User, Folder, Word
 from django.contrib import messages
 from random import randint, sample, shuffle
@@ -183,15 +182,22 @@ def getWords(request, id, numberOfWords=10):
     # find the learnpath in database
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
 
-    # if there are any words, show menu to restart the learnPath
-    if learnPath.set.words.count() == learnPath.wellKnown.count():
+
+    if learnPath.notStarred.count() > 0:
+        studySet = learnPath.notStarred
+    elif learnPath.poorKnown.count() > 0:
+        studySet = learnPath.poorKnown
+    elif learnPath.intermediateKnown.count() > 0:
+        studySet = learnPath.intermediateKnown
+    else:
+        # if there are any words, show menu to restart the learnPath
         return JsonResponse({'finish': 'The learn way is finished'}, status=200)
 
-    # if poorknown set is empty, take word from intermediate
-    if learnPath.poorKnown.count() > 0:
-        studySet = learnPath.poorKnown
-    else:
-        studySet = learnPath.intermediateKnown
+    # # if poorknown set is empty, take word from intermediate
+    # if learnPath.poorKnown.count() > 0:
+    #     studySet = learnPath.poorKnown
+    # else:
+    #     studySet = learnPath.intermediateKnown
 
     # get a list of words from the set available
     numberOfWordsToStudy = numberOfWords if studySet.count(
@@ -232,7 +238,7 @@ def getWords(request, id, numberOfWords=10):
 
 
 # list to remember all words learned to show them at the end of the round
-# @login_required
+@login_required
 @csrf_exempt
 def check(request, id):
     # compare two words, if their definitions are equal , then answer is right
@@ -246,11 +252,10 @@ def check(request, id):
     # if answer is right remove this word from poor known and add to intermediate known
 
     if actualWord.definition == givenWord['definition']:
-        # TODO remove comments from moving up/down in rank
-        # moveToUpperRank(learnPath, actualWord)
+        moveToUpperRank(learnPath, actualWord)
         answer = True
     else:
-        # moveToLowerRank(learnPath, actualWord)
+        moveToLowerRank(learnPath, actualWord)
         answer = False
 
     return JsonResponse({'answer': answer}, status=200)
@@ -258,6 +263,9 @@ def check(request, id):
 
 def moveToUpperRank(learnPath: LearnWay, word: Word):
     # if word in learnPath.poor, rise it to intermediate
+    if word in learnPath.notStarred.all():
+        learnPath.notStarred.remove(word)
+        learnPath.poorKnown.add(word)
     if word in learnPath.poorKnown.all():
         learnPath.poorKnown.remove(word)
         learnPath.intermediateKnown.add(word)
@@ -325,7 +333,7 @@ def saveChanges(request, id):
     if set.label != body['label']:
         set.label = body['label']
         set.save()
-    
+
     if set.description != body['description']:
         set.description = body['description']
         set.save()

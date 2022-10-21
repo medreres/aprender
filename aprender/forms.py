@@ -54,9 +54,9 @@ class TestForm(forms.Form):
         }), choices=QUESTION_TYPES)
     questionLimit = forms.IntegerField(widget=forms.NumberInput(attrs={
         # TODO
-        # 'min': 10,
-        # 'max': 15,
-        # 'step': 5,
+        'min': 5,
+        'max': 35,
+        'step': 5,
         'value': 5
     }))
     starredTerms = forms.ChoiceField(
