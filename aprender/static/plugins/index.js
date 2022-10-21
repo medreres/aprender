@@ -109,7 +109,10 @@ function addCard(card, id = 'containerAjax', addToFolder = false, setInFolderId)
         `${card['setsNumber']} sets`
     let template = document.createElement('div');
     template.classList.add('card');
-    template.innerHTML = `<div class="card-header">
+    template.classList.add('w-100');
+    template.innerHTML = `
+    
+    <div class="card-header">
                 ${card['label']}
             </div>
             <div class="card-body">
@@ -174,22 +177,36 @@ function toggleCard(element, remove) {
     } else {
         const url = new URL(location.href);
         const path = url.origin + '/sets';
-        let set = `<a class='set bla' href="${path}/${element['id']}" id="set_${element['id']}">
-                    <div class='set-info'>
-                        <span>
-                            <span> ${element['label']}</span>
-                            <span style='display: block; margin-top: -.5em;'>${element['wordsNumber']} terms</span>
-                        </span>
-                        <img class='set-icon' src='${imageIconPath}' alt="set icon">
-                        <button name="cardDelete" type="button" class="btn btn-primary hidden" data-id='${element['id']}'
-                    onclick="deleteSet(this, event);"><img src="${binIconPath}"
-                        alt="delete set from folder"></button>
-                    </div>
-                    <div style=''>
-                        <img src='${userIconPath}' alt="Author profile icon">
-                        <span>${element['author']}</span>
-                    </div>
-                </a>`;
+        // <a class='set' href="${path}/${element['id']}" id="set_${element['id']}">
+        //             <div class='set-info'>
+        //                 <span>
+        //                     <span> ${element['label']}</span>
+        //                     <span style='display: block; margin-top: -.5em;'>${element['wordsNumber']} terms</span>
+        //                 </span>
+        //                 <img class='set-icon' src='${imageIconPath}' alt="set icon">
+        //                 <button name="cardDelete" type="button" class="btn btn-primary hidden" data-id='${element['id']}'
+        //             onclick="deleteSet(this, event);"><img src="${binIconPath}"
+        //                 alt="delete set from folder"></button>
+        //             </div>
+        //             <div style=''>
+        //                 <img src='${userIconPath}' alt="Author profile icon">
+        //                 <span>${element['author']}</span>
+        //             </div>
+        //         </a>
+        console.log('loaded carad')
+        let set = `
+        <div class="card"  onclick=getToSet(this) id="set_${element['id']}" data-id="${element['id']}">
+            <div class="card-header">
+            ${element['label']}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">${element['author']}</h5>
+                <p class="card-text">${element['wordsNumber']} terms</p>
+            </div>
+        </div>
+                
+                
+                `;
         // add card
         // let div = document.createElement('div');
         // div.classList.add('folder');
@@ -197,6 +214,12 @@ function toggleCard(element, remove) {
         set.innerHTML = element['label'];
         folderContainer.innerHTML += set;
     }
+}
+
+function getToSet(element) {
+    // when click on div reroute to that sewr page
+    location.href = `${path}/sets/${element.dataset.id}`
+
 }
 
 

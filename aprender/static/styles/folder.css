@@ -1,3 +1,10 @@
 .included {
     background-color: green !important;
 }
+
+#folderContainer {
+    display: flex;
+    flex-flow: row wrap;
+
+    justify-content: center;
+}

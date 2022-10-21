@@ -44,6 +44,8 @@ function startNewRound() {
 }
 
 function checkAnswer(element) {
+    document.querySelectorAll(`button[data-id="${element.dataset.id}"]`).forEach(button => button
+        .classList.toggle('disabled'))
     let path = location.href + '/check';
     fetch(path, {
             method: 'POST',
@@ -55,9 +57,9 @@ function checkAnswer(element) {
         .then(response => response.json())
         .then(result => {
             if (result['answer']) {
-                element.classList.toggle('bg-success');
+                element.classList.toggle('correct');
             } else {
-                element.classList.toggle('bg-danger');
+                element.classList.toggle('incorrect');
             }
             element.addEventListener('transitionend', () => {
                 setTimeout(() => {
@@ -99,7 +101,7 @@ function getWords() {
                 let answers = '';
                 word['definitions'].forEach((definition, index) => {
                     let answer =
-                        `<button type="button" class="btn btn-primary answer" onclick="checkAnswer(this);" data-id='${word['word']['id']}' data-definition="${definition}">${definition}</button>`;
+                        `<button type="button" name='multiple' class="btn btn-primary answer" onclick="checkAnswer(this);" data-id='${word['word']['id']}' data-definition="${definition}">${definition}</button>`;
                     answers += answer;
                 })
                 let divContainer = document.createElement('div');

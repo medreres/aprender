@@ -56,3 +56,13 @@
     border: 1px solid black;
 }
 
+.correct {
+    background-color: green !important;
+    opacity: 1 !important;
+}
+
+.incorrect {
+    background-color: red !important;
+    opacity: 1 !important;
+}
+

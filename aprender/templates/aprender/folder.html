@@ -23,14 +23,13 @@
     {% if not folder.sets %}
     <p>It seems that any sets are in folder yet!</p>
     {% endif %}
-    
-    
-    
+
+
+
     <!-- Button trigger modal -->
-    <!-- TODO loadSets() functino is from index  separate in scripts.js-->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-        onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>Add Set</button>
-    <button type="button" class="btn btn-secondary" onclick="toggleEdit();">Edit</button>
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+        onclick='loadSets(undefined, "{{request.user}}", "sets", true);'>Edit Set</button>
+    {% comment %} <button type="button" class="btn btn-secondary" onclick="toggleEdit();">Edit</button> {% endcomment %}
     <!-- Button trigger modal -->
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmation">
@@ -84,11 +83,11 @@
     <section id="folderContainer">
         {% for set in folder.sets %}
         <!-- href="{% url 'set' set.id%}" -->
-        <a class='set' href="{% url 'set' set.id%}" id="set_{{set.id}}">
+        {% comment %} <a class='set'>
             <div class='set-info'>
                 <span>
-                    <span> {{set.label}}</span>
-                    <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
+
+
                 </span>
 
                 {%if set.set_image%}
@@ -102,7 +101,17 @@
                 <img src="{% static 'icons/user.png' %}" alt="Author profile icon">
                 <span>{{set.author}}</span>
             </div>
-        </a>
+        </a> {% endcomment %}
+
+        <div class="card"  onclick='getToSet(this);' id="set_{{set.id}}" data-id='{{set.id}}'>
+            <div class="card-header">
+                {{set.label}}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{set.author}}</h5>
+                <p class="card-text">{{set.wordsNumber}} terms</p>
+            </div>
+        </div>
 
         <!-- <div class="folder" >
             <section>

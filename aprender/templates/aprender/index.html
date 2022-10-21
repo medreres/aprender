@@ -203,7 +203,7 @@
         <h1>Recent Sets Studied</h1>
         <div class='recentSet'>
             {% for set in recentSets %}
-            <a class='set' href={% url 'set' set.id%}>
+            {% comment %} <a class='set' href={% url 'set' set.id%}>
                 <div class='set-info'>
                     <span>
                         <span> {{set.label}}</span>
@@ -219,7 +219,17 @@
                         alt="profile icon">
                     <span>{{set.author}}</span>
                 </div>
-            </a>
+            </a> {% endcomment %}
+
+            <div class="card"   onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
+                <div class="card-header">
+                    {{set.label}}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{set.author}}</h5>
+                    <p class="card-text">{{set.wordsNumber}} terms</p>
+                </div>
+            </div>
             {% endfor %}
         </div>
         {% endif %}
@@ -227,7 +237,7 @@
 
         <div class='recentSet'>
             {% for set in allSets %}
-            <a class='set' href="{% url 'set' set.id%}">
+            {% comment %} <a class='set' href="{% url 'set' set.id%}">
                 <div class='set-info'>
                     <span>
                         <span> {{set.label}}</span>
@@ -243,7 +253,16 @@
                         alt="profile icon">
                     <span>{{set.author}}</span>
                 </div>
-            </a>
+            </a> {% endcomment %}
+            <div class="card"  onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
+                <div class="card-header">
+                    {{set.label}}
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{set.author}}</h5>
+                    <p class="card-text">{{set.wordsNumber}} terms</p>
+                </div>
+            </div>
             {% endfor %}
         </div>
         {% endblock body %}

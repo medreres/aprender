@@ -8,8 +8,35 @@ class EditUser(ModelForm):
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name','email', 'profile_image')
-    
+        fields = ('username', 'first_name',
+                  'last_name', 'email', 'profile_image')
+
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'type': 'text',
+        'class': 'form-control',
+        'id': 'usernameInput',
+        'placeholder': 'Enter username'
+    }))
+
+    first_name = forms.CharField(widget=forms.TextInput(attrs={
+        'type': "text",
+        'class': "form-control",
+        'id': "firstNameInput",
+        'placeholder': "Enter First Name"
+    }))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={
+        'type': "text",
+        'class': "form-control",
+        'id': "firstNameInput",
+        'placeholder': "Enter First Name"
+    }))
+
+    email = forms.CharField(widget=forms.TextInput(attrs={
+        'type':"email",
+        'class':"form-control",
+        'id':"emailInput",
+        'placeholder':"Enter email"
+    }))
 
 
 

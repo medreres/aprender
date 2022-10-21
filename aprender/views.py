@@ -75,7 +75,11 @@ def settings(request):
         form = EditUser(request.POST, request.FILES)
         if not form.is_valid():
             messages.warning(request, 'Form is not valid')
-            return HttpResponseRedirect(reverse('profile'))
+            return render(request, 'aprender/settings.html', {
+                'user': User.objects.get(pk=request.user.id),
+                'EditUser': form
+            })
+            # return HttpResponseRedirect(reverse('settings'))
 
         user = User.objects.get(pk=request.user.id)
         if form.cleaned_data['profile_image'] is None:
@@ -88,9 +92,10 @@ def settings(request):
         messages.success(request, 'Changed successfully!')
         return HttpResponseRedirect(reverse('settings'))
     user = User.objects.get(pk=request.user.id)
+    form = EditUser(initial=model_to_dict(user))
     return render(request, 'aprender/settings.html', {
         'user': user,
-        'EditUser': EditUser(initial=model_to_dict(user))
+        'EditUser': form
     })
 
 
@@ -110,7 +115,6 @@ def loginUser(request):
     else:
         messages.warning(
             request, "User with such password/username doesnt exist")
-        
 
     # get page from which user logged
     next_url = request.GET.get('next', None)
@@ -376,7 +380,7 @@ def test(request, id):
     form = TestForm(request.GET)
     if not form.is_valid():
         messages.warning(request, 'Form is not valid')
-        return HttpResponseRedirect(reverse('set', krargs={'id':id}))
+        return HttpResponseRedirect(reverse('set', krargs={'id': id}))
 
     # {'questionTypes': ['written', 'matching', 'multiple', 'true'], 'questionLimit': 10, 'starredTerms': 'starred', 'showImages': False}
 
@@ -402,10 +406,9 @@ def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
     # if not only starred then get all words
     if starred == 'all':
         return [*(learnPath.set.words.all())]
-    
+
     # if only starred then fetch poor known first
     allWords = [*(learnPath.poorKnown.all())]
-
 
     # if not enough, append from intermedate
     if questionLimit > len(allWords) and learnPath.intermediateKnown.count():
@@ -418,12 +421,12 @@ def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
     # if not enough throw an error
     if questionLimit > len(allWords):
         return -1
-    
+
     else:
         return allWords
 
-def createTest(request, id, testForm) -> list:
 
+def createTest(request, id, testForm) -> list:
 
     # keys for accessing dictionary
     numberOfQuestionTypes = {'written': 0,
@@ -443,7 +446,8 @@ def createTest(request, id, testForm) -> list:
     # fetch all words from all sets(poorKnown, intermediate and well) and randomly
     # choose for each question type(all are ought to be different)
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
-    allWords = getAllWords(request, learnPath, testForm['questionLimit'], testForm['starredTerms'])
+    allWords = getAllWords(
+        request, learnPath, testForm['questionLimit'], testForm['starredTerms'])
 
     if allWords == -1:
         messages.warning(request, 'Too few words in dictionary')
@@ -451,10 +455,6 @@ def createTest(request, id, testForm) -> list:
         return -1
 
     possibleAnswers = copy.deepcopy(allWords)
-   
-
-    
-    
 
     # print('ALL WORDS')
     # print(allWords)
@@ -468,7 +468,8 @@ def createTest(request, id, testForm) -> list:
         for i in range(numberOfQuestionTypes[key]):
             # chose random word in accordace to question type
             if key == 'multiple':
-                questions[key].append(getMultipleWord(allWords, possibleAnswers))
+                questions[key].append(
+                    getMultipleWord(allWords, possibleAnswers))
             elif key == 'written':
                 questions[key].append(getWrittenWord(allWords))
             elif key == 'true':
@@ -504,7 +505,7 @@ def getMultipleWord(words: list, answers: list):
     possibleAnswers.remove(randWord)
     # add definition of the word, rest chose randomly
     definition = [randWord.definition, *
-                  ([word.definition for word  in sample(possibleAnswers, 3)])]
+                  ([word.definition for word in sample(possibleAnswers, 3)])]
     shuffle(definition)
     return {'word': randWord.term, 'definition': definition, 'id': randWord.id}
 

@@ -16,7 +16,28 @@
     justify-content: center;
     margin: 0 3em;
     border-radius: 15px;
+    padding: 10px;
 }
+
+
+@media screen and (min-width:300px) {
+    .card {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width:600px) {
+    .card {
+        width: 50%;
+    }
+}
+
+@media screen and (min-width:900px) {
+    .card {
+        width: 30%;
+    }
+}
+
 
 .set {
     background-color: antiquewhite;

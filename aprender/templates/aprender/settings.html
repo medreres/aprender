@@ -13,20 +13,10 @@
 <section class='d-flex justify-content-between p-4'>
     <form method='post' enctype="multipart/form-data">
         {% csrf_token %}
-
-        {{EditUser.as_ul}}
-        {% comment %}
-        <label for="">
-            {{EditUser.profile_image.label}}
-            {{EditUser.profile_image}}
-        </label> {% endcomment %}
-
-
+        
+        {{EditUser}}
         <input type="submit" value='Update Profile' class='btn btn-primary'>
         <a type="button" class="btn btn-primary " href="{% url 'changePassword' %}">Change Password</a>
-        <!-- Button trigger modal -->
-
-
     </form>
     <!-- Modal -->
     <img class="align-self-center" style='height: 200px; border-radius: 20px;'
