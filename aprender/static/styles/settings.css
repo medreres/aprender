@@ -1,0 +1,44 @@
+/* body {}
+
+form {
+    margin: 0 auto;
+} */
+
+
+
+.profileImage {
+    height: 150px;
+}
+
+
+
+
+
+@media screen and (min-width: 750px) {
+    form {
+        width: 50vw;
+    }
+}
+
+@media screen and (max-width: 749px) {
+    form {
+        width: 70vw;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    section {
+        flex-flow: column-reverse;
+        align-items: center;
+    }
+}
+
+.btn-container {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.btn-container > * {
+    margin: 5px;
+    margin-left: 0;
+}

@@ -1,7 +1,7 @@
 {% extends 'aprender/index.html' %}
 {% load static %}
 {% block head %}
-
+<link rel="stylesheet" href="{% static 'styles/settings.css' %}">
 {% endblock head %}
 {% block body %}
 {% comment %} <p>{{user.first_name}}</p>
@@ -13,14 +13,17 @@
 <section class='d-flex justify-content-between p-4'>
     <form method='post' enctype="multipart/form-data">
         {% csrf_token %}
-        
         {{EditUser}}
-        <input type="submit" value='Update Profile' class='btn btn-primary'>
+        <div class="mt-2 btn-container" >
+            <input type="submit" value='Update Profile' class='btn btn-primary'>
+        </div>
+        
         <a type="button" class="btn btn-primary " href="{% url 'changePassword' %}">Change Password</a>
     </form>
-    <!-- Modal -->
-    <img class="align-self-center" style='height: 200px; border-radius: 20px;'
+    <img class="d-block profileImage" style='border-radius: 20px;'
         src="{% if user.profile_image and user.profile_image != 'False' %}{{user.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
         alt="Author profile icon">
+    
+    <!-- Modal -->
 </section>
 {% endblock body %}

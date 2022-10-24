@@ -2,6 +2,7 @@ from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
 from .models import Set, Folder, User
 from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 
 
 class EditUser(ModelForm):
@@ -32,12 +33,11 @@ class EditUser(ModelForm):
     }))
 
     email = forms.CharField(widget=forms.TextInput(attrs={
-        'type':"email",
-        'class':"form-control",
-        'id':"emailInput",
-        'placeholder':"Enter email"
+        'type': "email",
+        'class': "form-control",
+        'id': "emailInput",
+        'placeholder': "Enter email"
     }))
-
 
 
 class LoginForm(forms.Form):
@@ -55,8 +55,6 @@ class LoginForm(forms.Form):
         'id': 'DropdownFormPassword1',
         'placeholder': 'Password',
     }))
-
-# form for creating test
 
 
 class TestForm(forms.Form):
@@ -96,10 +94,30 @@ class TestForm(forms.Form):
 
 
 class RegisterForm(forms.Form):
-    username = forms.CharField(label='Username', max_length=100)
-    password = forms.CharField(label='Password',  max_length=100)
-    password2 = forms.CharField(label='Password',  max_length=100)
-    email = forms.CharField(label='Email',  max_length=100)
+    username = forms.CharField(label='Username', max_length=100, widget=forms.TextInput(attrs={
+        # is-invalid TODO
+        'class': "form-control ",
+    }), required=True)
+    password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={
+        'class': "form-control ",
+    }))
+    password_confirm = forms.CharField(label="Password Confirmation", widget=forms.PasswordInput(attrs={
+        'class': "form-control ",
+    }))
+    email = forms.CharField(label='Email',  max_length=100, widget=forms.TextInput(attrs={
+        'class':"form-control ",
+        'type': 'email'
+    }))
+
+    def clean(self):
+        cd = self.cleaned_data
+        if cd.get('password') != cd.get('password_confirm'):
+            self.add_error('password_confirm', "Passwords do not match!")
+
+        if len(User.objects.filter(username=cd.get('username'))) != 0:
+            self.add_error(
+                'username', "User with such username already exists!")
+        return cd
 
 
 class CreateSet(forms.ModelForm):

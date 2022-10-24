@@ -1,11 +1,58 @@
 {% extends 'aprender/index.html' %}
+{% load static %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'styles/register.css' %}">
+<script src="{% static 'plugins/register.js' %}"></script>
+{% endblock head %}
 {% block body %}
-<style>
 
-</style>
-<form id='registerForm' action="{% url 'register' %}" method='post'>
-    {{RegisterForm}}
-    {% csrf_token %}
-    <input type="submit" value='Register'>
-</form>
+<div id="formContainer">
+    <form method='post' id="signUpForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            {{RegisterForm.username}}
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                User with this username already exists!
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            {{RegisterForm.password}}
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Passwords dont match!
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="id_password_confirm" class="form-label">Password Confirmation</label>
+            {{RegisterForm.password_confirm}}
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Passwords dont match!
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="id_username" class="form-label">Email</label>
+            {{RegisterForm.email}}
+            <div class="valid-feedback">
+                Looks good!
+            </div>
+            <div class="invalid-feedback">
+                Invalid email
+            </div>
+        </div>
+        <!--{{RegisterForm.as_p}} -->
+        <div class="valid-feedback">
+            Looks good!
+        </div>
+        <button type="submit" class="btn btn-primary">Register<button </form>
+</div>
 {% endblock body %}

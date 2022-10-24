@@ -1,0 +1,15 @@
+#registerForm {
+    /* display: flex;
+    flex-flow: column;
+    border: 1px solid #CED4DA;
+    padding: 10px;
+    border-radius: 10px; */
+    /* width: 50vw; */
+    align-items: center;
+}
+
+#formContainer {
+    /* width: 50vw;; */
+    display: flex;
+    justify-content: center;
+}

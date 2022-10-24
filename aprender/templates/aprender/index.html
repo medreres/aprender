@@ -32,6 +32,7 @@
 
     {% block head %}
     {% endblock head %}
+    <link rel="icon" href="{% static 'icons/logo.png'%}">
     <title>live</title>
 </head>
 
@@ -154,45 +155,51 @@
                             <button type="submit" class="btn btn-primary">Sign in</button>
                         </form>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'register' %}">New around here? Sign up</a>
+                        {% comment %} <a class="dropdown-item" href="{% url 'register' %}">New around here? Sign up</a>
+                        {% endcomment %}
+                        <!-- Button trigger modal -->
+                        <a type="button" class="dropdown-item" href="{% url 'register' %}">
+                            New around here? Sign up
+                        </a>
+
                         <a class="dropdown-item" href="#">Forgot password?</a>
                     </div>
                 </div>
-                {% else %}
-                <div class="btn-group">
-                    <a type="button" class="m-2" data-bs-toggle="dropdown" data-bs-display="static"
-                        aria-expanded="false">
-                        <img src="{% static 'icons/user.png' %}" alt="profile pic" style='height: 32px'>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-lg-end">
-                        <li>
-                            <div id='container'>
-                                {% comment %} TODO USERS PIC {% endcomment %}
-                                {% if request.user.profile_image %}
-                                <img class="profilePicSm" src="{{request.user.profile_image.url}}" alt="profile pic">
-                                {% else %}
-                                <img class="profilePicSm" src="{% static 'icons/user.png'%}" alt="profile pic">
-                                {% endif %}
-                                <div id='body'>
-                                    <p id='username'> <strong>{{request.user}}</strong></p>
-                                    <p id='email'>{{request.user.email}}</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'profile' request.user %}" type="button">Profile</a>
-                        </li>
-                        <li><a class="dropdown-item" type="button" href="{% url 'settings' %}">Settings</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}} ">Log Out</a></li>
-                    </ul>
-                </div>
-                {% endif %}
             </div>
+            {% else %}
+            <div class="btn-group">
+                <a type="button" class="m-2" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                    <img src="{% static 'icons/user.png' %}" alt="profile pic" style='height: 32px'>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-lg-end">
+                    <li>
+                        <div id='container'>
+                            {% comment %} TODO USERS PIC {% endcomment %}
+                            {% if request.user.profile_image %}
+                            <img class="profilePicSm" src="{{request.user.profile_image.url}}" alt="profile pic">
+                            {% else %}
+                            <img class="profilePicSm" src="{% static 'icons/user.png'%}" alt="profile pic">
+                            {% endif %}
+                            <div id='body'>
+                                <p id='username'> <strong>{{request.user}}</strong></p>
+                                <p id='email'>{{request.user.email}}</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'profile' request.user %}" type="button">Profile</a>
+                    </li>
+                    <li><a class="dropdown-item" type="button" href="{% url 'settings' %}">Settings</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}} ">Log Out</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>
         </div>
     </nav>
     {% bootstrap_messages %}
@@ -203,25 +210,7 @@
         <h1>Recent Sets Studied</h1>
         <div class='recentSet'>
             {% for set in recentSets %}
-            {% comment %} <a class='set' href={% url 'set' set.id%}>
-                <div class='set-info'>
-                    <span>
-                        <span> {{set.label}}</span>
-                        <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
-                    </span>
-                    {%if set.set_image%}
-                    <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
-                    {%endif%}
-                </div>
-                <div style=''>
-                    <img class="profilePicSm"
-                        src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
-                        alt="profile icon">
-                    <span>{{set.author}}</span>
-                </div>
-            </a> {% endcomment %}
-
-            <div class="card"   onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
+            <div class="card" onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
                 <div class="card-header">
                     {{set.label}}
                 </div>
@@ -237,24 +226,7 @@
 
         <div class='recentSet'>
             {% for set in allSets %}
-            {% comment %} <a class='set' href="{% url 'set' set.id%}">
-                <div class='set-info'>
-                    <span>
-                        <span> {{set.label}}</span>
-                        <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
-                    </span>
-                    {%if set.set_image%}
-                    <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
-                    {%endif%}
-                </div>
-                <div style=''>
-                    <img class="profilePicSm"
-                        src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
-                        alt="profile icon">
-                    <span>{{set.author}}</span>
-                </div>
-            </a> {% endcomment %}
-            <div class="card"  onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
+            <div class="card" onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
                 <div class="card-header">
                     {{set.label}}
                 </div>

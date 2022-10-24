@@ -6,6 +6,7 @@ from .views import PassowrdsChangeView
 urlpatterns = [
     path('', views.index, name='index'),
     path('register', views.register, name='register'),
+    path('register/username_available', views.usernameAvailable, name='usernameAvailable'),
     path('login', views.loginUser, name='login'),
     path('logout', views.logoutUser, name='logout'),
     path('createset', views.createset, name='createset'),

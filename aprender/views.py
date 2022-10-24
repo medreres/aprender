@@ -23,8 +23,9 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
+from django.views import generic
 
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, saveChanges, deleteWord, addSet, getSetsId, folderEdit, favorite
+from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, saveChanges, deleteWord, addSet, getSetsId, folderEdit, favorite, usernameAvailable
 
 # Create your views here.
 
@@ -52,6 +53,7 @@ def index(request):
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
         'CreateFolder': CreateFolder,
+        'RegisterForm': RegisterForm,
         'recentSets':  recentSets if request.user.is_authenticated else None,
         'allSets': allSets
     })
@@ -71,17 +73,16 @@ def settings(request):
     if not request.user.is_authenticated:
         return redirect('index')
 
+    user = User.objects.get(pk=request.user.id)
+
     if request.method == 'POST':
         form = EditUser(request.POST, request.FILES)
-        if not form.is_valid():
-            messages.warning(request, 'Form is not valid')
-            return render(request, 'aprender/settings.html', {
-                'user': User.objects.get(pk=request.user.id),
-                'EditUser': form
-            })
-            # return HttpResponseRedirect(reverse('settings'))
+        form.is_valid()
+        # if not form.is_valid():
+        # TODO crutches troubles with updating user profile
+        # messages.warning(request, 'Form is not valid')
+        # else:
 
-        user = User.objects.get(pk=request.user.id)
         if form.cleaned_data['profile_image'] is None:
             form.cleaned_data['profile_image'] = user.profile_image
         elif form.cleaned_data['profile_image'] == False:
@@ -91,8 +92,8 @@ def settings(request):
         user.save()
         messages.success(request, 'Changed successfully!')
         return HttpResponseRedirect(reverse('settings'))
-    user = User.objects.get(pk=request.user.id)
-    form = EditUser(initial=model_to_dict(user))
+    else:
+        form = EditUser(initial=model_to_dict(user))
     return render(request, 'aprender/settings.html', {
         'user': user,
         'EditUser': form
@@ -143,44 +144,28 @@ def register(request):
         messages.warning(request, 'You are already logged!')
         return HttpResponseRedirect(reverse('index'))
 
+   
+
     if request.method == 'POST':
 
         form = RegisterForm(request.POST)
-        if not form.is_valid():
-            messages.error(request, "Error. Invalid form")
+        if  form.is_valid():
 
-        password = form.cleaned_data['password']
-        password2 = form.cleaned_data['password2']
-        if password != password2:
-            # TODO throw an error
-            # ? OR better to do it on frontend?
-            pass
-
-        # ? Check on front whether username is taken
-        username = form.cleaned_data['username']
-
-        # ? Check on front whether email is taken
-        email = form.cleaned_data['email']
-
-        # * register new user and sign in
-        try:
+            password = form.cleaned_data['password']
+            username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             user = User.objects.create_user(username, email, password)
             user.save()
-        except IntegrityError:
-            messages.warning(
-                request, "User with such username already exists!")
-            return HttpResponseRedirect(reverse('register'))
-
-        logUser(request, user)
-        # print(user)
-        # redirect to main page
-        return HttpResponseRedirect(reverse('index'))
-
+        
+            logUser(request, user)
+            messages.success(request, "Registration Successful!")
+            return HttpResponseRedirect(reverse('index'))
     else:
-        return render(request, 'aprender/register.html', {
-            'RegisterForm': RegisterForm(),
-            'LoginForm': LoginForm()
-        })
+         form = RegisterForm()
+    return render(request, 'aprender/register.html', {
+        'RegisterForm': form,
+        'LoginForm': LoginForm()
+    })
 
 
 def logUser(request, user):

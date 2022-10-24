@@ -1,12 +1,9 @@
-from email.policy import default
-from multiprocessing import AuthenticationError
-from re import T
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.base_user import BaseUserManager
+
 
 # Create your models here.
-
-
 class User(AbstractUser):
     favoriteSets = models.ManyToManyField('Set', blank=True)
     favoriteFolders = models.ManyToManyField('Folder', blank=True)
@@ -20,6 +17,10 @@ class User(AbstractUser):
     # ? maybe creating a model for all those 3 categories and last index will work?
 
     profile_image = models.ImageField(blank=True, null=True, upload_to='images/')
+
+    
+
+
 
 
 

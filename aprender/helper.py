@@ -83,7 +83,16 @@ def fetchSets(request, user):
 
     return JsonResponse([set.serialize() for set in sets], safe=False)
 
-# fetch folde via ajax
+
+@csrf_exempt
+def usernameAvailable(request):
+    body = json.loads(request.body)
+    username = body['username']
+    if User.objects.filter(username=username).count():
+        return JsonResponse({'error': 'User with this username already exists!'}, status=200)
+    else:
+        return JsonResponse({'success': 'Username available'}, status=200)
+
 
 
 # @login_required
