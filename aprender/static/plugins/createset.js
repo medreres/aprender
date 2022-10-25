@@ -22,6 +22,7 @@
         // change IDs appropriately, clean input 
         let termField = termDefinitionNodeCopy.querySelector('#term_0');
         termField.id = `term_${id}`;
+        termDefinitionNodeCopy.querySelector('#id').innerHTML = id;
         termField.value = '';
         termField.required = '';
 
@@ -43,7 +44,7 @@
         crossIcon.src = crossIconPath;
         crossIcon.classList.add('closeBtn');
         crossSign.append(crossIcon);
-        termDefinitionNodeCopy.append(crossSign);
+        termDefinitionNodeCopy.querySelector('.card-header').append(crossSign);
         crossSign.onclick = () => {
             termDefinitionNodeCopy.remove();
         }

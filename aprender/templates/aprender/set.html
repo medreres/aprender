@@ -96,7 +96,8 @@
 				</div>
 			</div>
 		</div>
-		{% comment %} <hr class="dropdown-divider"> {% endcomment %}
+		{% comment %}
+		<hr class="dropdown-divider"> {% endcomment %}
 		<!-- carousel for taking look at cards with words -->
 		<div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
 			<div class="carousel-inner">
@@ -137,14 +138,17 @@
 			<p>Click <button onclick="createLearnPath();" class="btn bg-primary">Create</button> to start studying term
 				right off the bat!</p>
 		</div>
+		<!-- TODO ! in safari doesn't show up correctly -->
 		{% elif not user.is_authenticated %}
 		<div class='blur'>
+
+		</div>
+		<div class='blur-content'>
 			<p> Opps! It's seems that you haven't signed in yet!</p>
 			<p>Sign in to start learning words right now!</p>
 		</div>
 		{% endif %}
 	</div>
-	<hr class="dropdown-divider">
 	<section id="author-info">
 		<!-- INFO ABOUT CREATOR -->
 		<!-- TODO add icons for users and use their own icons  -->
@@ -154,7 +158,10 @@
 				alt="profile icon">
 			<span>
 				<p>Created by</p>
-				<strong>{{set.author}}</strong>
+				<a style="color: black; font-size: 15px;" href="{% url 'profile' set.author %}">
+					<strong>
+						{{set.author}}
+					</strong></a>
 			</span>
 		</div>
 		<span>
@@ -164,12 +171,44 @@
 			{% endif %}
 			{% if request.user.is_authenticated %}
 			{% if isFavorite %}
-			<button onclick='toggleLike(this);' data-id={{id}}><img src="{% static 'icons/heart-red.png' %}"
-					alt="heart"></button>
+			<button onclick='toggleLike(this);' class="btn btn-primary" data-id={{id}}><img
+					src="{% static 'icons/heart-red.png' %}" alt="heart"></button>
 			{% else %}
-			<button onclick='toggleLike(this);' data-id={{id}}><img src="{% static 'icons/heart.png' %}"
-					alt="heart"></button>
+			<button onclick='toggleLike(this);' class="btn btn-primary" data-id={{id}}><img
+					src="{% static 'icons/heart.png' %}" alt="heart"></button>
 			{% endif %}
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addToFolderModal">
+				<img src="{% static 'icons/add.png' %}" alt="add to folder icon">
+			</button>
+
+			<!-- Modal -->
+			<div class="modal fade" id="addToFolderModal" data-bs-backdrop="static" data-bs-keyboard="false"
+				tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="staticBackdropLabel">Add Set to Folder</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body folder-container">
+							{% for folder in folders %}
+
+							<div class="card w-100" onclick="addSetToFolder('{{folder.id}}');">
+								<div class="card-header">
+									{{folder.label}}
+								</div>
+								<div class="card-body">
+									<h5 class="card-title">{{folder.description}}</h5>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
 			{% endif %}
 		</span>
 	</section>

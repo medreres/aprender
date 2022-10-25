@@ -18,9 +18,10 @@ span>p {
     padding: 10px;
 }
 
+
 .buttonContainer .btn {
     margin: 0px 1px;
-    
+
 }
 
 @media screen and (max-width: 800px) {
@@ -53,10 +54,24 @@ span>p {
     justify-content: space-between;
     align-items: center;
 
-    border: 1px solid black;
-    background-color: blue;
-    padding: 10px;
+    background-color: #0d6efd;
+    border-radius: 15px;
+    min-height: 60px;
+    /* max-height: 100px; */
+    padding: 10px 50px;
     margin: 10px 0;
+}
+
+@media screen and (max-width: 500px) {
+    .word {
+        padding: 10px 20px;
+        flex-flow: column;
+    }
+}
+
+.definition {
+    max-width: 300px;
+    text-align: right;
 }
 
 
@@ -145,9 +160,11 @@ span>p {
 
 .blur {
     position: absolute;
-    border: 1px solid black;
-    backdrop-filter: blur(5px);
-    z-index: 1;
+    /* border: 1px solid black; */
+    backdrop-filter: blur(15px);
+    /* -webkit-filter: blur(15px); */
+    z-index: 15;
+    border-radius: 15px;
 
     left: 0;
     top: 0;
@@ -157,12 +174,16 @@ span>p {
     flex-flow: column;
     justify-content: center;
     align-items: center;
+    padding: 15px;
 }
 
 .menuContainer {
-    background-color: grey;
-    border: 1px solid red;
+    /* background-color: grey; */
+    border: 1px solid #BBBBBB;
+    padding: 10px;
     position: relative;
+    border-radius: 15px;
+    margin-bottom: 15px;
 
 }
 
@@ -176,4 +197,9 @@ span>p {
     backface-visibility: hidden;
 
     font-size: 30px;
+}
+
+.folder-container {
+    display: flex;
+    flex-flow: column;
 }

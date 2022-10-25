@@ -1,3 +1,4 @@
+from pydoc import describe
 from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
 from .models import Set, Folder, User
@@ -134,19 +135,28 @@ class CreateSet(forms.ModelForm):
         model = Set
         fields = ('label', 'words', 'description', 'set_image')
 
+    label = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+    }))
+
+    description = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+    }))
+
     words = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'term_0',
+        'class': 'form-control',
+        'placeholder': 'term'
+
     }))
     definitions = forms.CharField(widget=forms.TextInput(attrs={
         'id': 'definition_0',
+        'class': 'form-control',
+        'placeholder': 'definition'
     }))
 
     # set_image = forms.ImageField(blank=True)
 
-    wordsList = []
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
 class CreateFolder(forms.ModelForm):

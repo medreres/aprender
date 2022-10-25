@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
@@ -16,7 +17,7 @@ class User(AbstractUser):
     # Also there is need to implement index  of last word for the carousel in a set's main section to keep track of last word
     # ? maybe creating a model for all those 3 categories and last index will work?
 
-    profile_image = models.ImageField(blank=True, null=True, upload_to='images/')
+    profile_image = models.ImageField(upload_to='images/', default="images/user.png")
 
     
 
@@ -26,7 +27,7 @@ class User(AbstractUser):
 
 class LearnWay(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    set = models.ForeignKey('Set', on_delete=models.Case, null=True)
+    set = models.ForeignKey('Set', on_delete=models.CASCADE , null=True)
     # TODO implement case of deleting last word examined
     
     

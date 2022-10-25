@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function toggleLike(element) {
     const url = new URL(location.href)
-    
+
     const path = `${url.origin}/sets/${setId}/toggleFavorite`;
     fetch(path)
         .then(response => response.json())
@@ -110,9 +110,24 @@ function toggleLike(element) {
         })
 }
 
+function addSetToFolder(folderId) {
+    console.log('click')
+    const path = location.href + '/addSetToFolder';
+    fetch(path, {
+            method: 'POST',
+            body: JSON.stringify({
+                folderId: folderId
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result)
+        })
+
+}
 
 
-// TODO separate in js
+
 var numberOfPages;
 
 
@@ -224,12 +239,12 @@ function loadPage(i) {
 							<span id='definition_label_${word['id']}'>${word['definition']}</span>
 							<input id='definition_input_${word['id']}' type='text' class='hidden' value="${word['definition']}" />
 						</span>
-						<span class='icons'>
-							
-						</span>
 						`;
+                        /*<span class='icons'>
+							
+						</span> */
 
-                        //<button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src=${pencilIconPath} class="icon" alt="Edit word"></button>
+                //<button data-changemode=false data-id=${word['id']} onclick='changeWord(this);'><img src=${pencilIconPath} class="icon" alt="Edit word"></button>
 
 
                 container.append(div);

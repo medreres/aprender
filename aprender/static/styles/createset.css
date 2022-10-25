@@ -1,14 +1,33 @@
+.term-definition {
+    display: flex;
+    margin: 10px 10px;
+    /* border: 1px solid black; */
 
-    .term-definition {
-        display: flex;
-        margin: 10px 10px;
-        border: 1px solid black;
-    }
 
-    .closeBtn {
-        height: 24px;
-    }
+}
 
-    .closeBtn:hover {
-        cursor: pointer;
-    }
+.term-definition:hover { cursor: default; box-shadow: none;}
+
+
+.closeBtn {
+    height: 24px;
+}
+
+.closeBtn:hover {
+    cursor: pointer;
+}
+
+form {
+    /* display: flex; */
+    /* flex-flow: column; */
+}
+
+#termDefinitionContainer {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+#termDefinitionContainer .card-header {
+    display: flex;
+    justify-content: space-between;
+}

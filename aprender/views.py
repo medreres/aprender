@@ -25,7 +25,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
 from django.views import generic
 
-from .helper import fetchSets, fetchFolders, createLearnPath, nextWord, currentWord, prevWord, getWords, check, restartLearnWay, getWordsToEdit, getNumberOfPages, saveChanges, deleteWord, addSet, getSetsId, folderEdit, favorite, usernameAvailable
+from .helper import *
 
 # Create your views here.
 
@@ -144,24 +144,22 @@ def register(request):
         messages.warning(request, 'You are already logged!')
         return HttpResponseRedirect(reverse('index'))
 
-   
-
     if request.method == 'POST':
 
         form = RegisterForm(request.POST)
-        if  form.is_valid():
+        if form.is_valid():
 
             password = form.cleaned_data['password']
             username = form.cleaned_data['username']
             email = form.cleaned_data['email']
             user = User.objects.create_user(username, email, password)
             user.save()
-        
+
             logUser(request, user)
             messages.success(request, "Registration Successful!")
             return HttpResponseRedirect(reverse('index'))
     else:
-         form = RegisterForm()
+        form = RegisterForm()
     return render(request, 'aprender/register.html', {
         'RegisterForm': form,
         'LoginForm': LoginForm()
@@ -176,13 +174,12 @@ def logUser(request, user):
 @login_required
 def createset(request):
     if request.method == 'POST':
-        form = CreateSet(request.POST)
+        form = CreateSet(request.POST, request.FILES)
 
         if not form.is_valid():
             messages.error(request, 'Form is not valid')
             return HttpResponseRedirect(reverse('createset'))
 
-        # ! CRUTCHES
         formFields = request.POST
         # didn't manage to implement correctly, so all terms and their definitions
         # will be fetched via request.POST than it would have been better to do via django form
@@ -201,6 +198,16 @@ def createset(request):
             description=form.cleaned_data['description']
         )
         studySet.words.add(*[w.id for w in wordsObjectList])
+
+        # save set icon
+        if form.cleaned_data['set_image'] is None:
+            form.cleaned_data['set_image'] = studySet.set_image
+        elif form.cleaned_data['set_image'] == False:
+            studySet.set_image.delete()
+        else:
+            studySet.set_image = form.cleaned_data['set_image']
+
+        studySet.save()
 
         return HttpResponseRedirect(reverse('set', kwargs={'id': studySet.id}))
 
@@ -279,6 +286,10 @@ def set(request, id):
         user.recentSetsJson = recentSetsid
         user.save()
 
+    folders = []
+    if request.user.is_authenticated:
+        folders.extend(Folder.objects.filter(author=request.user).all())
+
     # recentSets.append(set)
 
     return render(request, 'aprender/set.html', {
@@ -287,7 +298,9 @@ def set(request, id):
         'id': id,
         'LoginForm': LoginForm(),
         'TestForm': TestForm(),
-        'isFavorite': isFavorite
+        'isFavorite': isFavorite,
+        'folders': folders,
+        'CreateFolder': CreateFolder
     })
 
 

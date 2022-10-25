@@ -169,7 +169,7 @@
             {% else %}
             <div class="btn-group">
                 <a type="button" class="m-2" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
-                    <img src="{% static 'icons/user.png' %}" alt="profile pic" style='height: 32px'>
+                    <img src="{{request.user.profile_image.url}}" alt="profile pic" style='height: 32px; width: 32px; border-radius: 15px;'>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg-end">
                     <li>
@@ -215,8 +215,13 @@
                     {{set.label}}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{set.author}}</h5>
-                    <p class="card-text">{{set.wordsNumber}} terms</p>
+                    <section>
+                        <h5 class="card-title">{{set.author}}</h5>
+                        <p class="card-text">{{set.wordsNumber}} terms</p>
+                    </section>
+                    {% if set.set_image %}
+                    <img class="set-icon d-none d-md-block" src="{{set.set_image.url}}" alt="set icon">
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -239,6 +244,9 @@
         </div>
         {% endblock body %}
     </div>
+    <footer style='margin-top: 30px;'>
+
+    </footer>
 </body>
 
 </html>

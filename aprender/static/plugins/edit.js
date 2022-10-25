@@ -216,22 +216,22 @@ function loadWords() {
                 div.id = `word_${id}`;
                 div.dataset.id = word['id']
                 div.innerHTML = `
-                    <span class='term'>
-                    <span class='id'>#${id}</span>
-                    
+                    <span class="term">
+                        <span class='id'>#${id}</span>
                         <input id='term_input_${word['id']}' type='text' value="${word['term']}" 
                         oninput="changeWord(this, ${word['id']})";
+                        class="form-control"
                         />
                     </span>
-                    <span class='definition'>
+                    <span class="definition">
                         <input id='definition_input_${word['id']}' type='text'  value="${word['definition']}" 
-                        oninput="changeWord(this, ${word['id']})";
-                        />
+                        class="form-control"
                     </span>
                     <span class='icons'>
                         <button tabindex="-1" onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
+
 
                 id++;
 

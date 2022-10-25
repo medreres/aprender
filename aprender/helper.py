@@ -2,7 +2,9 @@ from ast import match_case
 from email import message
 import json
 from multiprocessing.dummy import active_children
+from os import stat
 from random import random
+from turtle import st
 from django.http import JsonResponse
 from .models import LearnWay, Set, User, Folder, Word
 from django.contrib import messages
@@ -35,7 +37,7 @@ def getSetsId(request, id):
 def addSet(request, id):
     body = json.loads(request.body)
     print(body)
-    #{'folderId': '11', 'setId': 23}
+    # {'folderId': '11', 'setId': 23}
     folder = Folder.objects.get(pk=body['folderId'])
     set = Set.objects.get(pk=body['setId'])
     print(folder, set)
@@ -92,7 +94,6 @@ def usernameAvailable(request):
         return JsonResponse({'error': 'User with this username already exists!'}, status=200)
     else:
         return JsonResponse({'success': 'Username available'}, status=200)
-
 
 
 # @login_required
@@ -190,7 +191,6 @@ def getWords(request, id, numberOfWords=10):
 
     # find the learnpath in database
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
-
 
     if learnPath.notStarred.count() > 0:
         studySet = learnPath.notStarred
@@ -296,11 +296,8 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
 @csrf_exempt
 def getWordsToEdit(request, id):
 
-    if not request.user.is_authenticated:
-        return JsonResponse({'message': 'user isnt authorized'}, status=403)
-
-    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
-    allWords = [*learnPath.set.words.all()]
+    
+    allWords = [*Set.objects.get(pk=id).words.all()]
 
     # get number of page needed via ajax
     body = json.loads(request.body)
@@ -315,17 +312,20 @@ def getWordsToEdit(request, id):
         return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
     # else if in edit mode, load all words
     elif body['wordsPerPage'] == 'all':
+        
+        if not request.user.is_authenticated:
+            return JsonResponse({'message': 'user isnt authorized'}, status=403)
+
+        learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
+
         return JsonResponse({'words': [word.serialize() for word in allWords], 'label': learnPath.set.label,
                              'description': learnPath.set.description}, status=200)
 
 
 def getNumberOfPages(request, id):
 
-    if not request.user.is_authenticated:
-        return JsonResponse({'message': 'user isnt authorized'}, status=403)
-
-    learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
-    allWords = [*learnPath.set.words.all()]
+    set = Set.objects.get(pk=id)
+    allWords = [*set.words.all()]
 
     # create instance of paginaotr
     # ? could be saved in cache
@@ -431,3 +431,14 @@ def deleteWord(request, id):
     print('delete', wordToChange)
     wordToChange.delete()
     return JsonResponse({'success': 'word deleted successfully!'}, status=200)
+
+
+@csrf_exempt
+@login_required
+def addSetToFolder(request, id):
+    body = json.loads(request.body)
+    
+    folder = Folder.objects.get(pk=body['folderId'])
+    folder.sets.add(Set.objects.get(pk=id))
+    folder.save()
+    return JsonResponse({'success': 'set added successfully!'}, status=200)

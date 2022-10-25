@@ -5,7 +5,7 @@
 {% comment %} SCRIPTS {% endcomment %}
 <link rel="stylesheet" href="{% static 'styles/createset.css' %}">
 <script>
-    const crossIconPath = "{% static 'icons/close.png' %}";
+    const crossIconPath = "{% static 'icons/bin-dark.png' %}";
 </script>
 <script src="{% static 'plugins/createset.js' %}"></script>
 <form method="post" action="{% url 'createset' %}" enctype="multipart/form-data">
@@ -16,7 +16,7 @@
         </label>
     </div>
     <div>
-        <label for=""> description
+        <label for=""> Description
             {{CreateSet.description}}
         </label>
     </div>
@@ -25,17 +25,19 @@
             {{CreateSet.set_image}}
         </label>
     </div>
-    <button onclick="return addField();">Add term</button>
+
     <div id='termDefinitionContainer'>
-        <div class='term-definition' id="0">
-            <label for=""> Term
+        <div class='card w-100 term-definition' id="0">
+            <div class="card-header">
+                <span id="id">0</span>
+            </div>
+            <div class="card-body">
                 {{CreateSet.words}}
-            </label>
-            <label for=""> definition
                 {{CreateSet.definitions}}
-            </label>
+            </div>
         </div>
     </div>
-    <input type="submit" name="create study set" id="" value="Create Study Set">
+    <button onclick="return addField();" class="btn btn-primary">Add term</button>
+    <input type="submit" name="create study set" id="" class="btn btn-primary" value="Create Study Set">
 </form>
 {% endblock body %}
