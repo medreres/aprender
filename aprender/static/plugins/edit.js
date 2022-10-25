@@ -59,20 +59,20 @@ function createField() {
     div.id = `word_${id}`;
     div.dataset.id = id;
     div.innerHTML = `
-                    <span class='term'>
-                    <span class='id'>#${id}</span>
-                        <input  id='term_input_${id}' type='text'  value=''
+                    <span class="term">
+                        <span class='id'>${id}</span>
+                        <input id='term_input_${id}' type='text' value=''
                         oninput="changeWord(this, ${id})";
+                        class="form-control"
                         />
                     </span>
-                    <span class='definition'>
-                        <input id='definition_input_${id}' type='text'  value=''
-                        oninput="changeWord(this, ${id})";
-                        />
-                        
+                    <span class="definition">
+                        <textarea id='definition_input_${id}' type='text' 
+                        class="form-control"
+                        oninput="changeWord(this, ${id})";></textarea>
                     </span>
                     <span class='icons'>
-                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} data-id=${id}><img src=${deleteIconPath} class="icon" alt="Delete word"></button>
+                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} data-id=${id}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
     id++;
@@ -82,7 +82,6 @@ function createField() {
 }
 
 function changeWord(element, id) {
-    // console.log(element, id);
     wordToChange = words.find(word => word['id'] === id);
     if (typeof (wordToChange) == 'undefined') {
         wordToChange = {
@@ -102,6 +101,7 @@ function changeWord(element, id) {
         wordToChange['term'] = element.value;
     } else {
         wordToChange['definition'] = element.value;
+        do_resize(element);
     }
 
     // console.log('after ')
@@ -217,18 +217,19 @@ function loadWords() {
                 div.dataset.id = word['id']
                 div.innerHTML = `
                     <span class="term">
-                        <span class='id'>#${id}</span>
+                        <span class='id'>${id}</span>
                         <input id='term_input_${word['id']}' type='text' value="${word['term']}" 
                         oninput="changeWord(this, ${word['id']})";
                         class="form-control"
                         />
                     </span>
                     <span class="definition">
-                        <input id='definition_input_${word['id']}' type='text'  value="${word['definition']}" 
+                        <textarea id='definition_input_${word['id']}' type='text' 
                         class="form-control"
+                        oninput="changeWord(this, ${word['id']})";>${word['definition']}</textarea>
                     </span>
                     <span class='icons'>
-                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} dataset-id=${word['id']}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
+                        <button tabindex="-1" onclick='deleteWord(this);' id=${id} data-id=${word['id']}><img src="${deleteIconPath}" class="icon" alt="Delete word"></button>
                     </span>
                     `;
 
@@ -236,7 +237,23 @@ function loadWords() {
                 id++;
 
                 container.append(div);
-                
             })
+            container.querySelectorAll('textarea').forEach(element => do_resize(element))
         })
+}
+
+function do_resize(textbox) {
+
+    var maxrows = 6;
+    var txt = textbox.value;
+    var cols = textbox.cols;
+
+    var arraytxt = txt.split('\n');
+    var rows = arraytxt.length;
+
+    for (i = 0; i < arraytxt.length; i++)
+        rows += parseInt(arraytxt[i].length / cols);
+
+    if (rows > maxrows) textbox.rows = maxrows;
+    else textbox.rows = rows;
 }

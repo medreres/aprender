@@ -162,7 +162,7 @@
                             New around here? Sign up
                         </a>
 
-                        <a class="dropdown-item" href="#">Forgot password?</a>
+                        <a class="dropdown-item" href="{% url 'resetPassword' %}">Forgot password?</a>
                     </div>
                 </div>
             </div>
@@ -236,8 +236,13 @@
                     {{set.label}}
                 </div>
                 <div class="card-body">
-                    <h5 class="card-title">{{set.author}}</h5>
-                    <p class="card-text">{{set.wordsNumber}} terms</p>
+                    <section>
+                        <h5 class="card-title">{{set.author}}</h5>
+                        <p class="card-text">{{set.wordsNumber}} terms</p>
+                    </section>
+                    {% if set.set_image %}
+                    <img class="set-icon d-none d-md-block" src="{{set.set_image.url}}" alt="set icon">
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

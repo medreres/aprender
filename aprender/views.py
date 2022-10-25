@@ -8,7 +8,7 @@ from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from .forms import LoginForm, RegisterForm, CreateSet, CreateFolder, TestForm, EditUser
+from .forms import *
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
 # from django.shortcuts import redirect
@@ -22,8 +22,6 @@ from django.forms.models import model_to_dict
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import Http404
-from django.views import generic
 
 from .helper import *
 
@@ -301,6 +299,12 @@ def set(request, id):
         'isFavorite': isFavorite,
         'folders': folders,
         'CreateFolder': CreateFolder
+    })
+
+
+def resetPassword(request):
+    return render(request, 'aprender/reset-password.html', {
+        'ResetPasswordForm': ResetPasswordForm
     })
 
 

@@ -5,31 +5,21 @@
 {% block body %}
 <div class='recentSet'>
     {% for set in result %}
-    {% comment %} <a class='set' href="{% url 'set' set.id%}">
-        <div class='set-info'>
-            <span>
-                <span> {{set.label}}</span>
-                <span style='display: block; margin-top: -.5em;'>{{set.wordsNumber}} terms</span>
-            </span>
-            {%if set.set_image%}
-            <img class='set-icon' src="{{set.set_image.url}}" alt="set icon">
-            {%endif%}
-        </div>
-        <div style=''>
-            <img class="profilePicSm"
-                src="{% if set.author.profile_image %}{{set.author.profile_image.url}}{%else%}{% static 'icons/user.png' %}{%endif%}"
-                alt="profile icon">
-            <span>{{set.author}}</span>
-        </div>
-    </a> {% endcomment %}
+
     <div class="card" onclick="getToSet(this);" id="set_{{set.id}}" data-id="{{set.id}}">
         <div class="card-header">
             {{set.label}}
         </div>
         <div class="card-body">
-            <h5 class="card-title">{{set.author}}</h5>
-            <p class="card-text">{{set.wordsNumber}} terms</p>
+            <section>
+                <h5 class="card-title">{{set.author}}</h5>
+                <p class="card-text">{{set.wordsNumber}} terms</p>
+            </section>
+            {% if set.set_image %}
+            <img class="set-icon d-none d-md-block" src="{{set.set_image.url}}" alt="set icon">
+            {% endif %}
         </div>
     </div>
-    {% endfor %}</div>
+    {% endfor %}
+</div>
 {% endblock body %}

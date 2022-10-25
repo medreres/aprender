@@ -1,3 +1,4 @@
+from dataclasses import field
 from pydoc import describe
 from django import forms
 from django.forms import TextInput, EmailInput, PasswordInput
@@ -106,7 +107,7 @@ class RegisterForm(forms.Form):
         'class': "form-control ",
     }))
     email = forms.CharField(label='Email',  max_length=100, widget=forms.TextInput(attrs={
-        'class':"form-control ",
+        'class': "form-control ",
         'type': 'email'
     }))
 
@@ -155,9 +156,6 @@ class CreateSet(forms.ModelForm):
         'placeholder': 'definition'
     }))
 
-    # set_image = forms.ImageField(blank=True)
-
-
 
 class CreateFolder(forms.ModelForm):
     class Meta:
@@ -177,3 +175,13 @@ class CreateFolder(forms.ModelForm):
         'placeholder': 'Enter a description (optional)',
         'aria-label': 'Enter a description (optional)'
     }), required=False)
+
+class ResetPasswordForm(forms.Form):
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Username'
+    }))
+    email = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Email'
+    }))

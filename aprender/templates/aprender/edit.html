@@ -8,14 +8,14 @@
 <p>this is editting of the set {{id}}</p>
 <script>
     const setId = '{{id}}';
-    const deleteIconPath = '{% static 'icons/delete.png' %}';
+    const deleteIconPath = '{% static "icons/delete.png" %}';
     const setPath = "{% url 'set' id%}";
 </script>
 <section>
-    <label for="setLabel">Set Label
+    <label id='label' for="setLabel">Set Label
         <input type="text" name="set label" id="setLabel" value="">
     </label>
-    <label for="setDescription">Set Description
+    <label id='label' for="setDescription">Set Description
         <input type="text" name="set description" id="setDescription" value="">
     </label>
     <h2 id="saveHeader" class="hidden">Saved successfully...</h2>
@@ -23,5 +23,6 @@
 <section id='wordsContainer'>
 </section>
 <button class='word createBtn' onclick="return addField();">Create Card</button>
-<button type="button" class="btn btn-primary" onclick='submitForm();'>Done</button>
+
+<button type="button" class="btn btn-primary" style="margin-left: 10px !important;" onclick='submitForm();'>Done</button>
 {% endblock body %}
