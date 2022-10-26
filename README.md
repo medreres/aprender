@@ -76,9 +76,9 @@ nuances of some database related details. From the initial commit to the last al
 some others git commands were used as checkout, reset, log, status, which also helped to learn the ropes of using git.
 Some interesting problems aroused during the development and corresponding workarounds were used due to the lack of experience, as how to store the order of objects, added to Many-to-Many relation or updating uaser profile.
 
-Each file created contains html,js, python code of the project, all of the code is original, not copypasted.
-Additional libraries, plugins used: twbs plugin(for pagination purpose), Bootstrap (for mobile reponsiveness)
-To run applicatino you simply need to run command: 
+Each file created contains html,js, python code of the project, all of the code is original, not copypasted.  
+Additional libraries, plugins used: twbs plugin(for pagination purpose), Bootstrap (for mobile reponsiveness).  
+To run applicatino you simply need to run command:
 ```
 python3 manage.py runserver
 ```
