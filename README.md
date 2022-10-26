@@ -1,6 +1,6 @@
 # Aprender
 ![main page](readme/index.png)
-This web app is a clone of wide popular software for learning words - Quizzlet
+This web app is a clone of wide popular software for learning words - Quizzlet.
 Here you can create your own sets, separate them in folders, and, of course, learn words (set of term and its definition)!
 
 
