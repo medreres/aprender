@@ -387,7 +387,6 @@ def test(request, id):
     # {'questionTypes': ['written', 'matching', 'multiple', 'true'], 'questionLimit': 10, 'starredTerms': 'starred', 'showImages': False}
 
     test = createTest(request, id, form.cleaned_data)
-    print(test)
     if test == -1:
         return HttpResponseRedirect(reverse('set', kwargs={'id': id}))
     return render(request, 'aprender/test.html', {
@@ -407,20 +406,28 @@ def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
     allWords = []
     # if not only starred then get all words
     if starred == 'all':
-        return [*(learnPath.set.words.all())]
+        allWords = [*(learnPath.set.words.all())]
 
-    # if only starred then fetch poor known first
+        if len(allWords) < questionLimit:
+            messages.warning(request, 'Too few words in the set')
+            return -1
+
+        return allWords
+
+    # if only starred then fetch poorknown first
     allWords = [*(learnPath.poorKnown.all())]
 
-    # if not enough, append from intermedate
+    # if not enough, append from poorknown
     if questionLimit > len(allWords) and learnPath.intermediateKnown.count():
-        allWords.extend(*(learnPath.intermediateKnown.all()))
+        allWords.extend(learnPath.intermediateKnown.all())
 
-    # if thats not enough, then add from wellknown
-    if questionLimit > len(allWords) and learnPath.wellKnown.count():
-        allWords.extend(*(learnPath.wellKnown.all()))
+    # if thats not enough, then add from intermediate
+    # if questionLimit > len(allWords) and learnPath.wellKnown.count():
+    #     allWords.extend(*(learnPath.wellKnown.all()))
 
-    # if not enough throw an error
+    # # if not enough throw an error
+    # print(questionLimit)
+    # print(len(allWords))
     if questionLimit > len(allWords):
         return -1
 
@@ -458,13 +465,6 @@ def createTest(request, id, testForm) -> list:
 
     possibleAnswers = copy.deepcopy(allWords)
 
-    # print('ALL WORDS')
-    # print(allWords)
-
-    # print('ALL WORDS')
-    # print('----------------------------------')
-    # print(allWords)
-    # print('----------------------------------')
     for key in questions.keys():
         # numberOfQuestionTypes[key]
         for i in range(numberOfQuestionTypes[key]):

@@ -119,7 +119,7 @@ def createLearnPath(request, id):
 
     # add all words to poor known
     # get all words from this set
-    newPath.poorKnown.add(*setToLearn[0].words.all())
+    newPath.notStarred.add(*setToLearn[0].words.all())
 
     return JsonResponse({'success': "Learn Path successfully created!"})
 
