@@ -78,7 +78,7 @@ Some interesting problems aroused during the development and corresponding worka
 
 Each file created contains html,js, python code of the project, all of the code is original, not copypasted.  
 Additional libraries, plugins used: twbs plugin(for pagination purpose), Bootstrap (for mobile reponsiveness).  
-To run applicatino you simply need to run command:
+To run application you simply need to run command:
 ```
 python3 manage.py runserver
 ```
