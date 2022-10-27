@@ -2,20 +2,14 @@ from datetime import datetime
 import json
 import copy
 from random import randint, sample, shuffle
-from secrets import randbelow
-from xmlrpc.client import Boolean
-from django.db import IntegrityError
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from .forms import *
 from .models import Folder, User, Word, Set, LearnWay
 from django.contrib.auth import authenticate, login, logout
-# from django.shortcuts import redirect
-from django.contrib import messages  # import messages
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-# from django.utils.http import is_safe_url
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
@@ -47,7 +41,6 @@ def index(request):
         except:
             recentSets = None
 
-    # print(recentSets)
     return render(request, 'aprender/index.html', {
         'LoginForm': LoginForm,
         'CreateFolder': CreateFolder,
@@ -55,15 +48,6 @@ def index(request):
         'recentSets':  recentSets if request.user.is_authenticated else None,
         'allSets': allSets
     })
-
-
-def changePassword(request):
-    user = User.objects.get(pk=request.user.id)
-    # passwordOld = request.POST['passwordOld']
-    # passwordNew = request.POST['passwordNew']
-    # print(passwordOld, passwordNew)
-    print(request.POST)
-    return HttpResponseRedirect(reverse('settings'))
 
 
 def settings(request):
@@ -76,17 +60,13 @@ def settings(request):
     if request.method == 'POST':
         form = EditUser(request.POST, request.FILES)
         form.is_valid()
-        # if not form.is_valid():
         # TODO crutches troubles with updating user profile
-        # messages.warning(request, 'Form is not valid')
-        # else:
 
         if form.cleaned_data['profile_image'] is None:
             form.cleaned_data['profile_image'] = user.profile_image
         elif form.cleaned_data['profile_image'] == False:
             user.profile_image.delete()
         user.__dict__.update(form.cleaned_data)
-        # user.profile_image = form.cleaned_data['profile_image']
         user.save()
         messages.success(request, 'Changed successfully!')
         return HttpResponseRedirect(reverse('settings'))
@@ -217,7 +197,6 @@ def createset(request):
 
 def search(request):
     body = request.GET
-
     return render(request, 'aprender/search.html', {
         'result': Set.objects.filter(label__contains=body['search'])
     })
@@ -262,13 +241,6 @@ def set(request, id):
     # find out if user has already started learning way
     learnStarted = LearnWay.objects.filter(author=request.user).filter(
         set__pk=id).count() > 0 if request.user.is_authenticated else False
-
-    # set = set
-
-    # recentSets = request.user.recentSets
-    # print(json.loads(recentSets))
-
-    # print(json.dumps([1,3,], separators=(',',';')))
 
     # get recentSets from user, parse it, add or move, parse back to json and save
     if request.user.is_authenticated:
@@ -326,7 +298,6 @@ def createfolder(request):
     )
 
     return redirect('folder', folder.id)
-    return HttpResponseRedirect(reverse('folders', args=(request.user,)))
 
 
 @login_required
@@ -421,13 +392,6 @@ def getAllWords(request, learnPath: LearnWay, questionLimit: int, starred):
     if questionLimit > len(allWords) and learnPath.intermediateKnown.count():
         allWords.extend(learnPath.intermediateKnown.all())
 
-    # if thats not enough, then add from intermediate
-    # if questionLimit > len(allWords) and learnPath.wellKnown.count():
-    #     allWords.extend(*(learnPath.wellKnown.all()))
-
-    # # if not enough throw an error
-    # print(questionLimit)
-    # print(len(allWords))
     if questionLimit > len(allWords):
         return -1
 

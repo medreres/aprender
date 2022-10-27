@@ -80,7 +80,6 @@ class TestForm(forms.Form):
             'required': 'required'
         }), choices=QUESTION_TYPES)
     questionLimit = forms.IntegerField(widget=forms.NumberInput(attrs={
-        # TODO
         'min': 5,
         'max': 35,
         'step': 5,
@@ -97,7 +96,6 @@ class TestForm(forms.Form):
 
 class RegisterForm(forms.Form):
     username = forms.CharField(label='Username', max_length=100, widget=forms.TextInput(attrs={
-        # is-invalid TODO
         'class': "form-control ",
     }), required=True)
     password = forms.CharField(label="Password", widget=forms.PasswordInput(attrs={
@@ -123,15 +121,6 @@ class RegisterForm(forms.Form):
 
 
 class CreateSet(forms.ModelForm):
-   #  label = forms.CharField(label='Study Set Label', max_length=100)
-    # ? Could be done better?
-   #  term = forms.CharField(widget=forms.TextInput(attrs={
-   #      'id': f"term_0",
-   #  }))
-   #  definition = forms.CharField(widget=forms.TextInput(attrs={
-   #      'id': f"definition_0",
-   #  }))
-
     class Meta:
         model = Set
         fields = ('label', 'words', 'description', 'set_image')
@@ -175,6 +164,7 @@ class CreateFolder(forms.ModelForm):
         'placeholder': 'Enter a description (optional)',
         'aria-label': 'Enter a description (optional)'
     }), required=False)
+
 
 class ResetPasswordForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={

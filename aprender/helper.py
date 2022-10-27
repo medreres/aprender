@@ -1,13 +1,6 @@
-from ast import match_case
-from email import message
 import json
-from multiprocessing.dummy import active_children
-from os import stat
-from random import random
-from turtle import st
 from django.http import JsonResponse
 from .models import LearnWay, Set, User, Folder, Word
-from django.contrib import messages
 from random import randint, sample, shuffle
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -29,8 +22,6 @@ def getSetsId(request, id):
     body = json.loads(request.body)
     result = Folder.objects.get(pk=id).sets.all()
     return JsonResponse({'setId': [set.serialize() for set in result]}, status=200)
-
-# add set to folder
 
 
 @csrf_exempt
@@ -66,18 +57,14 @@ def folderEdit(request, id):
 
     return JsonResponse({'message': 'changed succesfully'}, status=200)
 
-# fetch sets via ajax
-
 
 @csrf_exempt
-# @login_required
 def fetchSets(request, user):
     body = json.loads(request.body)
     author = User.objects.get(username=user)
     sets = Set.objects.filter(author=author)
     if body['addToFolder']:
         folderSets = Folder.objects.get(pk=body['folderId']).sets.all()
-        # print(folderSets)
         sets = [*sets]
         for set in folderSets:
             if set not in sets:
@@ -96,17 +83,13 @@ def usernameAvailable(request):
         return JsonResponse({'success': 'Username available'}, status=200)
 
 
-# @login_required
 def fetchFolders(request, user):
     folders = Folder.objects.filter(author=User.objects.get(username=user))
     return JsonResponse([folder.serialize() for folder in folders], safe=False)
 
-# create learn path for user
-
 
 @login_required
 def createLearnPath(request, id):
-    # handle wrong id of set to learn
     setToLearn = Set.objects.filter(pk=id)
     if len(setToLearn) == 0:
         return JsonResponse({f"error': 'Set with such id {id} doesnt exist!"})
@@ -117,8 +100,6 @@ def createLearnPath(request, id):
         lastWord=setToLearn[0].words.first()
     )
 
-    # add all words to poor known
-    # get all words from this set
     newPath.notStarred.add(*setToLearn[0].words.all())
 
     return JsonResponse({'success': "Learn Path successfully created!"})
@@ -129,7 +110,6 @@ def nextWord(request, id):
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
     # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
-        # messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
 
@@ -151,12 +131,8 @@ def currentWord(request, id):
     if not request.user.is_authenticated:
         return JsonResponse({'message': 'user isnt authorized'}, status=403)
 
-    # if  not request.user.is_authorized:
-        # return JsonResponse({'message': 'user isnt authorised'}, status=403)
     learnPath = LearnWay.objects.filter(author=request.user).filter(set__pk=id)
-    # if set doesn't exist but somehow learnway is still available
     if len(learnPath) == 0:
-        # messages.error(request, 'Internal error. Set is not found')
         return JsonResponse({'error': "Set is not founded"})
     learnPath = learnPath[0]
     allWords = [*Set.objects.filter(pk=id)[0].words.all()]
@@ -201,12 +177,6 @@ def getWords(request, id, numberOfWords=10):
     else:
         # if there are any words, show menu to restart the learnPath
         return JsonResponse({'finish': 'The learn way is finished'}, status=200)
-
-    # # if poorknown set is empty, take word from intermediate
-    # if learnPath.poorKnown.count() > 0:
-    #     studySet = learnPath.poorKnown
-    # else:
-    #     studySet = learnPath.intermediateKnown
 
     # get a list of words from the set available
     numberOfWordsToStudy = numberOfWords if studySet.count(
@@ -255,8 +225,6 @@ def check(request, id):
     print(givenWord)
     actualWord = Word.objects.get(pk=givenWord['id'])
 
-    # learnPath = LearnWay.objects.filter(
-    #     author=request.user).get(set__pk=id)
     learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
     # if answer is right remove this word from poor known and add to intermediate known
 
@@ -296,7 +264,6 @@ def moveToLowerRank(learnPath: LearnWay, word: Word):
 @csrf_exempt
 def getWordsToEdit(request, id):
 
-    
     allWords = [*Set.objects.get(pk=id).words.all()]
 
     # get number of page needed via ajax
@@ -304,19 +271,19 @@ def getWordsToEdit(request, id):
     # if request made from set main page, then load 10 words per page
     if body['wordsPerPage'] == 'default':
         pageNumber = body['page']
-        # create instance of paginaotr
+        # create instance of paginator
         # ? could be saved in cache
         wordsPages = Paginator(allWords, WORDSPERPAGE)
         page = wordsPages.page(pageNumber).object_list
-        # print(wordsPages.page(2).object_list)
         return JsonResponse({'words': [word.serialize() for word in page]}, status=200)
     # else if in edit mode, load all words
     elif body['wordsPerPage'] == 'all':
-        
+
         if not request.user.is_authenticated:
             return JsonResponse({'message': 'user isnt authorized'}, status=403)
 
-        learnPath = LearnWay.objects.filter(author=request.user).get(set__pk=id)
+        learnPath = LearnWay.objects.filter(
+            author=request.user).get(set__pk=id)
 
         return JsonResponse({'words': [word.serialize() for word in allWords], 'label': learnPath.set.label,
                              'description': learnPath.set.description}, status=200)
@@ -354,7 +321,6 @@ def saveChanges(request, id):
     #  {'id': 3, 'term': 'table', 'definition': 'стілdsa'}]}
     # TODO word has 3 statuses: initial,change, add
     for word in body['words']:
-        # print(word)
         match word['status']:
             case 'change':
                 wordToChange = Word.objects.get(pk=word['id'])
@@ -381,30 +347,6 @@ def saveChanges(request, id):
 
     # TODO change succes message
     return JsonResponse({'message': 'zbs'}, status=200)
-
-    # # {'id': '53', 'term': 'coffe', 'definition': 'кава', 'deleted': True}
-    # try:
-    #     # user is changing existing word
-    #     wordToChange = Word.objects.get(pk=body['id'])
-
-    #     if (wordToChange.term == body['term'] and wordToChange.definition == body['definition']):
-    #         return JsonResponse({'success': 'word hasnt been changed'}, status=200)
-
-    #     wordToChange.term = body['term']
-    #     wordToChange.definition = body['definition']
-    #     wordToChange.save()
-    #     return JsonResponse({'success': 'word changed successfully!'}, status=200)
-    # except:
-    #     # user is adding new word
-    #     print(body)
-    #     newWord = Word.objects.create(
-    #         term=body['term'], definition=body['definition'])
-    #     learnPath = LearnWay.objects.filter(
-    #         author=request.user).get(set__pk=id)
-    #     # TODO create model for notstarred word and add there instead
-    #     learnPath.set.words.add(newWord)
-
-    #     return JsonResponse({'success': 'Word added successfully!', 'id': newWord.id}, status=200)
 
 
 @login_required
@@ -437,7 +379,7 @@ def deleteWord(request, id):
 @login_required
 def addSetToFolder(request, id):
     body = json.loads(request.body)
-    
+
     folder = Folder.objects.get(pk=body['folderId'])
     folder.sets.add(Set.objects.get(pk=id))
     folder.save()

@@ -13,7 +13,6 @@ urlpatterns = [
     path('search', views.search, name='search'),
     path('createfolder', views.createfolder, name='createfolder'),
     path('settings', views.settings, name='settings'),
-    # path('reset-password', views.resetPassword, name='resetPassword'),
     path('settings/password', PassowrdsChangeView.as_view(template_name="aprender/change-password.html"), name='changePassword'),
     path('<str:user>/folders', views.folders, name='folders'),
     path('folders/<int:id>', views.folder, name='folder'),
