@@ -57,4 +57,21 @@ as you will
 ![search page](readme/search.png)
 If you know there is a set you want to study, but can't find it on the main page, you can always use the search field in the upper right corner to find the needed set
 
+## Distinctiveness and Complexity
+This project is done solely by one person, therefore it took some time to think about all the implementation details and thereafter implement them all. Many bugs were catched during the process, yet I'm assured there will be others undiscovered. Aprender distincts from all the others projects, implemented in the CS50W course because of its size and complexity. Many js scripts are used here, some additional plugins as twbs, used for pagination on set main page, also Bootstrap modules are used quite a few times. Besides that, mobile first approach is used here, meaning that mobile design was the initial look of the pages, and desktop view was craeted afterwards Django models also are used quite a lot in this project, for creating Learn Path individually for each user. Words model, Folder model etc. Plethora of js (for loading user sets, adding sets to folder, add set to favorites and so on) is used here too. Before first lines of code were written, ER-model (initially on a piece of paper, then in Access) was created, to better understand nuances of some database related details. From the initial commit to the last all the changes were described in commit messages, some others git commands were used as checkout, reset, log, status, which also helped to learn the ropes of using git. Some interesting problems aroused during the development and corresponding workarounds were used due to the lack of experience, as how to store the order of objects, added to Many-to-Many relation or updating uaser profile.
 
+Each file created contains html,js, python code of the project, all of the code is original, not copypasted.
+Additional libraries, plugins used: twbs plugin(for pagination purpose), Bootstrap (for mobile reponsiveness).
+To run application you simply need to run command:
+
+```
+python3 manage.py makemigrations
+python3 manage.py migrate
+python3 manage.py runserver
+```
+
+### Libraries and Frameworks used:
+- Django
+- JQuery
+- Bootsrap
+- twbs-pagination
